@@ -1,12 +1,21 @@
 {
   "name": "locy",
+  "bin": {
+    "locy": "./dist/index.js"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "link-cli": "npm unlink -g locy && npm link",
+    "dev": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "pi-xlz",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "typescript": "^5.4.5"
+  }
 }
