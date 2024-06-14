@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 
-const someFn = (message: string) => {
-  console.log(message);
-};
+import fs from "fs";
+import { Command } from "commander";
 
-someFn("Hello World!");
+const program = new Command();
+
+program
+  .argument("<string>", "string to log")
+  .action((msg: string) => {
+    console.log(`Locy calls ${msg}`);
+  })
+  .description("It's /low-key/");
+
+program.parse(process.argv);

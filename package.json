@@ -1,18 +1,18 @@
 {
-  "name": "locy",
+  "name": "lofo",
   "bin": {
-    "locy": "./dist/index.js"
+    "lofo": "./dist/index.js"
   },
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "link-cli": "npm unlink -g locy && npm link",
+    "link-cli": "npm unlink -g lofo && npm link",
     "dev": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "pi-xlz",
+  "author": "pixlbin",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.14.2",
