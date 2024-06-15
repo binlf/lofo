@@ -6,9 +6,13 @@ CLI for adding local fonts to your Next.js projects!
 > npx lofo
 ```
 
-To get started, run the above command and `lofo` would try to get everything set up properly for you automatically.
+## Quick Start
 
-> _It's recommended you put all your local font files in a directory name `fonts` in the root directory of your project!_
+To get started, run the above command in your project directory and `lofo` would try to get everything set up properly for you automatically.
+
+> _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
+
+### How it works.
 
 When the CLI is executed, it would look through your project for a `fonts` directory[_put all your local font files in a single `fonts` directory for best results_] and create one if it doesn't exist in the root directory of your project.
 
