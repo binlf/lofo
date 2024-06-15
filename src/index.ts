@@ -27,7 +27,7 @@ const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
 logger.info(`lofo is running in ${PROJECT_NAME}`);
 const checkFontsDirectoryExists = async () => {
   try {
-    logger.info("Getting fonts directory...");
+    logger.info("Getting your fonts directory...");
     const data = await fsPromises.readdir(process.cwd());
     // console.log("Data: ", data);
     if (data.includes("fonts")) {
