@@ -4,31 +4,14 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 import { Command } from "commander";
+import { logger } from "./helpers/logger";
+import { folderExists } from "./utils/folderExists";
+import { FONTS_DIR } from "./constants";
 
 const program = new Command();
 
-const logger = {
-  error(message: string) {
-    console.log(`ERROR: ${message}...`);
-  },
-  success(message: string) {
-    console.log(`SUCCESS: ${message}`);
-  },
-  warning(message: string) {
-    console.log(`WARNING: ${message}`);
-  },
-  info(message: string) {
-    console.log(`INFO: ${message}`);
-  },
-};
-
 const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
 const CURRENT_DIR = process.cwd();
-const FONTS_DIR = "fonts";
-
-const folderExists = (folderPath: string) => {
-  return fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory();
-};
 
 // todo: recursively traverse the project tree for the `fonts` directory
 let index = 0;
@@ -58,13 +41,14 @@ const getFontsDir = () => {
   return fontsDirPath;
 };
 
+//? main function
 const main = () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR} directory...`);
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath)
     logger.warning(
-      `A ${FONTS_DIR} was not found in your project, creating one...`
+      `A ${FONTS_DIR} directory was not found in your project, creating one...`
     );
   else logger.info(`Found ${FONTS_DIR} directory in ${fontsDirPath}`);
 };
