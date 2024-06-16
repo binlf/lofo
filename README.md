@@ -3,7 +3,7 @@
 CLI for adding local fonts to your Next.js projects!
 
 ```
-> npx lofo
+ npx lofo
 ```
 
 ## Quick Start
