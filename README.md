@@ -27,10 +27,8 @@ example-project
 |-- app
 |-- pages
 |-- public
-|   |-- fonts
-|   `-- assets
-|-- package.json
-`-- tsconfig.json
+|-- fonts
+`-- ...
 ```
 
 ### Roadmap

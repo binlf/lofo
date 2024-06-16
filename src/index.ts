@@ -23,43 +23,50 @@ const logger = {
 };
 
 const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
+const CURRENT_DIR = process.cwd();
+const FONTS_DIR = "fonts";
 
-logger.info(`lofo is running in ${PROJECT_NAME}`);
-const checkFontsDirectoryExists = async () => {
-  try {
-    logger.info("Getting your fonts directory...");
-    const data = await fsPromises.readdir(process.cwd());
-    // console.log("Data: ", data);
-    if (data.includes("fonts")) {
-      logger.info(`Found fonts directory in ${process.cwd()}`);
-    } else if (data.includes("src")) {
-      try {
-        process.chdir("./src");
-        const isFontsDir = (await fsPromises.readdir(process.cwd())).includes(
-          "fonts"
-        );
-        isFontsDir && logger.info(`Found fonts directory in ${process.cwd()}`);
-      } catch (error) {
-        console.error("Something Went Wrong! ", error);
-        process.exit(1);
-      }
-    } else logger.info("Couldn't find your fonts directory!");
-  } catch (error) {
-    console.error("Something went wrong: ", error);
-    process.exit(1);
-  }
-
-  // logger.info("Found fonts directory in...");
-  // logger.info("Couldn't find fonts directory, creating one...");
+const folderExists = (folderPath: string) => {
+  return fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory();
 };
 
-checkFontsDirectoryExists();
+// todo: recursively traverse the project tree for the `fonts` directory
+let index = 0;
+let dirFound = false;
 
-// program
-//   .argument("<string>", "string to log")
-//   .action((msg: string) => {
-//     console.log(`Locy calls ${msg}`);
-//   })
-//   .description("It's /low-key/");
+const getFontsDir = () => {
+  const dirsToCheck = ["src", "src/public"];
+  const dirPathInCurrDir = path.join(CURRENT_DIR, FONTS_DIR);
+  let fontsDirPath = "";
 
-// program.parse(process.argv);
+  if (folderExists(dirPathInCurrDir)) {
+    dirFound = true;
+    fontsDirPath = dirPathInCurrDir;
+  } else {
+    while (index < dirsToCheck.length) {
+      const dir = dirsToCheck[index];
+      const dirPathInSubDir = path.join(CURRENT_DIR, dir!, FONTS_DIR);
+      fontsDirPath = dirPathInSubDir;
+      if (folderExists(dirPathInSubDir)) {
+        dirFound = true;
+        break;
+      }
+      index++;
+    }
+    if (!dirFound) fontsDirPath = "";
+  }
+  return fontsDirPath;
+};
+
+const main = () => {
+  logger.info(`lofo is running in ${PROJECT_NAME}`);
+  logger.info(`Getting your ${FONTS_DIR} directory...`);
+  const fontsDirPath = getFontsDir();
+  if (!fontsDirPath)
+    logger.warning(
+      `A ${FONTS_DIR} was not found in your project, creating one...`
+    );
+  else logger.info(`Found ${FONTS_DIR} directory in ${fontsDirPath}`);
+};
+
+main();
