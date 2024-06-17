@@ -83,15 +83,16 @@ const checkLocalFontFiles = async (dirPath: string) => {
         const fileName = fileParts[0];
         const fileExt = fileParts.pop()?.toLowerCase();
         const isFileFont = fontFileExts.some((ext) => ext === fileExt);
-        if (isFileFont) return file;
+        return isFileFont;
       }
     });
     console.log("Font Files: ", fontFiles);
-    if (!fontFiles.length)
+    if (!fontFiles.length) {
       logger.error(
         `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
       );
-    process.exit(1);
+      process.exit(1);
+    }
   }
 };
 
