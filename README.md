@@ -22,6 +22,8 @@ It would then resolve the paths to all the font files in your `fonts` directory 
 
 ### Recommended Folder Structure
 
+_This is just the ideal folder structure to start with before running the cli_
+
 ```
 example-project
 |-- app
