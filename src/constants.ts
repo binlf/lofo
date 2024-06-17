@@ -1,1 +1,1 @@
-export const FONTS_DIR = "fonts";
+export const FONTS_DIR_NAME = "fonts";

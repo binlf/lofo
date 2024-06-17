@@ -1,7 +1,7 @@
 // todo: add chalk for color
 export const logger = {
   error(message: string) {
-    console.log(`ERROR: ${message}...`);
+    console.log(`ERROR: ${message}`);
   },
   success(message: string) {
     console.log(`SUCCESS: ${message}`);
