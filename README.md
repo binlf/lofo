@@ -38,3 +38,4 @@ example-project
 - [ ] Add support for projects using TailwindCSS
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
+- [ ] Add support for monorepo projects
