@@ -44,6 +44,10 @@ const getLocalFonts = async (fontsDirPath: string) => {
   }
   logger.info("Found font files...");
   console.log("Font Files: ", fontFiles);
+  return fontFiles;
+};
+
+const groupFontsByFamily = (fontFiles: string[], fontsDirPath: string) => {
   logger.info("Grouping font files into families...");
   getFileNames(fontFiles).forEach((fileName) => {
     const fontFamilyFolderPath = path.join(fontsDirPath, `/${fileName}`);
@@ -64,10 +68,8 @@ const getLocalFonts = async (fontsDirPath: string) => {
   logger.info("Grouped fonts into families...");
 };
 
-// const groupFontsByFamily = (fontFiles: string) => {};
-
 //? entry point
-const main = () => {
+const main = async () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   const fontsDirPath = getFontsDir();
@@ -75,12 +77,12 @@ const main = () => {
     logger.warning(
       `A ${FONTS_DIR_NAME} directory was not found in your project...`
     );
-    createFontsDir();
-  } else {
-    // todo: format `fontsDirPath` -- length might be too long
-    logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
-    getLocalFonts(fontsDirPath);
+    return createFontsDir();
   }
+  // todo: format `fontsDirPath` -- length might be too long
+  logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
+  const fontFiles = await getLocalFonts(fontsDirPath);
+  groupFontsByFamily(fontFiles, fontsDirPath);
 };
 
 main();
