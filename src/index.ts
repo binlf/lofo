@@ -48,10 +48,10 @@ const getLocalFonts = async (fontsDirPath: string) => {
   getFileNames(fontFiles).forEach((fileName) => {
     const fontFamilyFolderPath = path.join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFiles
-      .filter(
-        (fontFile) =>
-          (fontFile.split(".")[0]?.split("-")[0] as string) === fileName
-      )
+      .filter((fontFile) => {
+        const [name] = getFileNames([fontFile]);
+        return name === fileName;
+      })
       .map((file) => `${fontsDirPath}/${file}`);
     if (!folderExists(fontFamilyFolderPath)) {
       const createdDirPath = fs.mkdirSync(fontFamilyFolderPath, {
