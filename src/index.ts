@@ -9,11 +9,10 @@ import {
   FONTS_DIR_NAME,
   FONT_FILE_EXTENSIONS as FONT_FILE_EXTS,
 } from "./constants";
-import { moveFile } from "./utils/move-file";
 import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontsDir } from "./helpers/get-fonts-dir";
-import { getFileNames } from "./utils/get-file-names";
-import { fileExists, folderExists } from "./utils/exists";
+import { fileExists } from "./utils/exists";
+import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 
 // const program = new Command();
 
@@ -47,27 +46,6 @@ const getLocalFonts = async (fontsDirPath: string) => {
   return fontFiles;
 };
 
-const groupFontsByFamily = (fontFiles: string[], fontsDirPath: string) => {
-  logger.info("Grouping font files into families...");
-  getFileNames(fontFiles).forEach((fileName) => {
-    const fontFamilyFolderPath = path.join(fontsDirPath, `/${fileName}`);
-    const filesToMove = fontFiles
-      .filter((fontFile) => {
-        const [name] = getFileNames([fontFile]);
-        return name === fileName;
-      })
-      .map((file) => `${fontsDirPath}/${file}`);
-    if (!folderExists(fontFamilyFolderPath)) {
-      const createdDirPath = fs.mkdirSync(fontFamilyFolderPath, {
-        recursive: true,
-      });
-      return moveFile(filesToMove, createdDirPath as string);
-    }
-    return moveFile(filesToMove, fontFamilyFolderPath);
-  });
-  logger.info("Grouped fonts into families...");
-};
-
 //? entry point
 const main = async () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
@@ -82,17 +60,8 @@ const main = async () => {
   // todo: format `fontsDirPath` -- length might be too long
   logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
   const fontFiles = await getLocalFonts(fontsDirPath);
+  // todo: find a way to implicitly get `fontsDirPath` inside here
   groupFontsByFamily(fontFiles, fontsDirPath);
 };
 
 main();
-
-// (err, createdDirPath) => {
-// if (err) throw err;
-// check if font directory already exists
-// const fontFolderPath = !createdDirPath
-//   ? path.join(fontsDirPath, `/${fileName}`)
-//   : createdDirPath;
-// console.log("Font Folder Path: ", fontFolderPath);
-// moveFile(`${fontsDirPath}/${fileName}`, fontFolderPath);
-// }
