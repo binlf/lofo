@@ -18,7 +18,7 @@ import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 
 const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
 
-const getLocalFonts = async (fontsDirPath: string) => {
+const getFontFiles = async (fontsDirPath: string) => {
   logger.info("Getting your local font files...");
   const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
   if (!filesInFontsDir.length) {
@@ -59,7 +59,7 @@ const main = async () => {
   }
   // todo: format `fontsDirPath` -- length might be too long
   logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
-  const fontFiles = await getLocalFonts(fontsDirPath);
+  const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   groupFontsByFamily(fontFiles, fontsDirPath);
 };
