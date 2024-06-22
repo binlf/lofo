@@ -25,33 +25,33 @@ export const groupFontsByFamily = (
   logger.info("Grouping font files into families...");
   const fontFamilies: Family[] = [];
   getFileNames(fontFiles).forEach((fileName) => {
-    const fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
+    let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFiles
       .filter((fontFile) => {
         return getFileNames([fontFile])[0] === fileName;
       })
       .map((file) => `${fontsDirPath}/${file}`);
     if (!folderExists(fontFamilyFolderPath)) {
-      const createdDirPath = fs.mkdirSync(fontFamilyFolderPath, {
+      fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
         recursive: true,
-      });
-      const movedFiles = moveFile(filesToMove, createdDirPath as string);
-      // todo: avoid code duplication[here and below]
-      const fonts = movedFiles?.map((filePath) => {
+      }) as string;
+    }
+    moveFile(filesToMove, fontFamilyFolderPath, (err, mvdFilePaths) => {
+      if (err) process.exit(1);
+      const fonts = mvdFilePaths.map((filePath): Font => {
         return {
           name: basename(filePath),
           path: filePath,
-          style: "normal" as Font["style"],
+          style: "normal",
           weight: getFontWeight(basename(filePath)),
         };
       });
       const family: Family = {
         familyName: fileName,
-        fonts: [...fonts!],
+        fonts: [...fonts],
       };
-      return fontFamilies.push(family);
-    }
-    return moveFile(filesToMove, fontFamilyFolderPath);
+      fontFamilies.push(family);
+    });
   });
   logger.info("Grouped fonts into families...");
   return fontFamilies;
