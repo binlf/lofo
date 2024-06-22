@@ -39,3 +39,5 @@ example-project
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
 - [ ] Add support for monorepo projects
+
+> ⚠Warning: _This project, at this time, makes quite a few assumptions about your project and conventions. Proceed with caution!_
