@@ -7,5 +7,6 @@ export const FONT_DIRS_TO_CHECK = [
   "src/public",
   "src/public/assets",
   "app",
+  "assets",
 ];
 export const FONT_FILE_EXTENSIONS = ["ttf", "otf", "woff", "woff2"];

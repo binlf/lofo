@@ -23,7 +23,7 @@ export const getFontsDir = () => {
         FONTS_DIR_NAME
       );
       fontsDirPath = dirPathInSubDir;
-      if (folderExists(dirPathInSubDir)) {
+      if (folderExists(fontsDirPath)) {
         dirFound = true;
         break;
       }

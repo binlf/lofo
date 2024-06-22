@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import fs, { mkdirSync } from "fs";
-import fsPromises from "fs/promises";
 import path from "path";
 import { Command } from "commander";
 import { logger } from "./utils/logger";
@@ -11,40 +9,14 @@ import {
 } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontsDir } from "./helpers/get-fonts-dir";
-import { fileExists } from "./utils/exists";
 import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
+import { getFontFiles } from "./helpers/get-font-files";
+import { writeFontImports } from "./helpers/write-font-imports";
 
 // const program = new Command();
 
+// todo: get project name from `package.json`
 const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
-
-const getFontFiles = async (fontsDirPath: string) => {
-  logger.info("Getting your local font files...");
-  const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
-  if (!filesInFontsDir.length) {
-    logger.error(
-      `Couldn't find any files, add your font files to your ${FONTS_DIR_NAME} directory and try again...`
-    );
-    return process.exit(1);
-  }
-  const fontFiles = filesInFontsDir.filter((file) => {
-    if (fileExists(path.join(fontsDirPath, `/${file}`))) {
-      const fileParts = file.split(".");
-      const fileExt = fileParts.pop()?.toLowerCase();
-      const isFileFont = FONT_FILE_EXTS.some((ext) => ext === fileExt);
-      return isFileFont;
-    }
-  });
-  if (!fontFiles.length) {
-    logger.error(
-      `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
-    );
-    return process.exit(1);
-  }
-  logger.info("Found font files...");
-  console.log("Font Files: ", fontFiles);
-  return fontFiles;
-};
 
 //? entry point
 const main = async () => {
@@ -61,7 +33,19 @@ const main = async () => {
   logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
-  groupFontsByFamily(fontFiles, fontsDirPath);
+  const fams = groupFontsByFamily(fontFiles, fontsDirPath);
+  console.log("Font Family's Fonts: ", fams[0]?.fonts);
+  writeFontImports(fontsDirPath);
 };
 
 main();
+
+//? We can, once the steps are complete inform the user
+//? about the ability to change the location of the `fonts` directory
+//? if not satisfied, after which they run the cli command again to update
+//? the font file import paths
+
+//? add ability for user to pass an argument along with `lofo` command
+//? for the path to where they would like the fonts directory to finally be placed,
+//? by default it'd be placed in the "public" folder of your Next.js project
+//? it'd create one if it doesn't already exist
