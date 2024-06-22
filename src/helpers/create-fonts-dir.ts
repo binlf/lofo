@@ -12,6 +12,6 @@ export const createFontsDir = () => {
     { recursive: true }
   );
   logger.info(
-    `Created a ${FONTS_DIR_NAME} directory in ${fontsDirPathInRoot}.\nPut all your local font files into the ${FONTS_DIR_NAME} directory and run the cli again...`
+    `Created a ${FONTS_DIR_NAME} directory at ${fontsDirPathInRoot}.\nPut all your local font files into the ${FONTS_DIR_NAME} directory and run the cli again...`
   );
 };

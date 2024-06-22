@@ -30,7 +30,7 @@ const main = async () => {
     return createFontsDir();
   }
   // todo: format `fontsDirPath` -- length might be too long
-  logger.info(`Found ${FONTS_DIR_NAME} directory in ${fontsDirPath}`);
+  logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fams = groupFontsByFamily(fontFiles, fontsDirPath);
