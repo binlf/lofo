@@ -6,7 +6,7 @@ type Source = string | string[];
 export const moveFile = (
   source: Source,
   dest: string,
-  callbackFn?: (err: unknown, movedFiles: string[]) => void
+  callbackFn?: (err: unknown, movedFilePaths: string[]) => void
 ) => {
   const isArrayOfFiles = Array.isArray(source);
   const movedFilesPaths: string[] = [];
