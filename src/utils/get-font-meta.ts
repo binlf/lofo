@@ -44,8 +44,8 @@ export const getFontWeight = (font: string): Wght => {
     ?.split(".")[0]
     ?.toLowerCase();
   let fontWeight: Wght = "400";
-  for (const [wghtA, wght] of Object.entries(wghtsMap)) {
-    if (fontAnnotationString?.includes(wghtA.toLowerCase())) {
+  for (const [wghtAnnot, wght] of Object.entries(wghtsMap)) {
+    if (fontAnnotationString?.includes(wghtAnnot.toLowerCase())) {
       fontWeight = wght;
       break;
     }

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Old and new GitHub usernames
-OLD_USERNAME="pi-xlz"
-NEW_USERNAME="pixlbin"
+OLD_USERNAME="pixlbin"
+NEW_USERNAME="pxlbin"
 
 # Path to the directory containing your repositories
 REPO_BASE_DIR=~/Documents/Prjs/[projects]/projects-original/[WIP]
