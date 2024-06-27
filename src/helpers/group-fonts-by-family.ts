@@ -6,14 +6,14 @@ import { folderExists } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
 import { Wght, getFontWeight } from "../utils/get-font-meta";
 
-type Font = {
+export type Font = {
   name: string;
   path: string;
   style: "normal" | "italic";
   weight: Wght;
 };
 
-type Family = {
+export type Family = {
   familyName: string;
   fonts: Font[];
 };

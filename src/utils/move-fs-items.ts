@@ -31,7 +31,3 @@ export const moveFile = (
     return movedFilesPaths;
   }
 };
-
-export const moveFolder = () => {
-  console.log("Moving Folder");
-};

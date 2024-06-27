@@ -10,3 +10,4 @@ export const FONT_DIRS_TO_CHECK = [
   "assets",
 ];
 export const FONT_FILE_EXTENSIONS = ["ttf", "otf", "woff", "woff2"];
+export const LAYOUT_FILE_NAME = "layout.tsx";

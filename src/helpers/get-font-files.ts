@@ -8,10 +8,10 @@ export const getFontFiles = async (fontsDirPath: string) => {
   logger.info("Getting your local font files...");
   const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
   if (!filesInFontsDir.length) {
-    logger.error(
+    logger.warning(
       `Couldn't find any files, add your font files to your ${FONTS_DIR_NAME} directory and try again...`
     );
-    return process.exit(1);
+    return process.exit(0);
   }
   const fontFiles = filesInFontsDir.filter((file) => {
     if (fileExists(path.join(fontsDirPath, `/${file}`))) {
@@ -22,10 +22,10 @@ export const getFontFiles = async (fontsDirPath: string) => {
     }
   });
   if (!fontFiles.length) {
-    logger.error(
+    logger.warning(
       `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
     );
-    return process.exit(1);
+    return process.exit(0);
   }
   logger.info("Found font files...");
   console.log("Font Files: ", fontFiles);

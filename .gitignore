@@ -1,4 +1,4 @@
 node_modules
 dist
-update-remotes.sh
+./update-remotes.sh
 fonts

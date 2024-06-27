@@ -1,0 +1,10 @@
+- We can, once the steps are complete, inform the user
+- about the ability to change the location of the `fonts` directory
+- if not satisfied, after which they run the cli command again to update
+- the font file import paths
+
+- Add ability for user to pass an argument along with `lofo` command
+- for the path to their preferred final destination of the fonts directory.
+- By default it'd be placed in the "public" folder of your Next.js project
+- it'd create one if it doesn't already exist
+
