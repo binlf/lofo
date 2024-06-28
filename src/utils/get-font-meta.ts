@@ -1,4 +1,6 @@
 import { getFileNames } from "./get-file-names";
+import type { Font } from "../helpers/group-fonts-by-family";
+import path from "path";
 
 export type Wght =
   | "100"
@@ -55,3 +57,20 @@ export const getFontWeight = (font: string): Wght => {
 
 export const getFontStyle = () => {};
 export const getFontVarName = () => {};
+
+export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
+  let src;
+  if (fonts.length > 1) {
+    src = fonts.map((font) => {
+      return {
+        path: path.relative(fontsDirPath, font.path).replaceAll(/\\/g, "/"),
+        weight: font.weight,
+        style: font.style,
+      };
+    });
+  } else
+    src = path
+      .relative(fontsDirPath, fonts[0]?.path as string)
+      .replaceAll(/\\/g, "/");
+  return JSON.stringify(src);
+};

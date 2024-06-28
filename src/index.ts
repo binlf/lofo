@@ -2,6 +2,7 @@
 
 import path from "path";
 import { Command } from "commander";
+import fs from "fs-extra";
 import { logger } from "./utils/logger";
 import { FONTS_DIR_NAME } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
@@ -35,3 +36,5 @@ const main = async () => {
 };
 
 main();
+// const filesInAppDir = fs.readdirSync("src/app");
+// console.log("Files In App Dir: ", filesInAppDir);

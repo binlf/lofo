@@ -4,15 +4,15 @@ import { basename } from "path";
 type Source = string | string[];
 
 export const moveFile = (
-  source: Source,
+  src: Source,
   dest: string,
   callbackFn?: (err: unknown, movedFilePaths: string[]) => void
 ) => {
-  const isArrayOfFiles = Array.isArray(source);
+  const isArrayOfFiles = Array.isArray(src);
   const movedFilesPaths: string[] = [];
   try {
     if (isArrayOfFiles) {
-      source.forEach((file) => {
+      src.forEach((file) => {
         const newFileName = `${dest}/${basename(file)}`;
         renameSync(file, newFileName);
         movedFilesPaths.push(newFileName);
@@ -20,8 +20,8 @@ export const moveFile = (
       callbackFn && callbackFn(undefined, movedFilesPaths);
       return movedFilesPaths;
     } else {
-      renameSync(source as string, `${dest}/${basename(source)}`);
-      movedFilesPaths.push(`${dest}/${basename(source)}`);
+      renameSync(src as string, `${dest}/${basename(src)}`);
+      movedFilesPaths.push(`${dest}/${basename(src)}`);
       callbackFn && callbackFn(undefined, movedFilesPaths);
       return movedFilesPaths;
     }
