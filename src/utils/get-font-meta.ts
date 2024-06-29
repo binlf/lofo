@@ -55,9 +55,6 @@ export const getFontWeight = (font: string): Wght => {
   return fontWeight;
 };
 
-export const getFontStyle = () => {};
-export const getFontVarName = () => {};
-
 export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   let src;
   if (fonts.length > 1) {
@@ -74,3 +71,6 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
       .replaceAll(/\\/g, "/");
   return JSON.stringify(src);
 };
+
+export const getFontStyle = () => {};
+export const getFontVarName = () => {};

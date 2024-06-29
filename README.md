@@ -20,7 +20,7 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one if it doesn't exist in the root directory of your project.
 
-> _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
+> [!NOTE] > _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
 
 In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these are files that typically have the `.otf`, `.ttf`, `.woff`, `.woff2` extensions_] into the `fonts` directory.
 
