@@ -9,7 +9,7 @@ import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontsDir } from "./helpers/get-fonts-dir";
 import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 import { getFontFiles } from "./helpers/get-font-files";
-import { writeFontImports } from "./helpers/write-font-imports";
+import { writeFontImports } from "./helpers/write-font";
 
 // const program = new Command();
 
@@ -20,6 +20,8 @@ const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
 const main = async () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
+  // todo: on first pass, store path in `lofo.json`.
+  // todo: reference path in `lofo.json` for succeeding passes to determine whether to update font import paths
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
     logger.warning(
@@ -31,6 +33,7 @@ const main = async () => {
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
+  //! remove
   console.log("Font Family's Fonts: ", fontFamilies[0]?.fonts);
   writeFontImports(fontsDirPath, fontFamilies);
 };
