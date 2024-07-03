@@ -4,7 +4,10 @@ import readline from "readline";
 import type { Family } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
-import { NEXT_LOCAL_FONT_IMPORT_STATEMENT } from "../constants";
+import {
+  LOFO_LOCAL_FONT_IMPORT_STATEMENT,
+  NEXT_LOCAL_FONT_IMPORT_STATEMENT,
+} from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 
 export const writeFontImports = async (
@@ -32,7 +35,7 @@ export const writeFontImports = async (
       item.includes("layout")
   ) as string[];
   if (!layoutFile) {
-    logger.info(
+    logger.warning(
       "Couldn't find your root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
     );
     return process.exit(1);
@@ -60,8 +63,8 @@ const generateFileContent = (ff: Family[], fontsDirPath: string) => {
 };
 
 const writeImportStatement = async (filePath: string) => {
-  const importStatement =
-    'import localfonts, { Poppins } from "../../public/fonts"\n// IMPORT YOUR LOCAL FONTS AS A DEFAULT EXPORT[import localfonts from ...]\n// OR AS A NAMED EXPORT[import { <font_name> } from ...]\n// YOU SHOULD PROBABLY GET RID OF THESE COMMENTS NOW\n\n';
+  const importStatement = LOFO_LOCAL_FONT_IMPORT_STATEMENT;
+  // todo: create util function for handling writing imports, should accept the streams
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
   //? Get rid of original output without logging to console
@@ -76,6 +79,7 @@ const writeImportStatement = async (filePath: string) => {
   let lineNumber = 1;
   let lineContent;
   for await (const line of rl) {
+    // this would break if a there's a line break between two import statements
     if (lineNumber > 1 && !line.trim() && lineContent?.includes("import")) {
       fileWriteStream.write(importStatement);
     } else {

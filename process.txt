@@ -3,6 +3,10 @@
 - if not satisfied, after which they run the cli command again to update
 - the font file import paths
 
+- After lofo has successfully completed its tasks, it prompts the user
+- to follow the displayed link(to to the Next.js docs on fonts optimization) for
+- next steps(in case they're somehow not aware of how to use the font variable or className props)
+
 - Add ability for user to pass an argument along with `lofo` command
 - for the path to their preferred final destination of the fonts directory.
 - By default it'd be placed in the "public" folder of your Next.js project
