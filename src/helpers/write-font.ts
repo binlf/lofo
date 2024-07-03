@@ -6,9 +6,6 @@ import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
 import { NEXT_LOCAL_FONT_IMPORT_STATEMENT } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
-// import localfonts, { Poppins } from "../../public/fonts"
-// IMPORT YOUR LOCAL FONTS AS A DEFAULT EXPORT[import localfonts from ...] OR AS A NAMED EXPORT[import { <font_name> } from ...]
-// YOU SHOULD PROBABLY GET RID OF THESE COMMENTS NOW
 
 // todo: implement writing font imports to layout file
 export const writeFontImports = async (
