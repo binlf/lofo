@@ -55,6 +55,7 @@ export const getFontWeight = (font: string): Wght => {
   return fontWeight;
 };
 
+// todo: handle variable fonts
 export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   let src;
   if (fonts.length > 1) {

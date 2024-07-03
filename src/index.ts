@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 import path from "path";
-import { Command } from "commander";
-import fs from "fs-extra";
 import { logger } from "./utils/logger";
 import { FONTS_DIR_NAME } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
@@ -21,7 +19,8 @@ const main = async () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   // todo: on first pass, store path in `lofo.json`.
-  // todo: reference path in `lofo.json` for succeeding passes to determine whether to update font import paths
+  // todo: reference path in `lofo.json` for succeeding passes to determine
+  // todo: whether to update all font import paths
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
     logger.warning(
@@ -39,5 +38,3 @@ const main = async () => {
 };
 
 main();
-// const filesInAppDir = fs.readdirSync("src/app");
-// console.log("Files In App Dir: ", filesInAppDir);
