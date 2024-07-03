@@ -7,7 +7,6 @@ import { getFontSrc } from "../utils/get-font-meta";
 import { NEXT_LOCAL_FONT_IMPORT_STATEMENT } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 
-// todo: implement writing font imports to layout file
 export const writeFontImports = async (
   fontsDirPath: string,
   fontFamilies: Family[]
