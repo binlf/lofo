@@ -10,7 +10,7 @@ import {
 } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 
-export const writeFontImports = async (
+export const writeFontImports = (
   fontsDirPath: string,
   fontFamilies: Family[]
 ) => {
@@ -22,6 +22,7 @@ export const writeFontImports = async (
   )}`;
   fs.outputFileSync(indexFilePath, content);
   logger.info("Finished writing font exports");
+  // warn: this breaks if fonstDirPath is initially in "public"
   fs.moveSync(fontsDirPath, `./public/fonts`);
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
@@ -41,8 +42,9 @@ export const writeFontImports = async (
     return process.exit(1);
   }
   const layoutFilePath = path.join(appDirPath, layoutFile);
-  await writeImportStatement(layoutFilePath);
-  logger.info("Finished writing font imports...");
+  writeImportStatement(layoutFilePath)
+    .then(() => logger.info("Finished writing font imports..."))
+    .catch((err) => logger.error(err));
 };
 
 const generateFileContent = (ff: Family[], fontsDirPath: string) => {
@@ -63,23 +65,21 @@ const generateFileContent = (ff: Family[], fontsDirPath: string) => {
 };
 
 const writeImportStatement = async (filePath: string) => {
+  // todo: check if user is updating import path[has run lofo prior]
+  // todo: if so, write import statement without additional comment
   const importStatement = LOFO_LOCAL_FONT_IMPORT_STATEMENT;
-  // todo: create util function for handling writing imports, should accept the streams
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
-  //? Get rid of original output without logging to console
-  const nullWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
 
   const rl = readline.createInterface({
     input: fileReadStream,
-    output: nullWriteStream, // get rid of original output without using `process.stdout`
     crlfDelay: Infinity,
   });
 
   let lineNumber = 1;
   let lineContent;
   for await (const line of rl) {
-    // this would break if a there's a line break between two import statements
+    // warn: this would break if \n appears between two import statement lines
     if (lineNumber > 1 && !line.trim() && lineContent?.includes("import")) {
       fileWriteStream.write(importStatement);
     } else {
@@ -88,13 +88,10 @@ const writeImportStatement = async (filePath: string) => {
     lineContent = line;
     lineNumber++;
   }
-  // todo: DRY this up
+
+  fileWriteStream.end();
   await new Promise((resolve, reject) =>
     fileWriteStream.on("finish", resolve).on("error", reject)
   );
-  await new Promise((resolve, reject) =>
-    nullWriteStream.on("finish", resolve).on("error", reject)
-  );
-  fileWriteStream.end();
-  return fileReadStream.close();
+  fileReadStream.close();
 };

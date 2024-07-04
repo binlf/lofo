@@ -12,14 +12,17 @@ import { writeFontImports } from "./helpers/write-font";
 // const program = new Command();
 
 // todo: get project name from `package.json`
+// todo: create util function to get project config, returns an object with config details
+// todo: this would include the configured root dir alias for the project
+// todo: which would be used when writing font imports
 const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
 
 //? entry point
 const main = async () => {
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
-  // todo: on first pass, store path in `lofo.json`.
-  // todo: reference path in `lofo.json` for succeeding passes to determine
+  // todo: on first pass, store path in `lofo-config.json`.
+  // todo: reference path in `lofo-config.json` for succeeding passes to determine
   // todo: whether to update all font import paths
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
@@ -32,8 +35,6 @@ const main = async () => {
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
-  //! remove
-  console.log("Font Family's Fonts: ", fontFamilies[0]?.fonts);
   writeFontImports(fontsDirPath, fontFamilies);
 };
 
