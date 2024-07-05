@@ -5,8 +5,9 @@ import type { Family } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
 import {
-  LOFO_LOCAL_FONT_IMPORT_STATEMENT,
-  NEXT_LOCAL_FONT_IMPORT_STATEMENT,
+  NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT,
+  LOCAL_FONT_IMPORT_STATEMENT,
+  LOCAL_FONT_IMPORT_ANNOTATION,
 } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 
@@ -16,7 +17,7 @@ export const writeFontImports = (
 ) => {
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const content = `${NEXT_LOCAL_FONT_IMPORT_STATEMENT}\n\n${generateFileContent(
+  const content = `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n${generateFileContent(
     fontFamilies,
     fontsDirPath
   )}`;
@@ -65,9 +66,10 @@ const generateFileContent = (ff: Family[], fontsDirPath: string) => {
 };
 
 const writeImportStatement = async (filePath: string) => {
-  // todo: check if user is updating import path[has run lofo prior]
+  // todo: check if user is merely updating import path[has run lofo prior]
   // todo: if so, write import statement without additional comment
-  const importStatement = LOFO_LOCAL_FONT_IMPORT_STATEMENT;
+  const importStatement =
+    LOCAL_FONT_IMPORT_STATEMENT + LOCAL_FONT_IMPORT_ANNOTATION;
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
 

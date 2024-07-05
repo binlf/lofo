@@ -1,29 +1,22 @@
 #!/usr/bin/env node
 
-import path from "path";
 import { logger } from "./utils/logger";
 import { FONTS_DIR_NAME } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
-import { getFontsDir } from "./helpers/get-fonts-dir";
 import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 import { getFontFiles } from "./helpers/get-font-files";
 import { writeFontImports } from "./helpers/write-font";
+import { getLofoConfig, getProjectConfig } from "./utils/get-project-config";
+import { getFontsDir } from "./helpers/get-fonts-dir";
 
 // const program = new Command();
 
-// todo: get project name from `package.json`
-// todo: create util function to get project config, returns an object with config details
-// todo: this would include the configured root dir alias for the project
-// todo: which would be used when writing font imports
-const PROJECT_NAME = path.basename(path.resolve(process.cwd()));
-
 //? entry point
 const main = async () => {
+  const { projectName: PROJECT_NAME } = getProjectConfig();
+  const { shouldUpdateImports, reachedSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
-  // todo: on first pass, store path in `lofo-config.json`.
-  // todo: reference path in `lofo-config.json` for succeeding passes to determine
-  // todo: whether to update all font import paths
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
     logger.warning(
@@ -32,10 +25,16 @@ const main = async () => {
     return createFontsDir();
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
+  if (shouldUpdateImports(fontsDirPath))
+    return logger.info(
+      "Change to fonts directory path detected. Updating paths..."
+    );
+
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
-  writeFontImports(fontsDirPath, fontFamilies);
+  await writeFontImports(fontsDirPath, fontFamilies);
+  reachedSuccess();
 };
 
 main();
