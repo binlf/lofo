@@ -1,5 +1,4 @@
 import fs from "fs-extra";
-import { getFontsDir } from "../helpers/get-fonts-dir";
 import { fileExists } from "./exists";
 import { LOFO_CONFIG, NEXT_LOCAL_FONTS_DOCS } from "../constants";
 import { type PackageJson as PkgJson } from "type-fest";
@@ -10,20 +9,22 @@ type LofoConfig = {
   reachedSuccess: boolean;
 } & PkgJson;
 
+let FONTS_DIR_PATH = "";
+
 export const getProjectConfig = () => {
   const packageJSON: PkgJson = fs.readJSONSync("./package.json");
   const projectName = packageJSON.name;
   //  todo: get project import alias for writing font imports
   const importAlias = "";
-  let fontsDirPath = getFontsDir();
+  // todo: check if project is using tailwindcss
   const isTwProject = false;
-  return { projectName, fontsDirPath, importAlias, isTwProject };
+  return { projectName, importAlias, isTwProject };
 };
 
 export const getLofoConfig = () => {
-  // todo: add lofo-config file to .gitignore
   const lofoConfigPath = `./${LOFO_CONFIG}`;
   const shouldUpdateImports = (fontsDirPath: string) => {
+    FONTS_DIR_PATH = fontsDirPath;
     if (fileExists(lofoConfigPath) && fontsDirPath) {
       const { fontsDirPath: _fontsDirPath, reachedSuccess } = fs.readJSONSync(
         lofoConfigPath
@@ -35,28 +36,28 @@ export const getLofoConfig = () => {
           { fontsDirPath, reachedSuccess },
           { spaces: 2 }
         );
+        return true;
       }
-      return true;
+      return false;
     }
-    fs.outputJSONSync(
-      lofoConfigPath,
-      { fontsDirPath, reachedSuccess: false },
-      { spaces: 2 }
-    );
-    return false;
   };
   const reachedSuccess = () => {
-    const lofoConfig = fs.readJSONSync(lofoConfigPath) as LofoConfig;
-    if (!lofoConfig.reachedSuccess)
-      return fs.writeJSONSync(
+    const lofoConfig =
+      (fileExists(lofoConfigPath) || undefined) &&
+      (fs.readJSONSync(lofoConfigPath) as LofoConfig);
+    if (!lofoConfig || !lofoConfig.reachedSuccess) {
+      fs.outputJSONSync(
         lofoConfigPath,
-        { ...lofoConfig, reachedSuccess: true },
+        { FONTS_DIR_PATH, reachedSuccess: true },
         { spaces: 2 }
       );
-    logger.success("Added local fonts to your projects successfully...");
+      fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
+    }
+    logger.success("Added local fonts to your project successfully...");
     logger.info(
       `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS}`
     );
+    return lofoConfig?.reachedSuccess;
   };
 
   return { shouldUpdateImports, reachedSuccess };

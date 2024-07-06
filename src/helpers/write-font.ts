@@ -11,9 +11,10 @@ import {
 } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 
-export const writeFontImports = (
+export const writeFontImports = async (
   fontsDirPath: string,
-  fontFamilies: Family[]
+  fontFamilies: Family[],
+  importAlias?: string
 ) => {
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
@@ -43,9 +44,8 @@ export const writeFontImports = (
     return process.exit(1);
   }
   const layoutFilePath = path.join(appDirPath, layoutFile);
-  writeImportStatement(layoutFilePath)
-    .then(() => logger.info("Finished writing font imports..."))
-    .catch((err) => logger.error(err));
+  await writeImportStatement(layoutFilePath).catch((err) => logger.error(err));
+  logger.info("Finished writing font imports...");
 };
 
 const generateFileContent = (ff: Family[], fontsDirPath: string) => {

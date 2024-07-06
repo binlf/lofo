@@ -6,14 +6,14 @@ import { createFontsDir } from "./helpers/create-fonts-dir";
 import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 import { getFontFiles } from "./helpers/get-font-files";
 import { writeFontImports } from "./helpers/write-font";
-import { getLofoConfig, getProjectConfig } from "./utils/get-project-config";
+import { getLofoConfig, getProjectConfig } from "./utils/get-config";
 import { getFontsDir } from "./helpers/get-fonts-dir";
 
 // const program = new Command();
 
 //? entry point
 const main = async () => {
-  const { projectName: PROJECT_NAME } = getProjectConfig();
+  const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
   const { shouldUpdateImports, reachedSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
@@ -33,7 +33,7 @@ const main = async () => {
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
-  await writeFontImports(fontsDirPath, fontFamilies);
+  await writeFontImports(fontsDirPath, fontFamilies, importAlias);
   reachedSuccess();
 };
 
