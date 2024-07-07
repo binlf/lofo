@@ -25,20 +25,26 @@ export const getLofoConfig = () => {
   const lofoConfigPath = `./${LOFO_CONFIG}`;
   const shouldUpdateImports = (fontsDirPath: string) => {
     FONTS_DIR_PATH = fontsDirPath;
-    if (fileExists(lofoConfigPath) && fontsDirPath) {
-      const { fontsDirPath: _fontsDirPath, reachedSuccess } = fs.readJSONSync(
-        lofoConfigPath
-      ) as LofoConfig;
-      if (!reachedSuccess) return;
-      if (_fontsDirPath && fontsDirPath !== _fontsDirPath) {
-        fs.writeJSONSync(
-          lofoConfigPath,
-          { fontsDirPath, reachedSuccess },
-          { spaces: 2 }
-        );
-        return true;
+    try {
+      if (fileExists(lofoConfigPath) && fontsDirPath) {
+        const { fontsDirPath: _fontsDirPath, reachedSuccess } = fs.readJSONSync(
+          lofoConfigPath
+        ) as LofoConfig;
+        if (!reachedSuccess) return false;
+        if (_fontsDirPath && fontsDirPath !== _fontsDirPath) {
+          fs.writeJSONSync(
+            lofoConfigPath,
+            { fontsDirPath, reachedSuccess },
+            { spaces: 2 }
+          );
+          return true;
+        }
+        return false;
       }
-      return false;
+    } catch (error: any) {
+      if (error.code === "ENOENT")
+        return logger.error("Couldn't find your lofo-config file...");
+      console.log(error);
     }
   };
   const reachedSuccess = () => {
@@ -48,7 +54,7 @@ export const getLofoConfig = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(
         lofoConfigPath,
-        { FONTS_DIR_PATH, reachedSuccess: true },
+        { fontsDirPath: FONTS_DIR_PATH, reachedSuccess: true },
         { spaces: 2 }
       );
       fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
