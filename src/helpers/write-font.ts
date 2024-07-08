@@ -10,21 +10,24 @@ import {
   LOCAL_FONT_IMPORT_ANNOTATION,
 } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
+// import { getLofoConfig } from "../utils/get-config";
 
 export const writeFontImports = async (
   fontsDirPath: string,
   fontFamilies: Family[],
   importAlias?: string
 ) => {
+  if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
   const content = `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n${generateFileContent(
     fontFamilies,
     fontsDirPath
   )}`;
-  fs.outputFileSync(indexFilePath, content);
+  fs.outputFileSync(indexFilePath, content, { flag: "a" });
   logger.info("Finished writing font exports");
   // warn: this breaks if fonstDirPath is initially in "public"
+  // warn: also breaks when you try to add a new font after you've added once before
   fs.moveSync(fontsDirPath, `./public/fonts`);
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
@@ -66,13 +69,18 @@ const generateFileContent = (ff: Family[], fontsDirPath: string) => {
 };
 
 const writeImportStatement = async (filePath: string) => {
+  // const { reachedSuccess } = getLofoConfig();
   // todo: check if user is merely updating import path[has run lofo prior]
   // todo: if so, write import statement without additional comment
+  // todo: check for name of first dir in fonts dir...
+  // todo: ...and use that for named export example
   const importStatement =
     LOCAL_FONT_IMPORT_STATEMENT + LOCAL_FONT_IMPORT_ANNOTATION;
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
 
+  // todo: create util for writing to file in case of incremental updates
+  // todo: should probably accept streams
   const rl = readline.createInterface({
     input: fileReadStream,
     crlfDelay: Infinity,

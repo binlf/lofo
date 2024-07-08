@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import { fileExists } from "./exists";
 import { LOFO_CONFIG, NEXT_LOCAL_FONTS_DOCS } from "../constants";
-import { type PackageJson as PkgJson } from "type-fest";
+import { type PackageJson as PkgJson, type TsConfigJson } from "type-fest";
 import { logger } from "./logger";
 
 type LofoConfig = {
@@ -14,10 +14,7 @@ let FONTS_DIR_PATH = "";
 export const getProjectConfig = () => {
   const packageJSON: PkgJson = fs.readJSONSync("./package.json");
   const projectName = packageJSON.name;
-  //  todo: get project import alias for writing font imports
-  const importAlias = "";
-  // todo: check if project is using tailwindcss
-  const isTwProject = false;
+  const { alias: importAlias, isTwProject } = getProjectMeta();
   return { projectName, importAlias, isTwProject };
 };
 
@@ -67,4 +64,26 @@ export const getLofoConfig = () => {
   };
 
   return { shouldUpdateImports, reachedSuccess };
+};
+
+const getProjectMeta = () => {
+  const isTwProject = fileExists("./tailwind.config.ts");
+  try {
+    const tsConfigFile = fs.readJSONSync("./tsconfig.json") as TsConfigJson;
+    const paths = tsConfigFile.compilerOptions?.paths;
+    const alias =
+      paths &&
+      Object.entries(paths).reduce((acc, [alias, paths]) => {
+        if (!acc && paths.filter((path) => path.indexOf("./") === 0).length > 0)
+          return alias;
+        return acc;
+      }, "");
+    return { alias, isTwProject };
+  } catch (error: any) {
+    if (error.code === "ENOENT")
+      logger.error("Couldn't find your tsconfig file...");
+    console.log(error);
+    // todo: type this properly
+    return {};
+  }
 };

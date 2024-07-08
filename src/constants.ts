@@ -10,7 +10,6 @@ export const FONT_DIRS_TO_CHECK = [
   "assets",
 ];
 export const FONT_FILE_EXTENSIONS = ["ttf", "otf", "woff", "woff2"];
-export const LOCAL_FONT_IMPORT_DEST = "layout.tsx";
 export const NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT =
   'import localfont from "next/font/local"';
 export const NEXT_LOCAL_FONTS_DOCS =

@@ -13,9 +13,14 @@ import { getFontsDir } from "./helpers/get-fonts-dir";
 
 //? entry point
 const main = async () => {
-  const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
+  const {
+    projectName: PROJECT_NAME,
+    importAlias,
+    isTwProject,
+  } = getProjectConfig();
   const { shouldUpdateImports, reachedSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
+  if (isTwProject) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
@@ -26,9 +31,7 @@ const main = async () => {
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
   if (shouldUpdateImports(fontsDirPath))
-    return logger.info(
-      "Change to fonts directory path detected. Updating paths..."
-    );
+    logger.info("Change to fonts directory path detected. Updating paths...");
 
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
