@@ -27,7 +27,7 @@ export const writeFontImports = async (
   fs.outputFileSync(indexFilePath, content, { flag: "a" });
   logger.info("Finished writing font exports");
   // warn: this breaks if fonstDirPath is initially in "public"
-  // warn: also breaks when you try to add a new font after you've added once before
+  // warn: also breaks on successive attempts to add fonts
   fs.moveSync(fontsDirPath, `./public/fonts`);
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
