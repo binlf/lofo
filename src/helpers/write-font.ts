@@ -1,7 +1,7 @@
 import path from "path";
 import fs, { readdirSync } from "fs-extra";
 import readline from "readline";
-import type { Family } from "./group-fonts-by-family";
+import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
 import {
@@ -14,7 +14,7 @@ import { replaceAll } from "../utils/format-string";
 
 export const writeFontImports = async (
   fontsDirPath: string,
-  fontFamilies: Family[],
+  fontFamilies: FontFamily[],
   importAlias?: string
 ) => {
   if (importAlias) logger.info(`Found  project import alias: ${importAlias}`);
@@ -46,7 +46,7 @@ export const writeFontImports = async (
     return process.exit(1);
   }
   const layoutFilePath = path.join(appDirPath, layoutFile);
-  // WARN: would easily break if some other dirs are in the fonts dir
+  // WARN: would easily break if some other unrelated dirs are in the fonts dir
   const namedExport = fs
     .readdirSync(fontsDirPath)
     .filter((fsItem) => folderExists(path.join(fontsDirPath, fsItem)))[0];
@@ -59,7 +59,8 @@ export const writeFontImports = async (
   logger.info("Finished writing font imports...");
 };
 
-const generateFileContent = (ff: Family[], fontsDirPath: string) => {
+//? GENERATE CONTENT TO WRITE TO INDEX FILE
+const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
   const familiesExportArr = ff.map((family) => {
     return (
       `
@@ -77,15 +78,17 @@ const generateFileContent = (ff: Family[], fontsDirPath: string) => {
   }`;
 };
 
+//? WRITE IMPORT STATEMENT TO LAYOUT FILE
 const writeImportStatement = async (
   filePath: string,
   fontsDirPath: string,
   namedExport: string,
   alias?: string
 ) => {
+  // todo: detect when fonts dir path has changed and update import path accordingly
   const importPath = alias
     ? path.resolve(process.cwd(), fontsDirPath)
-    : path.relative(filePath, fontsDirPath);
+    : path.relative(path.parse(filePath).dir, fontsDirPath);
   const importStatement = getImportStatement(namedExport, importPath, alias);
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
@@ -100,7 +103,7 @@ const writeImportStatement = async (
   let lineNumber = 1;
   let lineContent;
   for await (const line of rl) {
-    // warn: this would break if \n appears between two import statement lines
+    // warn: this would break if LF(\n) appears between two import statement lines
     if (lineNumber > 1 && !line.trim() && lineContent?.includes("import")) {
       fileWriteStream.write(importStatement);
     } else {
@@ -117,25 +120,22 @@ const writeImportStatement = async (
   fileReadStream.close();
 };
 
+//? GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
 const getImportStatement = (
   namedExport: string,
   importPath: string,
   alias?: string
 ) => {
   const { reachedSuccess } = getLofoConfig();
-  // todo: check if user is merely updating import path[has run lofo prior]
-  // todo: if so, write import statement without additional comment
-  // todo: check for name of first dir in fonts dir...
-  // todo: ...and use that for named export example
   const formattedImportPath = alias
     ? replaceAll(importPath, {
         [process.cwd()]: alias,
         "*": "",
-        "\\": "/",
+        [path.sep]: "/",
         "//": "/",
       })
-    : replaceAll(importPath, { "\\": "/" });
+    : importPath.split(path.sep).join("/");
   return `import localfonts, { ${namedExport} } from "${formattedImportPath}"\n${
-    !reachedSuccess() ? LOCAL_FONT_IMPORT_ANNOTATION : ""
+    !reachedSuccess ? LOCAL_FONT_IMPORT_ANNOTATION : ""
   }`;
 };

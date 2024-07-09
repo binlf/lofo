@@ -20,13 +20,14 @@ export const getProjectConfig = () => {
 
 export const getLofoConfig = () => {
   const lofoConfigPath = `./${LOFO_CONFIG}`;
+  const lofoConfig =
+    (fileExists(lofoConfigPath) || undefined) &&
+    (fs.readJSONSync(lofoConfigPath) as LofoConfig);
   const shouldUpdateImports = (fontsDirPath: string) => {
     FONTS_DIR_PATH = fontsDirPath;
     try {
-      if (fileExists(lofoConfigPath) && fontsDirPath) {
-        const { fontsDirPath: _fontsDirPath, reachedSuccess } = fs.readJSONSync(
-          lofoConfigPath
-        ) as LofoConfig;
+      if (lofoConfig && fontsDirPath) {
+        const { fontsDirPath: _fontsDirPath, reachedSuccess } = lofoConfig;
         if (!reachedSuccess) return false;
         if (_fontsDirPath && fontsDirPath !== _fontsDirPath) {
           fs.writeJSONSync(
@@ -44,10 +45,7 @@ export const getLofoConfig = () => {
       console.log(error);
     }
   };
-  const reachedSuccess = () => {
-    const lofoConfig =
-      (fileExists(lofoConfigPath) || undefined) &&
-      (fs.readJSONSync(lofoConfigPath) as LofoConfig);
+  const signalSuccess = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(
         lofoConfigPath,
@@ -60,10 +58,13 @@ export const getLofoConfig = () => {
     logger.info(
       `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS}`
     );
-    return lofoConfig?.reachedSuccess;
   };
 
-  return { shouldUpdateImports, reachedSuccess };
+  return {
+    shouldUpdateImports,
+    signalSuccess,
+    reachedSuccess: lofoConfig?.reachedSuccess,
+  };
 };
 
 const getProjectMeta = () => {

@@ -18,7 +18,7 @@ const main = async () => {
     importAlias,
     isTwProject,
   } = getProjectConfig();
-  const { shouldUpdateImports, reachedSuccess } = getLofoConfig();
+  const { shouldUpdateImports, signalSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   if (isTwProject) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
@@ -38,8 +38,7 @@ const main = async () => {
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies, importAlias);
-  reachedSuccess();
+  signalSuccess();
 };
 
 main();
-// console.log(process.cwd());

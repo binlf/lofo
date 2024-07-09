@@ -13,7 +13,7 @@ export type Font = {
   weight: Wght;
 };
 
-export type Family = {
+export type FontFamily = {
   familyName: string;
   fonts: Font[];
 };
@@ -23,7 +23,7 @@ export const groupFontsByFamily = (
   fontsDirPath: string
 ) => {
   logger.info("Grouping font files into families...");
-  const fontFamilies: Family[] = [];
+  const fontFamilies: FontFamily[] = [];
   getFileNames(fontFiles).forEach((fileName) => {
     let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFiles
@@ -46,7 +46,7 @@ export const groupFontsByFamily = (
           weight: getFontWeight(basename(filePath)),
         };
       });
-      const family: Family = {
+      const family: FontFamily = {
         familyName: fileName,
         fonts: [...fonts],
       };
