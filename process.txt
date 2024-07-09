@@ -12,3 +12,11 @@
 - By default it'd be placed in the "public" folder of your Next.js project
 - it'd create one if it doesn't already exist
 
+
+
+- GOALS TODAY
+- CLEAN UP WRITING FONT IMPORTS(WITH ALIAS)
+- IMPLEMENT UTILITY FUNCTION FOR WRITING FONTS TO FILE[ABLE TO INSERT FILE AT SPECIFIC POINTS]
+- PROPERLY IMPLEMENT MOVING FONTS DIR INTO PUBLIC DIR[ACCOMODATING OF POTENTIAL DEST ARGS PASSED BY USER]
+- CLEAN UP IMPL. OF THE `reachedSuccess` util, should be able to quietly return(without printing in console)
+- ...OR SEPARATE THE UTILS INTO: `signalSuccess()` and `reachedSuccess`

@@ -42,3 +42,4 @@ const main = async () => {
 };
 
 main();
+// console.log(process.cwd());

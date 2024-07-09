@@ -10,6 +10,7 @@ import {
 } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
+import { replaceAll } from "../utils/format-string";
 
 export const writeFontImports = async (
   fontsDirPath: string,
@@ -19,10 +20,9 @@ export const writeFontImports = async (
   if (importAlias) logger.info(`Found  project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const content = `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n${generateFileContent(
-    fontFamilies,
-    fontsDirPath
-  )}`;
+  const content =
+    `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n` +
+    generateFileContent(fontFamilies, fontsDirPath);
   fs.outputFileSync(indexFilePath, content, { flag: "a" });
   logger.info("Finished writing font exports");
   // warn: this breaks if fonstDirPath is initially in "public"
@@ -46,6 +46,7 @@ export const writeFontImports = async (
     return process.exit(1);
   }
   const layoutFilePath = path.join(appDirPath, layoutFile);
+  // WARN: would easily break if some other dirs are in the fonts dir
   const namedExport = fs
     .readdirSync(fontsDirPath)
     .filter((fsItem) => folderExists(path.join(fontsDirPath, fsItem)))[0];
@@ -126,16 +127,14 @@ const getImportStatement = (
   // todo: if so, write import statement without additional comment
   // todo: check for name of first dir in fonts dir...
   // todo: ...and use that for named export example
-  // const formattedImportPath = alias
-  //   ? (alias + importPath.replaceAll(/\\/g, "/")).replaceAll("*", "")
-  //   : importPath;
   const formattedImportPath = alias
-    ? importPath
-        .replaceAll(process.cwd(), alias)
-        .replaceAll("*", "")
-        .replaceAll(/\\/g, "/")
-        .replaceAll("//", "/")
-    : importPath;
+    ? replaceAll(importPath, {
+        [process.cwd()]: alias,
+        "*": "",
+        "\\": "/",
+        "//": "/",
+      })
+    : replaceAll(importPath, { "\\": "/" });
   return `import localfonts, { ${namedExport} } from "${formattedImportPath}"\n${
     !reachedSuccess() ? LOCAL_FONT_IMPORT_ANNOTATION : ""
   }`;

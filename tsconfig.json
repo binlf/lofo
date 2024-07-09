@@ -9,10 +9,7 @@
     "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "moduleResolution": "node16"
   },
   "include": ["src"],
   "exclude": ["public", "src/app", "fonts"]
