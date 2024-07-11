@@ -8,6 +8,9 @@ import { getFontFiles } from "./helpers/get-font-files";
 import { writeFontImports } from "./helpers/write-font";
 import { getLofoConfig, getProjectConfig } from "./utils/get-config";
 import { getFontsDir } from "./helpers/get-fonts-dir";
+import { readFileSync } from "fs-extra";
+import path from "path";
+import TS from "typescript";
 
 // const program = new Command();
 
@@ -42,3 +45,11 @@ const main = async () => {
 };
 
 main();
+// console.log(
+//   TS.createSourceFile(
+//     path.join(process.cwd(), "./fonts/index.ts"),
+//     readFileSync(path.join(process.cwd(), "./fonts/index.ts"), "utf-8"),
+//     TS.ScriptTarget.Latest,
+//     true
+//   )
+// );

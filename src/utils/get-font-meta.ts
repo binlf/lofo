@@ -26,6 +26,8 @@ type WghtAnnotation =
   | "Black"
   | "Variable";
 
+type Styles = "normal" | "italic" | "oblique";
+
 const wghtsMap: Record<WghtAnnotation, Wght> = {
   Thin: "100",
   ExtraLight: "200",

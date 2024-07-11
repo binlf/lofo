@@ -34,28 +34,36 @@ export const writeFontImports = async (
     ? path.join(srcDir, "/app")
     : path.join(process.cwd(), "/app");
 
-  const [layoutFile] = readdirSync(appDirPath, { recursive: true }).filter(
-    (item) =>
-      fileExists(path.join(appDirPath, item as string)) &&
-      item.includes("layout")
-  ) as string[];
-  if (!layoutFile) {
-    logger.warning(
-      "Couldn't find your root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
-    );
-    return process.exit(1);
+  try {
+    const [layoutFile] = readdirSync(appDirPath, { recursive: true }).filter(
+      (item) =>
+        fileExists(path.join(appDirPath, item as string)) &&
+        item.includes("layout")
+    ) as string[];
+    if (!layoutFile) {
+      logger.warning(
+        "Couldn't find your root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
+      );
+      return process.exit(1);
+    }
+    const layoutFilePath = path.join(appDirPath, layoutFile);
+    // WARN: would easily break if some other unrelated dirs are in the fonts dir
+    const namedExport = fs
+      .readdirSync(fontsDirPath)
+      .filter((fsItem) => folderExists(path.join(fontsDirPath, fsItem)))[0];
+    await writeImportStatement(
+      layoutFilePath,
+      fontsDirPath,
+      namedExport!,
+      importAlias
+    ).catch((err) => logger.error(err));
+  } catch (error: any) {
+    if (error.code === "ENOENT")
+      logger.error("Couldn't find your app directory...");
+    console.error(error);
+    process.exit(1);
   }
-  const layoutFilePath = path.join(appDirPath, layoutFile);
-  // WARN: would easily break if some other unrelated dirs are in the fonts dir
-  const namedExport = fs
-    .readdirSync(fontsDirPath)
-    .filter((fsItem) => folderExists(path.join(fontsDirPath, fsItem)))[0];
-  await writeImportStatement(
-    layoutFilePath,
-    fontsDirPath,
-    namedExport!,
-    importAlias
-  ).catch((err) => logger.error(err));
+
   logger.info("Finished writing font imports...");
 };
 
@@ -101,15 +109,15 @@ const writeImportStatement = async (
   });
 
   let lineNumber = 1;
-  let lineContent;
+  let prevLineContent;
   for await (const line of rl) {
     // warn: this would break if LF(\n) appears between two import statement lines
-    if (lineNumber > 1 && !line.trim() && lineContent?.includes("import")) {
+    if (lineNumber > 1 && !line.trim() && prevLineContent?.includes("import")) {
       fileWriteStream.write(importStatement);
     } else {
       fileWriteStream.write(`${line}\n`);
     }
-    lineContent = line;
+    prevLineContent = line;
     lineNumber++;
   }
 
