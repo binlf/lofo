@@ -1,6 +1,6 @@
 import { basename, join } from "path";
 import fs from "fs";
-import { getFileNames } from "../utils/get-file-names";
+import { getFontFileNames } from "../utils/get-file-names";
 import { logger } from "../utils/logger";
 import { folderExists } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
@@ -24,11 +24,11 @@ export const groupFontsByFamily = (
 ) => {
   logger.info("Grouping font files into families...");
   const fontFamilies: FontFamily[] = [];
-  getFileNames(fontFiles).forEach((fileName) => {
+  getFontFileNames(fontFiles).forEach((fileName) => {
     let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFiles
       .filter((fontFile) => {
-        return getFileNames([fontFile])[0] === fileName;
+        return getFontFileNames([fontFile])[0] === fileName;
       })
       .map((file) => `${fontsDirPath}/${file}`);
     if (!folderExists(fontFamilyFolderPath)) {

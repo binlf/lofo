@@ -1,4 +1,4 @@
-import { getFileNames } from "./get-file-names";
+import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
 import path from "path";
 
@@ -44,12 +44,16 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
 export const getFontWeight = (font: string): Wght => {
   const fontAnnotationString = font
     .trim()
-    .split(getFileNames([font])[0] as string)[1]
+    .split(getFontFileNames([font])[0] as string)[1]
     ?.split(".")[0]
+    ?.split("-")[1]
     ?.toLowerCase();
   let fontWeight: Wght = "400";
   for (const [wghtAnnot, wght] of Object.entries(wghtsMap)) {
-    if (fontAnnotationString?.includes(wghtAnnot.toLowerCase())) {
+    if (
+      fontAnnotationString?.includes(wghtAnnot.toLowerCase()) &&
+      fontAnnotationString.length === wghtAnnot.length
+    ) {
       fontWeight = wght;
       break;
     }
