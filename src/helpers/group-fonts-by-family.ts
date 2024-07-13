@@ -30,7 +30,7 @@ export const groupFontsByFamily = (
       .filter((fontFile) => {
         return getFontFileNames([fontFile])[0] === fileName;
       })
-      .map((file) => `${fontsDirPath}/${file}`);
+      .map((file) => `${fontsDirPath}/${file}`); // get rid of this step
     if (!folderExists(fontFamilyFolderPath)) {
       fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
         recursive: true,

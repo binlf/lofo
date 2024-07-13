@@ -18,5 +18,14 @@
 - IMPLEMENT UTILITY FUNCTION FOR WRITING FONTS TO FILE[ABLE TO INSERT CONTENT AT SPECIFIC POINTS]
 - START IMPLEMENTING INCREMENTAL UPDATES[ON ANY SUCCESSIVE ATTEMPT TO ADD A FONT, APPEND THE RIGHT CONTENT TO INDEX FILE]
 - PROPERLY IMPLEMENT MOVING FONTS DIR INTO PUBLIC DIR[ACCOMODATING OF POTENTIAL DEST ARGS PASSED BY USER]
-- writeLine(filePath: string, condition: (lineNumber, lineContent, prevLineContent) => {}, flag: "M")
+- writeLine(filePath: string, condition: (lineNumber, lineContent, prevLineContent) => {}, content: string, flag: "M")
 - fileContent.split("\n").join().split("export").filter((item) => item.includes("<key>"))
+
+
+- when about to write font, check if font belongs to any of the famillies that already exist
+- if true, in index.ts(where fonts are being exported) modify that families src property
+- if src property is type string, create a new array and spread
+
+- If new font files are found, check if they belong an existing family
+- if true, get the paths to their already existing families and return an array of all the files in that family plus the newly added ones
+- then regroup[the regrouping step in this algo is temp, might change in the future for perf reasons??] the font families

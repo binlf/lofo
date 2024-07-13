@@ -76,7 +76,7 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
     src = path
       .relative(fontsDirPath, fonts[0]?.path as string)
       .replaceAll(/\\/g, "/");
-  return JSON.stringify(src);
+  return JSON.stringify(src, null, 2);
 };
 
 export const getFontStyle = () => {};

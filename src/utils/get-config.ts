@@ -7,6 +7,7 @@ import { logger } from "./logger";
 type LofoConfig = {
   fontsDirPath: string;
   reachedSuccess: boolean;
+  fonts: string[];
 } & PkgJson;
 
 let FONTS_DIR_PATH = "";
@@ -45,11 +46,12 @@ export const getLofoConfig = () => {
       console.log(error);
     }
   };
-  const signalSuccess = () => {
+  // todo: diff the array to find handle delete case
+  const signalSuccess = (fonts: string[]) => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(
         lofoConfigPath,
-        { fontsDirPath: FONTS_DIR_PATH, reachedSuccess: true },
+        { fontsDirPath: FONTS_DIR_PATH, reachedSuccess: true, fonts },
         { spaces: 2 }
       );
       fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
@@ -64,6 +66,7 @@ export const getLofoConfig = () => {
     shouldUpdateImports,
     signalSuccess,
     reachedSuccess: lofoConfig?.reachedSuccess,
+    fonts: lofoConfig?.fonts,
   };
 };
 

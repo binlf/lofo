@@ -11,6 +11,7 @@ import { getFontsDir } from "./helpers/get-fonts-dir";
 import { readFileSync } from "fs-extra";
 import path from "path";
 import TS from "typescript";
+import fsPromises from "fs/promises";
 
 // const program = new Command();
 
@@ -35,13 +36,14 @@ const main = async () => {
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
   if (shouldUpdateImports(fontsDirPath))
-    logger.info("Change to fonts directory path detected. Updating paths...");
+    logger.info("Change to fonts directory detected. Updating paths...");
 
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
+  console.log("Fams: ", fontFamilies, fontFamilies[0]?.fonts);
   await writeFontImports(fontsDirPath, fontFamilies, importAlias);
-  signalSuccess();
+  signalSuccess(fontFamilies.map((family) => family.familyName));
 };
 
 main();
