@@ -26,6 +26,9 @@
 - if true, in index.ts(where fonts are being exported) modify that families src property
 - if src property is type string, create a new array and spread
 
-- If new font files are found, check if they belong an existing family
+
+- STEPS TO IMPLEMENT REGROUPING
+- MODIFY `getFontFiles()` to return an array of font file paths
+- In `getFontFiles()`, if new font files are found, check if they belong an existing family
 - if true, get the paths to their already existing families and return an array of all the files in that family plus the newly added ones
 - then regroup[the regrouping step in this algo is temp, might change in the future for perf reasons??] the font families
