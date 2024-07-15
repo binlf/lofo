@@ -56,6 +56,9 @@ export const getLofoConfig = () => {
       );
       fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
     }
+    // todo: success message should reflect finished operation
+    // todo: (e.g Added 1 local font(s) successfully...)
+    // todo: (Removed 2 local font(s) successfully...)
     logger.success("Added local fonts to your project successfully...");
     logger.info(
       `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS}`

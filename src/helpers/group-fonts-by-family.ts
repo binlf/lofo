@@ -1,4 +1,4 @@
-import { basename, join } from "path";
+import path, { basename, join } from "path";
 import fs from "fs";
 import { getFontFileNames } from "../utils/get-file-names";
 import { logger } from "../utils/logger";
@@ -24,35 +24,37 @@ export const groupFontsByFamily = (
 ) => {
   logger.info("Grouping font files into families...");
   const fontFamilies: FontFamily[] = [];
-  getFontFileNames(fontFiles).forEach((fileName) => {
-    let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
-    const filesToMove = fontFiles
-      .filter((fontFile) => {
-        return getFontFileNames([fontFile])[0] === fileName;
-      })
-      .map((file) => `${fontsDirPath}/${file}`); // get rid of this step
-    if (!folderExists(fontFamilyFolderPath)) {
-      fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
-        recursive: true,
-      }) as string;
-    }
-    moveFile(filesToMove, fontFamilyFolderPath, (err, mvdFilePaths) => {
-      if (err) process.exit(1);
-      const fonts = mvdFilePaths.map((filePath): Font => {
-        return {
-          name: basename(filePath),
-          path: filePath,
-          style: "normal",
-          weight: getFontWeight(basename(filePath)),
+  getFontFileNames(fontFiles.map((file) => path.basename(file))).forEach(
+    (fileName) => {
+      let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
+      const filesToMove = fontFiles
+        .filter((fontFile) => {
+          return getFontFileNames([fontFile])[0] === fileName;
+        })
+        .map((file) => `${fontsDirPath}/${file}`); // get rid of this step
+      if (!folderExists(fontFamilyFolderPath)) {
+        fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
+          recursive: true,
+        }) as string;
+      }
+      moveFile(filesToMove, fontFamilyFolderPath, (err, mvdFilePaths) => {
+        if (err) process.exit(1);
+        const fonts = mvdFilePaths.map((filePath): Font => {
+          return {
+            name: basename(filePath),
+            path: filePath,
+            style: "normal",
+            weight: getFontWeight(basename(filePath)),
+          };
+        });
+        const family: FontFamily = {
+          familyName: fileName,
+          fonts: [...fonts],
         };
+        fontFamilies.push(family);
       });
-      const family: FontFamily = {
-        familyName: fileName,
-        fonts: [...fonts],
-      };
-      fontFamilies.push(family);
-    });
-  });
+    }
+  );
   logger.info("Grouped fonts into families...");
   return fontFamilies;
 };
