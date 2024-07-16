@@ -36,6 +36,7 @@ const main = async () => {
 
   const fontFiles = await getFontFiles(fontsDirPath);
   // todo: find a way to implicitly get `fontsDirPath` inside here
+  console.log("All Font Files: ", fontFiles);
   // const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
   // console.log("Fams: ", fontFamilies, fontFamilies[0]?.fonts);
   // await writeFontImports(fontsDirPath, fontFamilies, importAlias);
