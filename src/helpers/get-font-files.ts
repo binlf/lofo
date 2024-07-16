@@ -1,5 +1,5 @@
 import { FONTS_DIR_NAME, FONT_FILE_EXTENSIONS } from "../constants";
-import { fileExists } from "../utils/exists";
+import { fileExists, folderExists } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { logger } from "../utils/logger";
 import fsPromises from "fs/promises";
@@ -7,9 +7,9 @@ import path from "path";
 import { getFontFileNames } from "../utils/get-file-names";
 
 /**
- * Returns an array of font files in a given directory.
+ * Returns an array of font file paths in a given directory.
  * @param {string} fontsDirPath - Directory path for font files.
- * @returns {string[]} An array of font files.
+ * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file paths.
  */
 export const getFontFiles = async (fontsDirPath: string) => {
   const { fonts } = getLofoConfig();
@@ -22,42 +22,48 @@ export const getFontFiles = async (fontsDirPath: string) => {
     return process.exit(0);
   }
 
-  // const fontFiles: string[] = [];
-  const fontFiles = await filesInFontsDir.reduce(async (accPromise, file) => {
-    const acc = await accPromise;
-    if (fileExists(path.join(fontsDirPath, `/${file}`))) {
+  const oldFonts: string[] = [];
+  const newFontFiles: string[] = filesInFontsDir.reduce<string[]>(
+    (acc, file) => {
       if (isFileFont(file)) {
         const [fontName] = getFontFileNames([file]);
-        if (fonts && fonts.includes(fontName!)) {
-          const fontDirPath = path.join(fontsDirPath, fontName!);
-          try {
-            const files = (await fsPromises.readdir(fontDirPath)).map((file) =>
-              path.join(fontDirPath, file)
-            );
-            return [
-              ...acc,
-              ...files.filter((file) => isFileFont(path.basename(file))),
-              path.join(fontsDirPath, file),
-            ];
-          } catch (error) {
-            logger.error("Error reading directory...");
-            console.error(error);
-            return acc;
-          }
-        }
+        if (fontName && fonts?.includes(fontName)) oldFonts.push(fontName);
         return [...acc, path.join(fontsDirPath, file)];
       }
-    }
-    return acc;
-  }, Promise.resolve([]) as Promise<string[]>);
-  if (!fontFiles.length) {
+      return acc;
+    },
+    []
+  );
+  const oldFontFiles = await oldFonts.reduce<Promise<string[]>>(
+    async (accPromise, font) => {
+      const acc = await accPromise;
+      const oldFontsDirPath = path.join(fontsDirPath, font);
+      if (folderExists(oldFontsDirPath)) {
+        const files = await fsPromises.readdir(oldFontsDirPath);
+        if (files.length)
+          return [
+            ...acc,
+            ...files
+              .filter((file) => isFileFont(file))
+              .map((f) => oldFontsDirPath + path.sep + f),
+          ];
+      }
+      return acc;
+    },
+    Promise.resolve([])
+  );
+  const fontFiles = [...newFontFiles, ...oldFontFiles];
+  if (!newFontFiles.length) {
     logger.warning(
       `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
     );
     return process.exit(0);
   }
   logger.info("Found font files...");
-  console.log("Font Files: ", fontFiles);
+  console.log(
+    "Font Files: ",
+    newFontFiles.map((ff) => path.basename(ff))
+  );
 
   return fontFiles;
 };
