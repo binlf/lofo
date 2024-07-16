@@ -6,13 +6,10 @@ import fsPromises from "fs/promises";
 import path from "path";
 import { getFontFileNames } from "../utils/get-file-names";
 
-type FontFiles = Font[];
-type Font = [font: string, path: string];
-
 /**
  * Returns an array of font file paths in a given directory.
  * @param {string} fontsDirPath - Directory path for font files.
- * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file names.
+ * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file paths.
  */
 export const getFontFiles = async (fontsDirPath: string) => {
   const { fonts } = getLofoConfig();
@@ -25,16 +22,35 @@ export const getFontFiles = async (fontsDirPath: string) => {
     return process.exit(0);
   }
 
-  // const fontFiles: string[] = [];
-  // todo: return a 2D array of files and their corresponding paths
-  // todo: return an array of font file paths
-  const fontFiles: Font[] = [];
-  for (const file of filesInFontsDir) {
-    const filePath = path.join(fontsDirPath, file);
-    if (fileExists(filePath))
-      if (isFileFont(file)) fontFiles.push([file, filePath]);
-  }
-  if (!fontFiles.length) {
+  const oldFonts: string[] = [];
+  const newFontFiles: string[] = filesInFontsDir.reduce<string[]>(
+    (acc, file) => {
+      if (isFileFont(file)) {
+        const [fontName] = getFontFileNames([file]);
+        if (fontName && fonts?.includes(fontName)) oldFonts.push(fontName);
+        return [...acc, path.join(fontsDirPath, file)];
+      }
+      return acc;
+    },
+    []
+  );
+  const oldFontFiles = await oldFonts.reduce<Promise<string[]>>(
+    async (accPromise, font) => {
+      const acc = await accPromise;
+      const files = await fsPromises.readdir(path.join(fontsDirPath, font));
+      if (files.length)
+        return [...acc, ...files.filter((file) => isFileFont(file))];
+      return acc;
+    },
+    Promise.resolve([])
+  );
+  const fontFiles = [...newFontFiles, ...oldFontFiles];
+  // for (const file of filesInFontsDir) {
+  //   const filePath = path.join(fontsDirPath, file);
+  //   if (fileExists(filePath))
+  //     if (isFileFont(file)) fontFiles.push([file, filePath]);
+  // }
+  if (!newFontFiles.length) {
     logger.warning(
       `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
     );
@@ -43,7 +59,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
   logger.info("Found font files...");
   console.log(
     "Font Files: ",
-    fontFiles.map((val: Font) => val[0])
+    newFontFiles.map((ff) => path.basename(ff))
   );
 
   return fontFiles;
