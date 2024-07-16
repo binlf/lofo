@@ -27,11 +27,9 @@ export const groupFontsByFamily = (
   getFontFileNames(fontFiles.map((file) => path.basename(file))).forEach(
     (fileName) => {
       let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
-      const filesToMove = fontFiles
-        .filter((fontFile) => {
-          return getFontFileNames([fontFile])[0] === fileName;
-        })
-        .map((file) => `${fontsDirPath}/${file}`); // get rid of this step
+      const filesToMove = fontFiles.filter((fontFile) => {
+        return getFontFileNames([path.basename(fontFile)])[0] === fileName;
+      });
       if (!folderExists(fontFamilyFolderPath)) {
         fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
           recursive: true,
