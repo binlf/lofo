@@ -46,7 +46,8 @@ export const getLofoConfig = () => {
       console.log(error);
     }
   };
-  // todo: diff the array to find handle delete case
+  // todo: diff the array to handle delete/add case
+  // todo: 'fonts' don't get written to lofo-config after first attempt
   const signalSuccess = (fonts: string[]) => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(

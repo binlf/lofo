@@ -4,7 +4,7 @@ import { getFontFileNames } from "../utils/get-file-names";
 import { logger } from "../utils/logger";
 import { folderExists } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
-import { Wght, getFontWeight } from "../utils/get-font-meta";
+import { type Wght, getFontWeight } from "../utils/get-font-meta";
 
 export type Font = {
   name: string;
