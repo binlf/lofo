@@ -36,3 +36,5 @@
 - AFTER REGROUPING
 - when writing to font, compare and identify the fonts that have changed(tokens, keys) in `index.ts` 
 - and overwrite them with the new fonts
+- first split file content into nodes using a user-specified separator...
+- then with the user-specified key, find the node, whose content should be overidden with the new content

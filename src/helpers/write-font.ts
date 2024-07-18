@@ -11,21 +11,29 @@ import {
 import { fileExists, folderExists } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
+import { writeFile, reWriteFileSync } from "../utils/write-file";
+
+const { reachedSuccess, fonts } = getLofoConfig();
 
 export const writeFontImports = async (
   fontsDirPath: string,
   fontFamilies: FontFamily[],
   importAlias?: string
 ) => {
-  if (importAlias) logger.info(`Found  project import alias: ${importAlias}`);
+  if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
   const content =
     `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n` +
     generateFileContent(fontFamilies, fontsDirPath);
-  fs.outputFileSync(indexFilePath, content, { flag: "a" });
+  !reachedSuccess
+    ? fs.outputFileSync(indexFilePath, content)
+    : reWriteFileSync(indexFilePath, content, {
+        key: "Satoshi",
+        separator: "export",
+      });
   logger.info("Finished writing font exports");
-  // warn: this breaks if fonstDirPath is initially in "public"
+  // warn: this breaks if fontsDirPath is initially in "public"
   // warn: also breaks on successive attempts to add fonts
   // fs.moveSync(fontsDirPath, `./public/fonts`);
   logger.info("Importing fonts in layout file...");
@@ -67,7 +75,7 @@ export const writeFontImports = async (
   logger.info("Finished writing font imports...");
 };
 
-//? GENERATE CONTENT TO WRITE TO INDEX FILE
+// GENERATE CONTENT TO WRITE TO INDEX FILE
 const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
   const familiesExportArr = ff.map((family) => {
     return (
@@ -82,11 +90,14 @@ const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
 
   // todo: on successive attempts to add font, append new font to default export object
   return `${familiesExportArr.join("\n")}\nexport default {
-    ${ff.map((f) => f.familyName).join(",\n")}
+    ${[
+      ...new Set([...ff.map((family) => family.familyName)]),
+      ...(fonts ?? ""),
+    ].join(",\n")}
   }`;
 };
 
-//? WRITE IMPORT STATEMENT TO LAYOUT FILE
+// WRITE IMPORT STATEMENT TO LAYOUT FILE
 const writeImportStatement = async (
   filePath: string,
   fontsDirPath: string,
@@ -103,38 +114,15 @@ const writeImportStatement = async (
 
   // todo: create util for writing to file to properly handle the case of incremental updates
   // todo: to same file. should probably accept streams
-  const rl = readline.createInterface({
-    input: fileReadStream,
-    crlfDelay: Infinity,
-  });
-
-  let lineNumber = 1;
-  let prevLineContent;
-  for await (const line of rl) {
-    // warn: this would break if LF(\n) appears between two import statement lines
-    if (lineNumber > 1 && !line.trim() && prevLineContent?.includes("import")) {
-      fileWriteStream.write(importStatement);
-    } else {
-      fileWriteStream.write(`${line}\n`);
-    }
-    prevLineContent = line;
-    lineNumber++;
-  }
-
-  fileWriteStream.end();
-  await new Promise((resolve, reject) =>
-    fileWriteStream.on("finish", resolve).on("error", reject)
-  );
-  fileReadStream.close();
+  await writeFile(fileReadStream, fileWriteStream, importStatement);
 };
 
-//? GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
+// GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
 const getImportStatement = (
   namedExport: string,
   importPath: string,
   alias?: string
 ) => {
-  const { reachedSuccess } = getLofoConfig();
   const formattedImportPath = alias
     ? replaceAll(importPath, {
         [process.cwd()]: alias,
