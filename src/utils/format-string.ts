@@ -14,10 +14,10 @@ export const replaceAll = (
   config: { [pattern: string]: string }
 ): string => {
   let newString = "";
-  Object.entries(config).forEach(([key, val]) => {
+  Object.entries(config).forEach(([pattern, replacement]) => {
     newString = newString
-      ? newString.replaceAll(key, val)
-      : str.replaceAll(key, val);
+      ? newString.replaceAll(pattern, replacement)
+      : str.replaceAll(pattern, replacement);
   });
   return newString;
 };

@@ -1,6 +1,5 @@
 import path from "path";
 import fs, { readdirSync } from "fs-extra";
-import readline from "readline";
 import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
@@ -11,7 +10,7 @@ import {
 import { fileExists, folderExists } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
-import { writeFile, reWriteFileSync } from "../utils/write-file";
+import { writeLines, reWriteFileSync } from "../utils/write-file";
 
 const { reachedSuccess, fonts } = getLofoConfig();
 
@@ -24,12 +23,12 @@ export const writeFontImports = async (
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
   const content =
-    `${NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT}\n\n` +
+    `${reachedSuccess ? "" : NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"}` +
     generateFileContent(fontFamilies, fontsDirPath);
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
     : reWriteFileSync(indexFilePath, content, {
-        key: "Satoshi",
+        key: "export const Satoshi",
         separator: "export",
       });
   logger.info("Finished writing font exports");
@@ -112,9 +111,7 @@ const writeImportStatement = async (
   const fileReadStream = fs.createReadStream(filePath);
   const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
 
-  // todo: create util for writing to file to properly handle the case of incremental updates
-  // todo: to same file. should probably accept streams
-  await writeFile(fileReadStream, fileWriteStream, importStatement);
+  await writeLines(fileReadStream, fileWriteStream, importStatement);
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE

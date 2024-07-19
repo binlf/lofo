@@ -1,8 +1,21 @@
-import { ReadStream, WriteStream, readFileSync, writeFileSync } from "fs-extra";
+import {
+  type ReadStream,
+  type WriteStream,
+  readFileSync,
+  writeFileSync,
+} from "fs-extra";
 import readline from "readline";
 
+/**
+ * Writes to a file using the `node:readline` module
+ *
+ * @param {ReadStream} rs - A readable stream for the file.
+ * @param {WriteStream} ws - A writeable stream for the file.
+ * @param {string} content - The content to be written to the file.
+ * @returns {Promise<void>} Returns a promise that resolves with `void`
+ */
 // todo: make function more generic
-export const writeFile = async (
+export const writeLines = async (
   rs: ReadStream,
   ws: WriteStream,
   content: string
@@ -32,23 +45,34 @@ export const writeFile = async (
   rs.close();
 };
 
+/**
+ * Re-writes the contents of a file while inserting `content` at a determined node.
+ *
+ * @param {string} path - Path to file.
+ * @param {string} content - The content to be inserted at the determined node.
+ * @param {string} config - The configuration for the `key`[the node to be overwritten] and
+ * the `separator`[the pattern describing how to split file into nodes].
+ * @returns {undefined} Returns `undefined`
+ */
 export const reWriteFileSync = (
   path: string,
   content: string,
-  options: { key: string; separator: string }
+  config: { key: string; separator: string }
 ) => {
+  const token = "lofo";
   const fileContentNodes = readFileSync(path, { encoding: "utf8" })
-    .split("\n")
-    .join()
-    .split(";")
-    .join()
-    .split(options.separator);
+    .replaceAll(config.separator, token + ` ${config.separator}`)
+    .split(token);
+
+  // console.log(fileContentNodes);
 
   const updatedContentNodes = fileContentNodes.map((node) => {
-    if (node.includes(options.key)) return content;
+    if (node.trim().startsWith(config.key)) return content;
     return node;
   });
-  const updatedContent = [...new Set(updatedContentNodes)].join("\n");
+
+  // console.log("Updated Nodes: ", updatedContentNodes);
+  const updatedContent = Array.from(new Set(updatedContentNodes)).join("\n");
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;
