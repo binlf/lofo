@@ -90,9 +90,8 @@ const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
   // todo: on successive attempts to add font, append new font to default export object
   return `${familiesExportArr.join("\n")}\nexport default {
     ${[
-      ...new Set([...ff.map((family) => family.familyName)]),
-      ...(fonts ?? ""),
-    ].join(",\n")}
+      ...new Set([...ff.map((family) => family.familyName, ...(fonts ?? ""))]),
+    ].join(", ")}
   }`;
 };
 
