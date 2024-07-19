@@ -64,14 +64,11 @@ export const reWriteFileSync = (
     .replaceAll(config.separator, token + ` ${config.separator}`)
     .split(token);
 
-  // console.log(fileContentNodes);
-
   const updatedContentNodes = fileContentNodes.map((node) => {
     if (node.trim().startsWith(config.key)) return content;
     return node;
   });
 
-  // console.log("Updated Nodes: ", updatedContentNodes);
   const updatedContent = Array.from(new Set(updatedContentNodes)).join("\n");
   writeFileSync(path, updatedContent, "utf8");
 
