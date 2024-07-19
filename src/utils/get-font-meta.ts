@@ -12,7 +12,7 @@ export type Wght =
   | "700"
   | "800"
   | "900"
-  | "variable";
+  | null;
 
 type WghtAnnotation =
   | "Thin"
@@ -38,7 +38,7 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
   Bold: "700",
   ExtraBold: "800",
   Black: "900",
-  Variable: "variable",
+  Variable: null,
 };
 
 export const getFontWeight = (font: string): Wght => {
@@ -67,15 +67,15 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   if (fonts.length > 1) {
     src = fonts.map((font) => {
       return {
-        path: path.relative(fontsDirPath, font.path).replaceAll(/\\/g, "/"),
-        weight: font.weight,
+        path: path.relative(fontsDirPath, font.path).replaceAll(path.sep, "/"),
+        ...(font.weight && { weight: font.weight }),
         style: font.style,
       };
     });
   } else
     src = path
       .relative(fontsDirPath, fonts[0]?.path as string)
-      .replaceAll(/\\/g, "/");
+      .replaceAll(path.sep, "/");
   return JSON.stringify(src);
 };
 
