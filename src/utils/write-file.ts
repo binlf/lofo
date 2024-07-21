@@ -46,26 +46,40 @@ export const writeLines = async (
 };
 
 /**
+ * Sets the mode for re-writing the file
+ *
+ * `W` - Sets re-write mode to overwrite contents of file `from` a determined node.
+ *
+ * `R` - Sets re-write mode to overwrite contents of file `at` a determined node.
+ */
+type Flags = "W" | "R";
+/**
  * Re-writes the contents of a file while inserting `content` at a determined node.
  *
  * @param {string} path - Path to file.
  * @param {string} content - The content to be inserted at the determined node.
- * @param {{ key: string; separator: string }} config - The configuration for the `key`[the node to be overwritten] and
- * the `separator`[the pattern describing how to split file into nodes].
+ * @param {{ key: string; separator: string; flag?: Flags }} config - The configuration for the `key`[identifier for the node to be overwritten] and
+ * the `separator`[the pattern describing how to split file content into nodes] and `flag`[sets the mode for re-write]
  * @returns {undefined} Returns `undefined`
  */
 export const reWriteFileSync = (
   path: string,
   content: string,
-  config: { key: string; separator: string }
+  config: { key: string; separator: string; flag?: Flags }
 ) => {
+  const flag = config.flag ?? "W";
   const token = "lofo";
   const fileContentNodes = readFileSync(path, { encoding: "utf8" })
     .replaceAll(config.separator, token + config.separator)
     .split(token);
 
-  const updatedContentNodes = fileContentNodes.map((node) => {
-    if (node.trim().startsWith(config.key)) return content;
+  let keyNodeIndex: number;
+  const updatedContentNodes = fileContentNodes.map((node, idx) => {
+    if (flag === "W" && idx > keyNodeIndex) return "";
+    if (node.trim().startsWith(config.key)) {
+      keyNodeIndex = idx;
+      return content;
+    }
     return node;
   });
 
