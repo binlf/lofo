@@ -8,7 +8,7 @@ CLI for adding local fonts to your Next.js projects!
 
 ## Installation
 
-To get started, run the above command in your project directory and `lofo` would try to get everything set up properly for you automatically. You can also install the program on your machine by running the command below:
+To get started, run the above command in your project directory and `lofo` would try to get everything set up properly for you automatically. You can also install the CLI on your machine by running the command below:
 
 ```
 npm install lofo
@@ -20,8 +20,7 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one if it doesn't exist in the root directory of your project.
 
-> [!TIP]
-> _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
+> [!TIP] > _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
 
 In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these are files that typically have the `.otf`, `.ttf`, `.woff`, `.woff2` extensions_] into the `fonts` directory.
 
@@ -48,5 +47,4 @@ example-project
 - [ ] Add support for Vanilla.js projects
 - [ ] Add support for monorepo projects
 
-> [!WARNING]
-> _This project, at this time, makes quite a few assumptions about your project and conventions. Proceed with caution!_
+> [!WARNING] > _This project, at this time, makes quite a few assumptions about your project and conventions. Proceed with caution!_
