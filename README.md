@@ -23,7 +23,7 @@ When the CLI is executed, it would look through your project for a `fonts` direc
 > [!TIP]
 > _It's recommended you put all your local font files in a directory named `fonts` in the root directory of your project!_
 
-In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these are files that typically have the `.otf`, `.ttf`, `.woff`, `.woff2` extensions_] into the `fonts` directory.
+In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these files typically have extensions such as `.otf`, `.ttf`, `.woff`, `.woff2` etc._] into the `fonts` directory.
 
 It would then resolve the paths to all the font files in your `fonts` directory and then generate the right code snippet to add the font imports into your Next.js project. _This would typically be written/appended to your `layout.tsx` file._
 
