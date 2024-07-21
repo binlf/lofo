@@ -38,3 +38,5 @@
 - and overwrite them with the new fonts
 - first split file content into nodes using a user-specified separator...
 - then with the user-specified key, find the node, whose content should be overidden with the new content
+
+- Add recovery step for the scenario that it passes the grouping step but fails before reaching the writing step

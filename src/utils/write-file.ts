@@ -50,7 +50,7 @@ export const writeLines = async (
  *
  * @param {string} path - Path to file.
  * @param {string} content - The content to be inserted at the determined node.
- * @param {string} config - The configuration for the `key`[the node to be overwritten] and
+ * @param {{ key: string; separator: string }} config - The configuration for the `key`[the node to be overwritten] and
  * the `separator`[the pattern describing how to split file into nodes].
  * @returns {undefined} Returns `undefined`
  */
@@ -61,7 +61,7 @@ export const reWriteFileSync = (
 ) => {
   const token = "lofo";
   const fileContentNodes = readFileSync(path, { encoding: "utf8" })
-    .replaceAll(config.separator, token + ` ${config.separator}`)
+    .replaceAll(config.separator, token + config.separator)
     .split(token);
 
   const updatedContentNodes = fileContentNodes.map((node) => {
