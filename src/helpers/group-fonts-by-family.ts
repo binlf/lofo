@@ -35,9 +35,9 @@ export const groupFontsByFamily = (
           recursive: true,
         }) as string;
       }
-      moveFile(filesToMove, fontFamilyFolderPath, (err, mvdFilePaths) => {
+      moveFile(filesToMove, fontFamilyFolderPath, (err, movedFilePaths) => {
         if (err) process.exit(1);
-        const fonts = mvdFilePaths.map((filePath): Font => {
+        const fonts = movedFilePaths.map((filePath): Font => {
           return {
             name: basename(filePath),
             path: filePath,

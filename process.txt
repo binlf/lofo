@@ -40,3 +40,10 @@
 - then with the user-specified key, find the node, whose content should be overidden with the new content
 
 - Add recovery step for the scenario that it passes the grouping step but fails before reaching the writing step
+
+
+- GOALS TODAY
+- Implement adding dynamic keys[should come from the actual files being modified] for `reWriteFileSync` -- It should probably be an array
+- that takes all the possible nodes that should be overwritten
+- For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure -- 
+- ...(import - named exports - default export))

@@ -1,27 +1,25 @@
 import {
   type ReadStream,
   type WriteStream,
+  createReadStream,
+  createWriteStream,
   readFileSync,
   writeFileSync,
 } from "fs-extra";
 import readline from "readline";
 
+// todo: make function more generic
 /**
  * Writes to a file using the `node:readline` module
- *
- * @param {ReadStream} rs - A readable stream for the file.
- * @param {WriteStream} ws - A writeable stream for the file.
+ * @param {string} filePath - Path to file.
  * @param {string} content - The content to be written to the file.
  * @returns {Promise<void>} Returns a promise that resolves with `void`
  */
-// todo: make function more generic
-export const writeLines = async (
-  rs: ReadStream,
-  ws: WriteStream,
-  content: string
-) => {
+export const writeLines = async (filePath: string, content: string) => {
+  const fileReadStream = createReadStream(filePath);
+  const fileWriteStream = createWriteStream(filePath, { flags: "r+" });
   const rl = readline.createInterface({
-    input: rs,
+    input: fileReadStream,
     crlfDelay: Infinity,
   });
 
@@ -30,19 +28,19 @@ export const writeLines = async (
   for await (const line of rl) {
     // warn: this would break if \n appears between two import statement lines
     if (lineNumber > 1 && !line.trim() && prevLineContent?.includes("import")) {
-      ws.write(content);
+      fileWriteStream.write(content);
     } else {
-      ws.write(`${line}\n`);
+      fileWriteStream.write(`${line}\n`);
     }
     prevLineContent = line;
     lineNumber++;
   }
 
-  ws.end();
+  fileWriteStream.end();
   await new Promise((resolve, reject) =>
-    ws.on("finish", resolve).on("error", reject)
+    fileWriteStream.on("finish", resolve).on("error", reject)
   );
-  rs.close();
+  fileReadStream.close();
 };
 
 /**
@@ -50,15 +48,16 @@ export const writeLines = async (
  *
  * `W` - Sets re-write mode to overwrite contents of file `from` a determined node.
  *
- * `R` - Sets re-write mode to overwrite contents of file `at` a determined node.
+ * `I` - Sets re-write mode to overwrite contents of file `at` a determined node.
  */
-type Flags = "W" | "R";
+type Flags = "W" | "I";
 /**
  * Re-writes the contents of a file while inserting `content` at a determined node.
  *
  * @param {string} path - Path to file.
  * @param {string} content - The content to be inserted at the determined node.
- * @param {{ key: string; separator: string; flag?: Flags }} config - The configuration for the `key`[identifier for the node to be overwritten] and
+ * @param {{ key: string; separator: string; flag?: Flags }} config -
+ * The configuration for the `key`[describes how to determine the node to overwrite] and
  * the `separator`[the pattern describing how to split file content into nodes] and `flag`[sets the mode for re-write]
  * @returns {undefined} Returns `undefined`
  */
@@ -76,7 +75,7 @@ export const reWriteFileSync = (
   let keyNodeIndex: number;
   const updatedContentNodes = fileContentNodes.map((node, idx) => {
     if (flag === "W" && idx > keyNodeIndex) return "";
-    if (node.trim().startsWith(config.key)) {
+    if (node.trim().includes(config.key)) {
       keyNodeIndex = idx;
       return content;
     }

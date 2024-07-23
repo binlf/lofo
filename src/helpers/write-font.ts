@@ -22,9 +22,7 @@ export const writeFontImports = async (
   if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const content =
-    `${reachedSuccess ? "" : NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"}` +
-    generateFileContent(fontFamilies, fontsDirPath);
+  const content = generateFileContent(fontFamilies, fontsDirPath);
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
     : reWriteFileSync(indexFilePath, content, {
@@ -76,6 +74,9 @@ export const writeFontImports = async (
 
 // GENERATE CONTENT TO WRITE TO INDEX FILE
 const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
+  const localfontUtilImport = !reachedSuccess
+    ? NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"
+    : "";
   const familiesExportArr = ff.map((family) => {
     return (
       `
@@ -87,12 +88,15 @@ const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
     );
   });
 
+  const namedExports = familiesExportArr.join("\n");
   // todo: on successive attempts to add font, append new font to default export object
-  return `${familiesExportArr.join("\n")}\nexport default {
+  const defaultExport = `\nexport default {
     ${Array.from(
       new Set([...ff.map((family) => family.familyName), ...(fonts || "")])
     ).join(", ")}
   }`;
+
+  return [localfontUtilImport, namedExports, defaultExport].join("\n");
 };
 
 // WRITE IMPORT STATEMENT TO LAYOUT FILE
@@ -107,10 +111,7 @@ const writeImportStatement = async (
     ? path.resolve(process.cwd(), fontsDirPath)
     : path.relative(path.parse(filePath).dir, fontsDirPath);
   const importStatement = getImportStatement(namedExport, importPath, alias);
-  const fileReadStream = fs.createReadStream(filePath);
-  const fileWriteStream = fs.createWriteStream(filePath, { flags: "r+" });
-
-  await writeLines(fileReadStream, fileWriteStream, importStatement);
+  await writeLines(filePath, importStatement);
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
