@@ -46,43 +46,59 @@ export const writeLines = async (filePath: string, content: string) => {
 /**
  * Sets the mode for re-writing the file
  *
- * `W` - Sets re-write mode to overwrite contents of file `from` a determined node.
+ * `w` - Sets re-write behavior to overwrite content of file `from` the determined chunk.
  *
- * `I` - Sets re-write mode to overwrite contents of file `at` a determined node.
+ * `i` - Sets re-write behavior to overwrite content of file `at` the determined chunk.
+ *
+ * `p` - Sets re-write behavior to overwrite content of file `at` the last chunk.
  */
-type Flags = "W" | "I";
+type Flags = "w" | "i" | "p";
+
 /**
- * Re-writes the contents of a file while inserting `content` at a determined node.
+ * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
  *
- * @param {string} path - Path to file.
- * @param {string} content - The content to be inserted at the determined node.
- * @param {{ key: string; separator: string; flag?: Flags }} config -
- * The configuration for the `key`[describes how to determine the node to overwrite] and
- * the `separator`[the pattern describing how to split file content into nodes] and `flag`[sets the mode for re-write]
+ * @param {string} path - The path to the file that will be rewritten.
+ * @param {string} content - The new content to write into the file.
+ * @param {Object} config - Configuration options for re-writing the file.
+ * @param {string} config.key - A key that describes how to determine the chunk to overwrite.
+ * @param {string} config.separator - The pattern describing how to split file content into chunks.
+ * @param {Flags} [config.flag] - Optional flag that modifies the behavior of the re-write operation.
+ *
  * @returns {undefined} Returns `undefined`
+ * @example
+ * reWriteFileSync('/path/to/file.txt', 'New content', {
+ *   key: 'myKey',
+ *   separator: ',',
+ *   flag: 'w'
+ * });
  */
 export const reWriteFileSync = (
   path: string,
   content: string,
-  config: { key: string; separator: string; flag?: Flags }
+  config: {
+    key: string;
+    separator: string;
+    flag?: Flags;
+  }
 ) => {
-  const flag = config.flag ?? "W";
+  const flag = config.flag ?? "w";
   const token = "lofo";
-  const fileContentNodes = readFileSync(path, { encoding: "utf8" })
+  const fileContentChunks = readFileSync(path, { encoding: "utf8" })
     .replaceAll(config.separator, token + config.separator)
     .split(token);
 
   let keyNodeIndex: number;
-  const updatedContentNodes = fileContentNodes.map((node, idx) => {
-    if (flag === "W" && idx > keyNodeIndex) return "";
-    if (node.trim().includes(config.key)) {
+  const updatedContentChunks = fileContentChunks.map((node, idx, chunks) => {
+    if (flag === "w" && idx > keyNodeIndex) return "";
+    if (flag === "p" && idx === chunks.length - 1) return content;
+    if (config.key && flag !== "p" && node.trim().includes(config.key)) {
       keyNodeIndex = idx;
       return content;
     }
     return node;
   });
 
-  const updatedContent = Array.from(new Set(updatedContentNodes)).join("\n");
+  const updatedContent = Array.from(new Set(updatedContentChunks)).join("\n");
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;
