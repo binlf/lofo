@@ -8,8 +8,6 @@ import { getFontFiles } from "./helpers/get-font-files";
 import { writeFontImports } from "./helpers/write-font";
 import { getLofoConfig, getProjectConfig } from "./utils/get-config";
 import { getFontsDir } from "./helpers/get-fonts-dir";
-import { reWriteFileSync } from "./utils/write-file";
-import path from "path";
 
 // const program = new Command();
 
@@ -44,11 +42,3 @@ const main = async () => {
 };
 
 main();
-// reWriteFileSync(
-//   path.join(process.cwd(), "fonts/index.ts"),
-//   "Something Hoooge",
-//   {
-//     key: "export const Satoshi",
-//     separator: "export",
-//   }
-// );

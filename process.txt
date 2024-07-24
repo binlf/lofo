@@ -46,4 +46,20 @@
 - Implement adding dynamic keys[should come from the actual files being modified] for `reWriteFileSync` -- It should probably be an array
 - that takes all the possible nodes that should be overwritten
 - For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure -- 
-- ...(import - named exports - default export))
+- (import - named exports - default export))
+
+- user can:
+    - add a new font family + add a new font file
+    - add a new font family
+    - add a new font file
+
+- When generating code snippet for font exports, also return file chunks along with the content to be written to file.
+- The file chunks returned from `generateFileContent` are diff'd against the file chunks gotten in `reWriteFileSync`
+- and this is used to figure out exactly what chunk should be overwritten. This implementation might only work if the content/chunks from both functions
+- are isomorphic(almost identical) so `reWriteFilySync` should probably throw if contents are determined to not match.
+- At this moment this is not viable as there's an extra step of formatting the file that the user has to do, which would most likely alter the "shape" 
+- of the file -- fragile and subjective.
+
+- MOVING FONTS DIR TO FINAL DESTINATION
+- moving "fonts" dir into final destination would be handled by a user provided path argument when running "lofo"
+- the "alternative" would be manually moving the "fonts" directory to preferred final destination and then running the "lofo" command again

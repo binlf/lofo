@@ -22,17 +22,15 @@ export const writeFontImports = async (
   if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const content = generateFileContent(fontFamilies, fontsDirPath);
+  const [content, chunks] = generateFileContent(fontFamilies, fontsDirPath);
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
     : reWriteFileSync(indexFilePath, content, {
         key: "export const Satoshi",
         separator: "export",
+        flag: "p",
       });
   logger.info("Finished writing font exports");
-  // warn: this breaks if fontsDirPath is initially in "public"
-  // warn: also breaks on successive attempts to add fonts
-  // fs.moveSync(fontsDirPath, `./public/fonts`);
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
   const appDirPath = folderExists(srcDir)
@@ -73,10 +71,14 @@ export const writeFontImports = async (
 };
 
 // GENERATE CONTENT TO WRITE TO INDEX FILE
-const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
+const generateFileContent = (
+  ff: FontFamily[],
+  fontsDirPath: string
+): [string, string[]] => {
   const localfontUtilImport = !reachedSuccess
     ? NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"
     : "";
+
   const familiesExportArr = ff.map((family) => {
     return (
       `
@@ -95,8 +97,8 @@ const generateFileContent = (ff: FontFamily[], fontsDirPath: string) => {
       new Set([...ff.map((family) => family.familyName), ...(fonts || "")])
     ).join(", ")}
   }`;
-
-  return [localfontUtilImport, namedExports, defaultExport].join("\n");
+  const chunks = [localfontUtilImport, namedExports, defaultExport];
+  return [chunks.join("\n"), chunks];
 };
 
 // WRITE IMPORT STATEMENT TO LAYOUT FILE
