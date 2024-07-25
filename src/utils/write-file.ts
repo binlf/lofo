@@ -51,8 +51,11 @@ export const writeLines = async (filePath: string, content: string) => {
  * `i` - Sets re-write behavior to overwrite content of file `at` the determined chunk.
  *
  * `p` - Sets re-write behavior to overwrite content of file `at` the last chunk.
+ *
+ * `i+` Sets re-write behavior to overwrite content `at` a determined chunk. If chunk doesn't exist,
+ * it appends that chunk to end of file.
  */
-type Flags = "w" | "i" | "p";
+type Flags = "w" | "i" | "p" | "i+";
 
 /**
  * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
@@ -87,15 +90,28 @@ export const reWriteFileSync = (
     .replaceAll(config.separator, token + config.separator)
     .split(token);
 
-  let keyNodeIndex: number;
-  const updatedContentChunks = fileContentChunks.map((node, idx, chunks) => {
-    if (flag === "w" && idx > keyNodeIndex) return "";
-    if (flag === "p" && idx === chunks.length - 1) return content;
-    if (config.key && flag !== "p" && node.trim().includes(config.key)) {
-      keyNodeIndex = idx;
-      return content;
+  let keyChunkIndex: number;
+  const updatedContentChunks = fileContentChunks.map((chunk, idx, chunks) => {
+    switch (flag) {
+      case "w":
+        if (idx > keyChunkIndex) return "";
+        break;
+      case "p": {
+        if (idx === chunks.length - 1) return content;
+        break;
+      }
+      case "i": {
+        if (config.key && chunk.trim().includes(config.key)) {
+          keyChunkIndex = idx;
+          return content;
+        }
+        break;
+      }
+      default:
+        return chunk;
     }
-    return node;
+
+    return chunk;
   });
 
   const updatedContent = Array.from(new Set(updatedContentChunks)).join("\n");
@@ -103,3 +119,17 @@ export const reWriteFileSync = (
 
   return undefined;
 };
+
+// if (flag === "w" && idx > keyChunkIndex) return "";
+// if (flag === "p" && idx === chunks.length - 1) return content;
+// if (Array.isArray(config.key)) {
+//   if (config.key.length) {
+//     const keys = config.key;
+//     const key
+//   }
+// } else {
+//   if (config.key && flag !== "p" && chunk.trim().includes(config.key)) {
+//     keyChunkIndex = idx;
+//     return content;
+//   }
+// }
