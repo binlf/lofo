@@ -1,6 +1,4 @@
 import {
-  type ReadStream,
-  type WriteStream,
   createReadStream,
   createWriteStream,
   readFileSync,
@@ -52,10 +50,15 @@ export const writeLines = async (filePath: string, content: string) => {
  *
  * `p` - Sets re-write behavior to overwrite content of file `at` the last chunk.
  *
- * `i+` Sets re-write behavior to overwrite content `at` a determined chunk. If chunk doesn't exist,
+ * `i+` - Sets re-write behavior to overwrite content of file `at` a determined chunk. If chunk doesn't exist,
  * it appends that chunk to end of file.
+ *
+ * `m` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
+ *
+ * `m+` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
+ * If not, overwite last chunk with incoming chunks.
  */
-type Flags = "w" | "i" | "p" | "i+";
+type Flags = "w" | "i" | "p" | "i+" | "m" | "m+";
 
 /**
  * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
@@ -75,7 +78,7 @@ type Flags = "w" | "i" | "p" | "i+";
  *   flag: 'w'
  * });
  */
-export const reWriteFileSync = (
+export const reWriteFileSyncDep = (
   path: string,
   content: string,
   config: {
@@ -120,16 +123,85 @@ export const reWriteFileSync = (
   return undefined;
 };
 
-// if (flag === "w" && idx > keyChunkIndex) return "";
-// if (flag === "p" && idx === chunks.length - 1) return content;
-// if (Array.isArray(config.key)) {
-//   if (config.key.length) {
-//     const keys = config.key;
-//     const key
-//   }
-// } else {
-//   if (config.key && flag !== "p" && chunk.trim().includes(config.key)) {
-//     keyChunkIndex = idx;
-//     return content;
-//   }
-// }
+/**
+ * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
+ *
+ * @param {string} path - The path to the file that will be rewritten.
+ * @param {string} content - The new content to write into the file.
+ * @param {string} separator - The pattern describing how to split file content into chunks. Default is LF("\n").
+ * @param {Flags} flag - Optional flag that modifies the behavior of the re-write operation. Default is "p"(pop).
+ *
+ * @returns {undefined} Returns `undefined`
+ * @example
+ * reWriteFileSync('/path/to/file.txt', 'New content', ", ", "i");
+ */
+export const reWriteFileSync = (
+  path: string,
+  content: string,
+  separator: string = "\n",
+  flag: Flags = "p"
+): undefined => {
+  const fileContent = readFileSync(path, { encoding: "utf8" });
+  const fileContentChunks = getChunks(fileContent, separator, true);
+  const newContentChunks = getChunks(content, separator, true);
+
+  console.log("File Content Chunks: ", fileContentChunks);
+  console.log("New Content Chunks: ", newContentChunks);
+
+  function getChunks(content: string, sep: string, normalize?: boolean) {
+    const token = "lofo";
+    const chunks = normalize ? content.replaceAll("\n", "LF") : content;
+    return chunks.replaceAll(sep, token + sep).split(token);
+  }
+
+  // max: two chunks(for now). Compares by words
+  function compareChunks(chunk: string, nextChunk: string) {
+    const words = chunk.split(" ", 4);
+    console.log("Words: ", words);
+    if (words) {
+      const wordRank = words.reduce<{ [word: string]: number }>((acc, word) => {
+        if (
+          word &&
+          !word.includes("LF") &&
+          word !== "export" &&
+          nextChunk.includes(word)
+        ) {
+          const wordCount = nextChunk.split(word).length - 1;
+          return { ...acc, [word]: wordCount };
+        }
+        return acc;
+      }, {});
+      let popWord = "";
+      for (const [word, count] of Object.entries(wordRank)) {
+        if (popWord && count > wordRank[popWord]!) {
+          return (popWord = word);
+        }
+        if (!popWord) popWord = word;
+      }
+      return popWord;
+    }
+    return undefined;
+  }
+
+  const updatedContentChunks = fileContentChunks.map((oldChunk, idx) => {
+    let updatedChunk = "";
+    for (const chunk of newContentChunks) {
+      console.log("New Chunk: ", chunk);
+      console.log("Old Chunk: ", oldChunk);
+      const commonWord = compareChunks(chunk, oldChunk);
+      console.log("Common Word: ", commonWord);
+      if (commonWord && commonWord !== "const") {
+        if (chunk.includes(commonWord)) {
+          console.log("Should rewrite");
+          // updatedChunk = chunk;
+        }
+      }
+      updatedChunk = oldChunk;
+    }
+    return updatedChunk.replaceAll("LF", "\n");
+  });
+  // const updatedContent = Array.from(new Set(updatedContentChunks)).join(" ");
+  // writeFileSync(path, updatedContent, "utf8");
+
+  return undefined;
+};

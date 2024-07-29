@@ -29,11 +29,7 @@ export const writeFontImports = async (
   const flag = fonts?.includes(key?.split("export const ")[1]!) ? "i" : "p";
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
-    : reWriteFileSync(indexFilePath, content, {
-        key: key!,
-        separator: "export",
-        flag,
-      });
+    : reWriteFileSync(indexFilePath, content, "export", "i");
   logger.info("Finished writing font exports");
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
