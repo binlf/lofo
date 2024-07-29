@@ -12,6 +12,11 @@
 - By default it'd be placed in the "public" folder of your Next.js project
 - it'd create one if it doesn't already exist
 
+- Could implement a rename step that normalizes the name of font files ensuring a consistent naming pattern
+- this could be achieved by checking for the font weight(t'is the win condition)
+- after which we check the elements that come before and after the weight, then discard the old string
+- and create a new one that follows our opinion/standard
+
 
 
 - GOALS TODAY

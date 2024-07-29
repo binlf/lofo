@@ -22,13 +22,17 @@ export const writeFontImports = async (
   if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const [content, chunks] = generateFileContent(fontFamilies, fontsDirPath);
+  const [content] = generateFileContent(fontFamilies, fontsDirPath);
+  const [key] = fontFamilies.map(
+    (family) => "export const " + family.familyName
+  );
+  const flag = fonts?.includes(key?.split("export const ")[1]!) ? "i" : "p";
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
     : reWriteFileSync(indexFilePath, content, {
-        key: "export const Satoshi",
+        key: key!,
         separator: "export",
-        flag: "p",
+        flag,
       });
   logger.info("Finished writing font exports");
   logger.info("Importing fonts in layout file...");

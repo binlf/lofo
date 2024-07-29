@@ -57,14 +57,17 @@ export const getLofoConfig = () => {
       );
       fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
     }
-    fs.outputJSONSync(
-      lofoConfigPath,
-      {
-        ...lofoConfig,
-        fonts: Array.from(new Set([...lofoConfig?.fonts!, ...fonts])),
-      },
-      { spaces: 2 }
-    );
+    if (lofoConfig?.reachedSuccess) {
+      fs.outputJSONSync(
+        lofoConfigPath,
+        {
+          ...lofoConfig,
+          fonts: Array.from(new Set([...lofoConfig?.fonts!, ...fonts])),
+        },
+        { spaces: 2 }
+      );
+    }
+
     // todo: success message should reflect finished operation
     // todo: (e.g Added 1 font(s) successfully...)
     // todo: (Removed 2 font(s) successfully...)
