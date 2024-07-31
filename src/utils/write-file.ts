@@ -1,6 +1,4 @@
 import {
-  type ReadStream,
-  type WriteStream,
   createReadStream,
   createWriteStream,
   readFileSync,
@@ -44,92 +42,91 @@ export const writeLines = async (filePath: string, content: string) => {
 };
 
 /**
- * Sets the mode for re-writing the file
+ * Sets the mode for re-writing the file.
  *
- * `w` - Sets re-write behavior to overwrite content of file `from` the determined chunk.
- *
- * `i` - Sets re-write behavior to overwrite content of file `at` the determined chunk.
- *
- * `p` - Sets re-write behavior to overwrite content of file `at` the last chunk.
- *
- * `i+` Sets re-write behavior to overwrite content `at` a determined chunk. If chunk doesn't exist,
+ * `i+` - Sets re-write behavior to overwrite content of file `at` a determined chunk. If chunk doesn't exist,
  * it appends that chunk to end of file.
+ *
+ * `m` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
+ *
+ * `m+` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
+ * If no chunks are determined to be isomorphic, overwite the last "existing" chunk with incoming chunks.
+ *
+ * `p` - Sets re-write behavior to always overwrite content of file `at` the last "existing" chunk.
  */
-type Flags = "w" | "i" | "p" | "i+";
+type Flags = "i+" | "m" | "m+" | "p";
 
 /**
  * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
  *
- * @param {string} path - The path to the file that will be rewritten.
+ * @param {string} path - The path to the file to be rewritten.
  * @param {string} content - The new content to write into the file.
- * @param {Object} config - Configuration options for re-writing the file.
- * @param {string} config.key - A key that describes how to determine the chunk to overwrite.
- * @param {string} config.separator - The pattern describing how to split file content into chunks.
- * @param {Flags} [config.flag] - Optional flag that modifies the behavior of the re-write operation.
+ * @param {string} separator - The pattern describing how to split file content into chunks. Default is LF("\n").
+ * @param {Flags} flag - Optional flag that modifies the behavior of the re-write operation. Default is "i+".
  *
  * @returns {undefined} Returns `undefined`
  * @example
- * reWriteFileSync('/path/to/file.txt', 'New content', {
- *   key: 'myKey',
- *   separator: ',',
- *   flag: 'w'
- * });
+ * reWriteFileSync('/path/to/file.txt', 'New content', ", ");
  */
 export const reWriteFileSync = (
   path: string,
   content: string,
-  config: {
-    key: string;
-    separator: string;
-    flag?: Flags;
+  separator: string = "\n",
+  flag: Flags = "i+"
+): undefined => {
+  const fileContent = readFileSync(path, { encoding: "utf8" });
+  const fileContentChunks = getChunks(fileContent, separator, true);
+  const newContentChunks = getChunks(content, separator, true);
+
+  function getChunks(content: string, sep: string, normalize?: boolean) {
+    const token = "lofo";
+    const chunks = normalize ? content.replaceAll("\n", "LF") : content;
+    return chunks.replaceAll(sep, token + sep).split(token);
   }
-) => {
-  const flag = config.flag ?? "w";
-  const token = "lofo";
-  const fileContentChunks = readFileSync(path, { encoding: "utf8" })
-    .replaceAll(config.separator, token + config.separator)
-    .split(token);
 
-  let keyChunkIndex: number;
-  const updatedContentChunks = fileContentChunks.map((chunk, idx, chunks) => {
-    switch (flag) {
-      case "w":
-        if (idx > keyChunkIndex) return "";
-        break;
-      case "p": {
-        if (idx === chunks.length - 1) return content;
-        break;
+  function compareChunks(...chunks: string[]) {
+    let union;
+    const intersection = [];
+    const tokensArray = chunks.reduce<string[][]>((acc, chunk) => {
+      // todo: increase sample size
+      const tokens = chunk.split(" ", 7);
+      return [...acc, tokens];
+    }, []);
+    union = Array.from(new Set(tokensArray.flat()));
+    let sampleTokens = tokensArray[0] as string[];
+    for (let index = 0; index < sampleTokens.length; index++) {
+      const sampleToken = sampleTokens[index] as string;
+      for (let j = 1; j < tokensArray.length; j++) {
+        const restTokens = tokensArray[j];
+        if (
+          sampleToken &&
+          sampleToken !== "LF" &&
+          restTokens?.includes(sampleToken)
+        )
+          intersection.push(sampleToken);
       }
-      case "i": {
-        if (config.key && chunk.trim().includes(config.key)) {
-          keyChunkIndex = idx;
-          return content;
-        }
-        break;
-      }
-      default:
-        return chunk;
     }
+    const simIndex = !intersection.length
+      ? 0
+      : intersection.length / union.length;
+    return Number(simIndex.toFixed(1));
+  }
 
-    return chunk;
+  const updatedContentChunks = fileContentChunks.map((oldChunk) => {
+    let updatedChunk = "";
+    const THRESHOLD = 0.5;
+    for (const chunk of newContentChunks) {
+      const similarityIndex = compareChunks(chunk, oldChunk);
+      if (similarityIndex && similarityIndex > THRESHOLD) {
+        updatedChunk = chunk;
+        break;
+      }
+    }
+    return (updatedChunk || oldChunk).replaceAll("LF", "\n");
   });
 
-  const updatedContent = Array.from(new Set(updatedContentChunks)).join("\n");
+  const updatedContent = Array.from(new Set(updatedContentChunks)).join(" ");
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;
 };
-
-// if (flag === "w" && idx > keyChunkIndex) return "";
-// if (flag === "p" && idx === chunks.length - 1) return content;
-// if (Array.isArray(config.key)) {
-//   if (config.key.length) {
-//     const keys = config.key;
-//     const key
-//   }
-// } else {
-//   if (config.key && flag !== "p" && chunk.trim().includes(config.key)) {
-//     keyChunkIndex = idx;
-//     return content;
-//   }
-// }

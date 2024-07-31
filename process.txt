@@ -17,6 +17,9 @@
 - after which we check the elements that come before and after the weight, then discard the old string
 - and create a new one that follows our opinion/standard
 
+- QOL(Quality of Life improvemtns)
+- add ability to run lofo CLI from whatever "depth" in your project directory tree
+
 
 
 - GOALS TODAY
@@ -41,8 +44,8 @@
 - AFTER REGROUPING
 - when writing to font, compare and identify the fonts that have changed(tokens, keys) in `index.ts` 
 - and overwrite them with the new fonts
-- first split file content into nodes using a user-specified separator...
-- then with the user-specified key, find the node, whose content should be overidden with the new content
+- first split file content into chunks using a user-specified separator...
+- then with the user-specified key, find the chunk, whose content should be overwritten with the new content
 
 - Add recovery step for the scenario that it passes the grouping step but fails before reaching the writing step
 
@@ -50,7 +53,7 @@
 - GOALS TODAY
 - Implement adding dynamic keys[should come from the actual files being modified] for `reWriteFileSync` -- It should probably be an array
 - that takes all the possible nodes that should be overwritten
-- For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure -- 
+- For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure/anatomy -- 
 - (import - named exports - default export))
 
 - user can:
@@ -65,6 +68,20 @@
 - At this moment this is not viable as there's an extra step of formatting the file that the user has to do, which would most likely alter the "shape" 
 - of the file -- fragile and subjective.
 
+- New API Proposal: reWriteFileSync(filePath: string, content: string, separator: string = "\n", flag: string = "p") 
+- This would work by using the value gotten from separator to
+- figure out how to chunk the content of `filePath` and the `content` arg, it would then move on to compare the incoming and existing 
+- chunks(strictly -- this might lead to redundant rewrites) and for the comparison to work right(regardless of variable styles of formatting) 
+- it'd have to "normalize"(make each chunk one long string removing all escapes) the chunks[incoming and existing] to be compared before comparison.
+- For comparison to work the chunks need to have a percentage of "similarity". If comparison yields "true" and they match, 
+- the incoming chunk is favored and the existing chunk is overwritten with the new one, otherwise the exsiting chunk is preserved...
+- when flag is set to `p`(pop), it overwrites the last chunk with the incoming chunk(no questions asked)
+- when flag is `i*` or `i+`(insert) it would either insert incoming chunk at the end of file if there was no match or discard the chunk if there was no match
+- token based comparison(??), cell size based/substring based comparison(too restrictive)
+
+
+
 - MOVING FONTS DIR TO FINAL DESTINATION
-- moving "fonts" dir into final destination would be handled by a user provided path argument when running "lofo"
+- moving "fonts" dir into final destination would be handled by a user provided path argument when running "lofo": `lofo --final-dest <path>` or `lofo -f <path>`
 - the "alternative" would be manually moving the "fonts" directory to preferred final destination and then running the "lofo" command again
+- or running the command: `lofo --move <path>` or `lofo -m <path>`
