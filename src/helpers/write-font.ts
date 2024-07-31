@@ -23,13 +23,9 @@ export const writeFontImports = async (
   logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
   const [content] = generateFileContent(fontFamilies, fontsDirPath);
-  const [key] = fontFamilies.map(
-    (family) => "export const " + family.familyName
-  );
-  const flag = fonts?.includes(key?.split("export const ")[1]!) ? "i" : "p";
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
-    : reWriteFileSync(indexFilePath, content, "export", "i");
+    : reWriteFileSync(indexFilePath, content, "export", "m+");
   logger.info("Finished writing font exports");
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");

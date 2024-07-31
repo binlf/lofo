@@ -35,9 +35,9 @@ const main = async () => {
     logger.info("Change to fonts directory detected. Updating paths...");
 
   const fontFiles = await getFontFiles(fontsDirPath);
-  // todo: find a way to implicitly get `fontsDirPath` inside here
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies, importAlias);
+  // todo: remove unnecessary responsibility[fonts argument]
   signalSuccess(fontFamilies.map((family) => family.familyName));
 };
 

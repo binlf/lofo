@@ -53,7 +53,7 @@
 - GOALS TODAY
 - Implement adding dynamic keys[should come from the actual files being modified] for `reWriteFileSync` -- It should probably be an array
 - that takes all the possible nodes that should be overwritten
-- For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure -- 
+- For the code-gen step, an array should probably be return from the function(since the file has a fairly predictable structure/anatomy -- 
 - (import - named exports - default export))
 
 - user can:
