@@ -40,7 +40,7 @@ export const writeFontImports = async (
         item.includes("layout")
     ) as string[];
     if (!layoutFile) {
-      logger.warning(
+      logger.error(
         "Couldn't find your root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
       );
       return process.exit(1);
