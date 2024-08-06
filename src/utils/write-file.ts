@@ -88,11 +88,12 @@ export const reWriteFileSync = (
     let union;
     const intersection = [];
     const tokensArray = chunks.reduce<string[][]>((acc, chunk) => {
-      // todo: increase sample size
-      const tokens = chunk.split(" ", 7);
+      const tokens = chunk.split(" ", 4);
       return [...acc, tokens];
     }, []);
-    union = Array.from(new Set(tokensArray.flat()));
+    union = Array.from(
+      new Set(tokensArray.flat().filter((token) => Boolean(token)))
+    );
     let sampleTokens = tokensArray[0] as string[];
     for (let index = 0; index < sampleTokens.length; index++) {
       const sampleToken = sampleTokens[index] as string;
@@ -114,7 +115,7 @@ export const reWriteFileSync = (
 
   const updatedContentChunks = fileContentChunks.map((oldChunk) => {
     let updatedChunk = "";
-    const THRESHOLD = 0.5;
+    const THRESHOLD = 0.7;
     for (const chunk of newContentChunks) {
       const similarityIndex = compareChunks(chunk, oldChunk);
       if (similarityIndex && similarityIndex > THRESHOLD) {
