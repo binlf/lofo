@@ -32,7 +32,7 @@ const main = async () => {
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
   if (shouldUpdateImports(fontsDirPath))
-    logger.info("Change to fonts directory detected. Updating paths...");
+    logger.info("Change to fonts directory detected. Updating import...");
 
   const fontFiles = await getFontFiles(fontsDirPath);
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);

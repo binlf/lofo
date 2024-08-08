@@ -25,7 +25,7 @@ export const writeFontImports = async (
   const [content] = generateFileContent(fontFamilies, fontsDirPath);
   !reachedSuccess
     ? fs.outputFileSync(indexFilePath, content)
-    : reWriteFileSync(indexFilePath, content, "export", "m+");
+    : reWriteFileSync(indexFilePath, content, "export");
   logger.info("Finished writing font exports");
   logger.info("Importing fonts in layout file...");
   const srcDir = path.join(process.cwd(), "/src");
@@ -70,7 +70,7 @@ export const writeFontImports = async (
 const generateFileContent = (
   ff: FontFamily[],
   fontsDirPath: string
-): [string, string[]] => {
+): [content: string, chunks: string[]] => {
   const localfontUtilImport = !reachedSuccess
     ? NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"
     : "";
