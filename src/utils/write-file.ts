@@ -61,7 +61,7 @@ type Flags = "i+" | "m" | "m+" | "p";
  *
  * @param {string} path - The path to the file to be rewritten.
  * @param {string} content - The new content to write into the file.
- * @param {string} separator - The pattern describing how to split file content into chunks. Default is LF("\n").
+ * @param {string} separator - The pattern describing how to split file content and new `content` into chunks. Default is LF("\n").
  * @param {Flags} flag - Optional flag that modifies the behavior of the re-write operation. Default is "i+".
  *
  * @returns {undefined} Returns `undefined`
@@ -74,6 +74,7 @@ export const reWriteFileSync = (
   separator: string = "\n",
   flag: Flags = "i+"
 ): undefined => {
+  // todo: implement flags
   const fileContent = readFileSync(path, { encoding: "utf8" });
   const fileContentChunks = getChunks(fileContent, separator, true);
   const newContentChunks = getChunks(content, separator, true);
@@ -113,20 +114,39 @@ export const reWriteFileSync = (
     return Number(simIndex.toFixed(1));
   }
 
-  const updatedContentChunks = fileContentChunks.map((oldChunk) => {
-    let updatedChunk = "";
-    const THRESHOLD = 0.7;
-    for (const chunk of newContentChunks) {
-      const similarityIndex = compareChunks(chunk, oldChunk);
-      if (similarityIndex && similarityIndex > THRESHOLD) {
-        updatedChunk = chunk;
-        break;
+  const getUpdatedChunks = () => {
+    const foundChunkIndexes: number[] = [];
+    const updatedContentChunks = fileContentChunks.map((oldChunk) => {
+      let updatedChunk = "";
+      const THRESHOLD = 0.7;
+      let index = 0;
+      for (const chunk of newContentChunks) {
+        const similarityIndex = compareChunks(chunk, oldChunk);
+        if (similarityIndex && similarityIndex > THRESHOLD) {
+          updatedChunk = chunk;
+          foundChunkIndexes.push(index);
+          break;
+        }
+        index++;
       }
+      return (updatedChunk || oldChunk).replaceAll("LF", "\n");
+    });
+    const restContent = newContentChunks
+      .filter((_, idx) => !foundChunkIndexes.includes(idx))
+      .join("")
+      .replaceAll("LF", "\n");
+    if (restContent) {
+      //todo: switch impl. to use `arr.splice()` to support more node versions
+      return updatedContentChunks.toSpliced(
+        updatedContentChunks.length - 1,
+        0,
+        restContent
+      );
     }
-    return (updatedChunk || oldChunk).replaceAll("LF", "\n");
-  });
+    return updatedContentChunks;
+  };
 
-  const updatedContent = Array.from(new Set(updatedContentChunks)).join(" ");
+  const updatedContent = Array.from(new Set(getUpdatedChunks())).join(" ");
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;

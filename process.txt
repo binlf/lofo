@@ -19,6 +19,7 @@
 
 - QOL(Quality of Life improvemtns)
 - add ability to run lofo CLI from whatever "depth" in your project directory tree
+- check client node version to figure out whether to prefer newly available API's over baseline API's --- misc
 
 
 
@@ -60,6 +61,7 @@
     - add a new font family + add a new font file
     - add a new font family
     - add a new font file
+- If the newly added font is a variable font, burn the previous fonts?
 
 - When generating code snippet for font exports, also return file chunks along with the content to be written to file.
 - The file chunks returned from `generateFileContent` are diff'd against the file chunks gotten in `reWriteFileSync`
@@ -79,9 +81,11 @@
 - when flag is `i*` or `i+`(insert) it would either insert incoming chunk at the end of file if there was no match or discard the chunk if there was no match
 - token based comparison(??), cell size based/substring based comparison(too restrictive)
 
-
+- user shouldn't have to manually delete font name from `lofo-config.json`
 
 - MOVING FONTS DIR TO FINAL DESTINATION
 - moving "fonts" dir into final destination would be handled by a user provided path argument when running "lofo": `lofo --final-dest <path>` or `lofo -f <path>`
 - the "alternative" would be manually moving the "fonts" directory to preferred final destination and then running the "lofo" command again
 - or running the command: `lofo --move <path>` or `lofo -m <path>`
+
+    
