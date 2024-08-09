@@ -126,7 +126,11 @@ const getImportStatement = (
         "//": "/",
       })
     : importPath.split(path.sep).join("/");
-  return `import localfonts, { ${namedExport} } from "${formattedImportPath}"\n${
-    !reachedSuccess ? LOCAL_FONT_IMPORT_ANNOTATION : ""
-  }`;
+  return (
+    `import localfonts from "${formattedImportPath}"\n` +
+    (!reachedSuccess
+      ? "// OR IMPORT FONTS AS NAMED EXPORTS\n" +
+        `// import { ${namedExport} } from "${formattedImportPath}"\n\n`
+      : "")
+  );
 };
