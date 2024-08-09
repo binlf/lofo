@@ -20,6 +20,8 @@
 - QOL(Quality of Life improvemtns)
 - add ability to run lofo CLI from whatever "depth" in your project directory tree
 - check client node version to figure out whether to prefer newly available API's over baseline API's --- misc
+- handle variable fonts
+- support projects using tailwind
 
 
 
@@ -88,4 +90,8 @@
 - the "alternative" would be manually moving the "fonts" directory to preferred final destination and then running the "lofo" command again
 - or running the command: `lofo --move <path>` or `lofo -m <path>`
 
-    
+- GOALS TODAY
+- start implementing support for variable fonts and 
+- deserialize objects before writing to index file
+- refactor `writeLines` to `writeLineBy` that writes content to a line based on the evaluation of the mapper function
+- implement support for tailwindcss(make sure projects without are good to go!)
