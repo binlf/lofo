@@ -92,7 +92,10 @@
 
 - GOALS TODAY
 - deserialize objects before writing to index file(done)
-- start implementing support for variable fonts
+- start implementing support for variable fonts(done)
 - refactor `writeLines` to `writeLineBy` that writes content to a line based on the evaluation of the mapper function
+- handle case when user changes location of `fonts` directory -- don't write to layout file until fonts dir path changes
+- add color to CLI
 - CLI is currently very dependent on config[lofoConfig]...inremental fonts rewrite break if signalSuccess doesn't fire on first attempt
 - implement support for tailwindcss(make sure projects without are good to go!)
+- wrap `main()` function in error boundary to catch misc errors -- trycatch

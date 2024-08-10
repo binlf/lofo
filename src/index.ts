@@ -18,7 +18,7 @@ const main = async () => {
     importAlias,
     isTwProject,
   } = getProjectConfig();
-  const { shouldUpdateImports, signalSuccess } = getLofoConfig();
+  const { didPathChange, signalSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   if (isTwProject) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
@@ -31,14 +31,16 @@ const main = async () => {
     return createFontsDir();
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
-  if (shouldUpdateImports(fontsDirPath))
-    logger.info("Change to fonts directory detected. Updating import...");
+  if (didPathChange(fontsDirPath))
+    logger.info("Change to fonts directory path detected. Updating imports...");
 
   const fontFiles = await getFontFiles(fontsDirPath);
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies, importAlias);
-  // todo: remove unnecessary responsibility[fonts argument]
-  signalSuccess(fontFamilies.map((family) => family.familyName));
+  signalSuccess();
 };
 
-main();
+main().catch((err) => {
+  logger.error("Something went wrong...");
+  console.error(err);
+});
