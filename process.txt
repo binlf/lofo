@@ -91,7 +91,8 @@
 - or running the command: `lofo --move <path>` or `lofo -m <path>`
 
 - GOALS TODAY
-- start implementing support for variable fonts and 
-- deserialize objects before writing to index file
+- deserialize objects before writing to index file(done)
+- start implementing support for variable fonts
 - refactor `writeLines` to `writeLineBy` that writes content to a line based on the evaluation of the mapper function
+- CLI is currently very dependent on config[lofoConfig]...inremental fonts rewrite break if signalSuccess doesn't fire on first attempt
 - implement support for tailwindcss(make sure projects without are good to go!)

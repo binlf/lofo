@@ -1,6 +1,7 @@
 import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
 import path from "path";
+import fs from "fs-extra";
 
 export type Wght =
   | "100"
@@ -76,7 +77,26 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
     src = path
       .relative(fontsDirPath, fonts[0]?.path as string)
       .replaceAll(path.sep, "/");
-  return JSON.stringify(src);
+  return deSerializeKeys(JSON.stringify(src));
+};
+
+/**
+ * De-Serialize object keys in a JSON string.
+ * @param {string} jsonString - The JSON string to be parsed.
+ * @example deSerializeKeys('{"hello":"world"}') // Output: '{hello:"world"}'
+ */
+const deSerializeKeys = (jsonString: string) => {
+  const jsonObj = JSON.parse(jsonString);
+  if (typeof jsonObj !== "undefined" && typeof jsonObj !== "string") {
+    return jsonString
+      .split(",")
+      .map((token) => {
+        const [left, right] = token.split(":");
+        return `${left?.replaceAll('"', "")}:${right}`;
+      })
+      .join(",");
+  }
+  return jsonString;
 };
 
 export const getFontStyle = () => {};
