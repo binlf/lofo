@@ -18,7 +18,7 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 
 ### How it works.
 
-When the CLI is executed, it would look through your project for a `fonts` directory and create one if it doesn't exist in the root directory of your project.
+When the CLI is executed, it would look through your project for a `fonts` directory and create one(_if it doesn't exist_) in the root directory of your project.
 
 > [!NOTE]
 > _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move]() it somewhere else afterwards!_
