@@ -25,6 +25,7 @@ export const writeLines = async (filePath: string, content: string) => {
   let prevLineContent;
   for await (const line of rl) {
     // warn: this would break if \n appears between two import statement lines
+    // todo: condition - previous line could be a comment
     if (lineNumber > 1 && !line.trim() && prevLineContent?.includes("import")) {
       fileWriteStream.write(content);
     } else {
@@ -74,7 +75,6 @@ export const reWriteFileSync = (
   separator: string = "\n",
   flag: Flags = "i+"
 ): undefined => {
-  // todo: implement flags
   const fileContent = readFileSync(path, { encoding: "utf8" });
   const fileContentChunks = getChunks(fileContent, separator, true);
   const newContentChunks = getChunks(content, separator, true);
