@@ -11,6 +11,8 @@ type LofoConfig = {
 } & PkgJson;
 
 let FONTS_DIR_PATH = "";
+let fontNames: string[] = [];
+let shouldUpdateImports = false;
 
 export const getProjectConfig = () => {
   const packageJSON: PkgJson = fs.readJSONSync("./package.json");
@@ -24,7 +26,7 @@ export const getLofoConfig = () => {
   const lofoConfig =
     (fileExists(lofoConfigPath) || undefined) &&
     (fs.readJSONSync(lofoConfigPath) as LofoConfig);
-  const shouldUpdateImports = (fontsDirPath: string) => {
+  const didPathChange = (fontsDirPath: string) => {
     FONTS_DIR_PATH = fontsDirPath;
     try {
       if (lofoConfig && fontsDirPath) {
@@ -36,6 +38,7 @@ export const getLofoConfig = () => {
             { fontsDirPath, reachedSuccess },
             { spaces: 2 }
           );
+          shouldUpdateImports = true;
           return true;
         }
         return false;
@@ -46,12 +49,19 @@ export const getLofoConfig = () => {
       console.log(error);
     }
   };
+
+  const setFontNames = (names: string[]) => (fontNames = names);
+
   // todo: diff the array to handle delete/add case
-  const signalSuccess = (fonts: string[]) => {
+  const signalSuccess = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(
         lofoConfigPath,
-        { fontsDirPath: FONTS_DIR_PATH, reachedSuccess: true, fonts },
+        {
+          fontsDirPath: FONTS_DIR_PATH,
+          reachedSuccess: true,
+          fonts: fontNames,
+        } as LofoConfig,
         { spaces: 2 }
       );
       fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
@@ -61,8 +71,8 @@ export const getLofoConfig = () => {
         lofoConfigPath,
         {
           ...lofoConfig,
-          fonts: Array.from(new Set([...lofoConfig?.fonts!, ...fonts])),
-        },
+          fonts: Array.from(new Set([...lofoConfig?.fonts!, ...fontNames])),
+        } as LofoConfig,
         { spaces: 2 }
       );
     }
@@ -77,10 +87,12 @@ export const getLofoConfig = () => {
   };
 
   return {
+    didPathChange,
     shouldUpdateImports,
     signalSuccess,
     reachedSuccess: lofoConfig?.reachedSuccess,
     fonts: lofoConfig?.fonts,
+    setFontNames,
   };
 };
 

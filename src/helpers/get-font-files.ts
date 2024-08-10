@@ -68,7 +68,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
   return fontFiles;
 };
 
-const isFileFont = (file: string) => {
+export const isFileFont = (file: string) => {
   const fileExt = file.split(".").pop()?.toLowerCase();
   return FONT_FILE_EXTENSIONS.some((ext) => ext === fileExt);
 };

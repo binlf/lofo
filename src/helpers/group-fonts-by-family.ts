@@ -5,6 +5,7 @@ import { logger } from "../utils/logger";
 import { folderExists } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
 import { type Wght, getFontWeight } from "../utils/get-font-meta";
+import { getLofoConfig } from "../utils/get-config";
 
 export type Font = {
   name: string;
@@ -17,6 +18,8 @@ export type FontFamily = {
   familyName: string;
   fonts: Font[];
 };
+
+const { setFontNames } = getLofoConfig();
 
 export const groupFontsByFamily = (
   fontFiles: string[],
@@ -54,5 +57,6 @@ export const groupFontsByFamily = (
     }
   );
   logger.info("Grouped fonts into families...");
+  setFontNames(fontFamilies.map((font) => font.familyName));
   return fontFamilies;
 };

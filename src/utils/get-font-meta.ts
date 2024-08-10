@@ -1,7 +1,6 @@
 import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
 import path from "path";
-import fs from "fs-extra";
 
 export type Wght =
   | "100"
@@ -62,7 +61,6 @@ export const getFontWeight = (font: string): Wght => {
   return fontWeight;
 };
 
-// todo: handle variable fonts
 export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   let src;
   if (fonts.length > 1) {
@@ -91,8 +89,8 @@ const deSerializeKeys = (jsonString: string) => {
     return jsonString
       .split(",")
       .map((token) => {
-        const [left, right] = token.split(":");
-        return `${left?.replaceAll('"', "")}:${right}`;
+        const [key, value] = token.split(":");
+        return `${key?.replaceAll('"', "")}:${value}`;
       })
       .join(",");
   }
