@@ -12,6 +12,8 @@ import { isFileFont } from "./get-font-files";
 
 const { reachedSuccess, fonts, shouldUpdateImports } = getLofoConfig();
 
+const CURR_DIR = process.cwd();
+
 export const writeFontImports = async (
   fontsDirPath: string,
   fontFamilies: FontFamily[],
@@ -25,10 +27,10 @@ export const writeFontImports = async (
     ? fs.outputFileSync(indexFilePath, content)
     : reWriteFileSync(indexFilePath, content, "export");
   logger.info("Finished writing font exports");
-  const srcDir = path.join(process.cwd(), "/src");
+  const srcDir = path.join(CURR_DIR, "/src");
   const appDirPath = folderExists(srcDir)
     ? path.join(srcDir, "/app")
-    : path.join(process.cwd(), "/app");
+    : path.join(CURR_DIR, "/app");
 
   try {
     const [layoutFile] = readdirSync(appDirPath, { recursive: true }).filter(
@@ -111,7 +113,7 @@ const writeImportStatement = async (
   logger.info("Writing font imports to layout file...");
   // todo: detect when fonts dir path has changed and update import path accordingly
   const importPath = alias
-    ? path.resolve(process.cwd(), fontsDirPath)
+    ? path.resolve(CURR_DIR, fontsDirPath)
     : path.relative(path.parse(filePath).dir, fontsDirPath);
   const importStatement = getImportStatement(namedExport, importPath, alias);
   await writeLines(filePath, importStatement);
@@ -125,7 +127,7 @@ const getImportStatement = (
 ) => {
   const formattedImportPath = alias
     ? replaceAll(importPath, {
-        [process.cwd()]: alias,
+        [CURR_DIR]: alias,
         "*": "",
         [path.sep]: "/",
         "//": "/",

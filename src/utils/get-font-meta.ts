@@ -83,6 +83,7 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
  * @param {string} jsonString - The JSON string to be parsed.
  * @example deSerializeKeys('{"hello":"world"}') // Output: '{hello:"world"}'
  */
+//? Doesn't work on deeply nested objects(yet)??
 const deSerializeKeys = (jsonString: string) => {
   const jsonObj = JSON.parse(jsonString);
   if (typeof jsonObj !== "undefined" && typeof jsonObj !== "string") {
