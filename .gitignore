@@ -2,3 +2,5 @@ node_modules/
 dist/
 update-remotes.sh
 fonts/
+process.txt
+lofo-config.json
