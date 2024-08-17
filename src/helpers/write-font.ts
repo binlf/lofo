@@ -7,7 +7,7 @@ import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
 import { fileExists, folderExists } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
-import { writeLines, reWriteFileSync } from "../utils/write-file";
+import { writeLines, reWriteFileSync, writeLineBy } from "../utils/write-file";
 import { isFileFont } from "./get-font-files";
 
 const { reachedSuccess, fonts, shouldUpdateImports } = getLofoConfig();
@@ -116,7 +116,15 @@ const writeImportStatement = async (
     ? path.resolve(CURR_DIR, fontsDirPath)
     : path.relative(path.parse(filePath).dir, fontsDirPath);
   const importStatement = getImportStatement(namedExport, importPath, alias);
-  await writeLines(filePath, importStatement);
+  // await writeLines(filePath, importStatement);
+  await writeLineBy(
+    filePath,
+    importStatement,
+    (prevLine, currentLine, nextLine) => {
+      if (prevLine) return true;
+      return false;
+    }
+  );
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE

@@ -41,6 +41,7 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
   Variable: null,
 };
 
+// todo: revise impl.
 export const getFontWeight = (font: string): Wght => {
   const fontAnnotationString = font
     .trim()

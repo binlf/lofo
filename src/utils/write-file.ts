@@ -4,6 +4,7 @@ import {
   readFileSync,
   writeFileSync,
 } from "fs-extra";
+import { once } from "events";
 import readline from "readline";
 
 // todo: make function more generic
@@ -42,20 +43,37 @@ export const writeLines = async (filePath: string, content: string) => {
   fileReadStream.close();
 };
 
-/**
- * Sets the mode for re-writing the file.
- *
- * `i+` - Sets re-write behavior to overwrite content of file `at` a determined chunk. If chunk doesn't exist,
- * it appends that chunk to end of file.
- *
- * `m` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
- *
- * `m+` - Sets re-write behavior to overwrite content of file `at` chunks that are determined to be isomorphic to the incoming chunks.
- * If no chunks are determined to be isomorphic, overwite the last "existing" chunk with incoming chunks.
- *
- * `p` - Sets re-write behavior to always overwrite content of file `at` the last "existing" chunk.
- */
-type Flags = "i+" | "m" | "m+" | "p";
+export const writeLineBy = async (
+  path: string,
+  content: string,
+  predicate: (
+    prevLine: string,
+    currentLine: string,
+    nextLine: string
+  ) => boolean
+) => {
+  const fileReadStream = createReadStream(path);
+  const fileWriteStream = createWriteStream(path, { flags: "r+" });
+  const rl = readline.createInterface({
+    input: fileReadStream,
+    crlfDelay: Infinity,
+  });
+
+  let previousLine: string,
+    nextLine: string,
+    lineIndex = 0;
+  rl.on("line", (line) => {
+    if (predicate(previousLine, line, nextLine)) {
+      fileWriteStream.write(content);
+    } else fileWriteStream.write(line);
+    lineIndex++;
+  });
+
+  await once(rl, "close");
+  fileWriteStream.end();
+};
+
+type Flag = "i" | "p" | "i+";
 
 /**
  * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
@@ -63,8 +81,9 @@ type Flags = "i+" | "m" | "m+" | "p";
  * @param {string} path - The path to the file to be rewritten.
  * @param {string} content - The new content to write into the file.
  * @param {string} separator - The pattern describing how to split file content and new `content` into chunks. Default is LF("\n").
- * @param {Flags} flag - Optional flag that modifies the behavior of the re-write operation. Default is "i+".
- *
+ * @param {Flag} [flag] - A flag that sets the mode of re-write operation.
+ * - `"p"`: Sets re-write behavior to always overwrite content of file `at` the last "existing" chunk.
+ * - `"i"`: Sets re-write behavior to overwrite content of file `at` a determined chunk.
  * @returns {undefined} Returns `undefined`
  * @example
  * reWriteFileSync('/path/to/file.txt', 'New content', ", ");
@@ -72,8 +91,7 @@ type Flags = "i+" | "m" | "m+" | "p";
 export const reWriteFileSync = (
   path: string,
   content: string,
-  separator: string = "\n",
-  flag: Flags = "i+"
+  separator: string = "\n"
 ): undefined => {
   const fileContent = readFileSync(path, { encoding: "utf8" });
   const fileContentChunks = getChunks(fileContent, separator, true);
