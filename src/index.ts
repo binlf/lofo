@@ -41,6 +41,8 @@ const main = async () => {
 };
 
 main().catch((err) => {
-  logger.error("Something went wrong...");
+  logger.error(
+    "Something broke...Feel free to create an issue here: https://github.com/binlf/lofo/issues/new"
+  );
   console.error(err);
 });
