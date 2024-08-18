@@ -44,7 +44,7 @@ my-project/
 
 ### Fonts Directory Destination
 
-The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument or manually moving the `fonts` directory through your project directory tree. If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path...
+The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path...
 
 Using a command line argument with the `lofo` command:
 | Command | Description | Example |
