@@ -21,9 +21,9 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one(_if it doesn't exist_) in the root directory of your project.
 
 > [!NOTE]
-> _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move]() it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
+> _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move](https://github.com/binlf/lofo?tab=readme-ov-file#fonts-directory-destination) it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
 
-In the latter scenario, after the creation of the `fonts` directory, if there are no font files in your `fonts` directory already, it would prompt you to move your local font files[_these files typically have extensions such as `.otf`, `.ttf`, `.woff`, `.woff2` etc._] into the `fonts` directory.
+In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these files typically have extensions such as `.otf`, `.ttf`, `.woff`, `.woff2` etc._] into the `fonts` directory.
 
 It would then resolve the paths to all the font files in your `fonts` directory and then generate the code snippet to add the font imports into your Next.js project. _This would typically be written to your root `layout.tsx` file._
 
@@ -44,19 +44,25 @@ my-project/
 
 ### Fonts Directory Destination
 
-The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument or manually moving the `fonts` directory through your project directory tree, if you prefer the latter, remember to run `lofo` afterwards to auto update your import path...
+The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument or manually moving the `fonts` directory through your project directory tree. If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path...
+
+Using a command line argument with the `lofo` command:
+| Command | Description | Example |
+| --- | --- | --- |
+| `lofo --dest <path>` or `lofo -d <path>` | Run this command on your **initial** attempt[i.e when running running `lofo` for the first time] to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest /public/assets` |
+| `lofo --move <path>` or `lofo -m <path>` | Run this command to move the `fonts` directory across your project directory to the specified `<path>`. The value of `<path>` is resolved relative to your root directory. | `lofo -m /app/assets` |
 
 ### Quirks
 
-These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed.
+_These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed._
 
 #### Q(uirk): I have to manually delete a font's entry in the `lofo-config.json` file after I remove/delete a local font.
 
-This is an issue! Rest assured that a fix is on the way and would be released soon enough as QL(Quality of Life) improvement.
+This is an [issue](https://github.com/binlf/lofo/issues/26)! Rest assured that a fix is on the way and would be released soon enough as a QoL(Quality of Life) improvement.
 
 #### Q(uirk): Nothing happens when I add a folder containing my font files to the `fonts` directory.
 
-We are aware of this issue and are currently implementing this as a quality of life improvement, to be released in the next **minor** release.
+This is currently being implemented, to be released in the next **minor** release.
 
 ### Roadmap
 
