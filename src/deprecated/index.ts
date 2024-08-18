@@ -1,6 +1,12 @@
 import path from "path";
 import { folderExists } from "../utils/exists";
-import { readFileSync, writeFileSync } from "fs-extra";
+import {
+  createReadStream,
+  createWriteStream,
+  readFileSync,
+  writeFileSync,
+} from "fs-extra";
+import readline from "readline";
 
 // ** GET FILE SYSTEM ITEM
 
@@ -111,4 +117,40 @@ export const reWriteFileSyncDep = (
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;
+};
+
+// todo: make function more generic
+/**
+ * Writes to a file using the `node:readline` module
+ * @param {string} filePath - Path to file.
+ * @param {string} content - The content to be written to the file.
+ * @returns {Promise<void>} Returns a promise that resolves with `void`
+ */
+export const writeLines = async (filePath: string, content: string) => {
+  const fileReadStream = createReadStream(filePath);
+  const fileWriteStream = createWriteStream(filePath, { flags: "r+" });
+  const rl = readline.createInterface({
+    input: fileReadStream,
+    crlfDelay: Infinity,
+  });
+
+  let lineNumber = 1;
+  let prevLineContent;
+  for await (const line of rl) {
+    // warn: this would break if \n appears between two import statement lines
+    // todo: condition - previous line could be a comment
+    if (lineNumber > 1 && !line.trim() && prevLineContent?.includes("import")) {
+      fileWriteStream.write(content);
+    } else {
+      fileWriteStream.write(`${line}\n`);
+    }
+    prevLineContent = line;
+    lineNumber++;
+  }
+
+  fileWriteStream.end();
+  await new Promise((resolve, reject) =>
+    fileWriteStream.on("finish", resolve).on("error", reject)
+  );
+  fileReadStream.close();
 };
