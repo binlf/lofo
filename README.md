@@ -73,4 +73,4 @@ This is currently being implemented, to be released in the next **minor** releas
 - [ ] Add support for monorepo projects
 
 > [!WARNING]
-> _This project, at this time, makes quite a few assumptions about your project and conventions. Proceed with caution!_
+> _This project, at this time, is in active development and makes quite a few assumptions about your project and conventions. Proceed with caution!_
