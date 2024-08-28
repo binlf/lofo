@@ -7,6 +7,18 @@ import {
 import { once } from "events";
 import readline from "readline";
 
+/**
+ * Write a line to a file based on the result of `predicate`.
+ *
+ * @param {string} path - The path to the file.
+ * @param {string} content - The content to write to file.
+ * @param {(prevLine: string, currentLine: string, nextLine: string) => boolean} predicate - Evaluates to a boolean value which results
+ * in `content` being written or not.
+ * @returns {Promise<void>} Returns a promise that resolves with `void`.
+ * @example
+ * await writeLineBy('/path/to/file.txt', 'New content', (_, currentLine) => typeof(currentLine) === "string"); // Writes to every line in file.
+ */
+
 export const writeLineBy = async (
   path: string,
   content: string,
@@ -74,6 +86,7 @@ export const reWriteFileSync = (
       return [...acc, tokens];
     }, []);
     union = Array.from(
+      // remove empty strings
       new Set(tokensArray.flat().filter((token) => Boolean(token)))
     );
     let sampleTokens = tokensArray[0] as string[];
@@ -95,7 +108,7 @@ export const reWriteFileSync = (
     return Number(simIndex.toFixed(1));
   }
 
-  const getUpdatedChunks = () => {
+  function getUpdatedChunks() {
     const foundChunkIndexes: number[] = [];
     const updatedContentChunks = fileContentChunks.map((oldChunk) => {
       let updatedChunk = "";
@@ -125,7 +138,7 @@ export const reWriteFileSync = (
       );
     }
     return updatedContentChunks;
-  };
+  }
 
   const updatedContent = Array.from(new Set(getUpdatedChunks())).join(" ");
   writeFileSync(path, updatedContent, "utf8");

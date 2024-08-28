@@ -1,5 +1,5 @@
-import { FONTS_DIR_NAME, FONT_FILE_EXTENSIONS } from "../constants";
-import { fileExists, folderExists } from "../utils/exists";
+import { FONTS_DIR_NAME } from "../constants";
+import { folderExists, isFileFont } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { logger } from "../utils/logger";
 import fsPromises from "fs/promises";
@@ -8,22 +8,23 @@ import { getFontFileNames } from "../utils/get-file-names";
 
 /**
  * Returns an array of font file paths in a given directory.
- * @param {string} fontsDirPath - Directory path for font files.
+ * @param {string} fontsDirPath - Path to directory containing font files.
  * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file paths.
  */
 export const getFontFiles = async (fontsDirPath: string) => {
-  const { fonts } = getLofoConfig();
+  const { fonts, shouldUpdateImports } = getLofoConfig();
   logger.info("Getting your local font files...");
   const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
   if (!filesInFontsDir.length) {
     logger.warning(
       `Couldn't find any files, add your font files to your ${FONTS_DIR_NAME} directory and try again...`
     );
+
     return process.exit(0);
   }
 
   const oldFonts: string[] = [];
-  const newFontFiles: string[] = filesInFontsDir.reduce<string[]>(
+  const newFontFilePaths: string[] = filesInFontsDir.reduce<string[]>(
     (acc, file) => {
       if (isFileFont(file)) {
         const [fontName] = getFontFileNames([file]);
@@ -34,26 +35,23 @@ export const getFontFiles = async (fontsDirPath: string) => {
     },
     []
   );
-  const oldFontFiles = await oldFonts.reduce<Promise<string[]>>(
+  const oldFontFilePaths = await oldFonts.reduce<Promise<string[]>>(
     async (accPromise, font) => {
       const acc = await accPromise;
       const oldFontsDirPath = path.join(fontsDirPath, font);
       if (folderExists(oldFontsDirPath)) {
-        const files = await fsPromises.readdir(oldFontsDirPath);
-        if (files.length)
-          return [
-            ...acc,
-            ...files
-              .filter((file) => isFileFont(file))
-              .map((f) => oldFontsDirPath + path.sep + f),
-          ];
+        const filesInDir = await fsPromises.readdir(oldFontsDirPath);
+        const fontFilePaths = filesInDir
+          .filter((file) => isFileFont(file))
+          .map((f) => oldFontsDirPath + path.sep + f);
+        if (filesInDir.length) return [...acc, ...fontFilePaths];
       }
       return acc;
     },
     Promise.resolve([])
   );
-  const fontFiles = [...newFontFiles, ...oldFontFiles];
-  if (!newFontFiles.length) {
+  const fontFilePaths = [...newFontFilePaths, ...oldFontFilePaths];
+  if (!newFontFilePaths.length) {
     logger.warning(
       `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
     );
@@ -62,13 +60,8 @@ export const getFontFiles = async (fontsDirPath: string) => {
   logger.info("Found font files...");
   console.log(
     "Font Files: ",
-    newFontFiles.map((ff) => path.basename(ff))
+    newFontFilePaths.map((fontFilePath) => path.basename(fontFilePath))
   );
 
-  return fontFiles;
-};
-
-export const isFileFont = (file: string) => {
-  const fileExt = file.split(".").pop()?.toLowerCase();
-  return FONT_FILE_EXTENSIONS.some((ext) => ext === fileExt);
+  return fontFilePaths;
 };

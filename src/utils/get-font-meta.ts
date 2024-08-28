@@ -1,6 +1,7 @@
 import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
 import path from "path";
+import { dsr } from "dsr-kv";
 
 export type Wght =
   | "100"
@@ -26,7 +27,7 @@ type WghtAnnotation =
   | "Black"
   | "Variable";
 
-type Styles = "normal" | "italic" | "oblique";
+type Styles = "normal" | "italic" | "oblique" | "Condensed";
 
 const wghtsMap: Record<WghtAnnotation, Wght> = {
   Thin: "100",
@@ -43,7 +44,8 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
 
 // todo: revise impl.
 export const getFontWeight = (font: string): Wght => {
-  const fontAnnotationString = font
+  // get part of file name containing font weight: `Inter-Bold.otf -> Bold`
+  const fontWeightAnnot = font
     .trim()
     .split(getFontFileNames([font])[0] as string)[1]
     ?.split(".")[0]
@@ -52,8 +54,8 @@ export const getFontWeight = (font: string): Wght => {
   let fontWeight: Wght = "400";
   for (const [wghtAnnot, wght] of Object.entries(wghtsMap)) {
     if (
-      fontAnnotationString?.includes(wghtAnnot.toLowerCase()) &&
-      fontAnnotationString.length === wghtAnnot.length
+      fontWeightAnnot?.includes(wghtAnnot.toLowerCase()) &&
+      fontWeightAnnot.length === wghtAnnot.length
     ) {
       fontWeight = wght;
       break;
@@ -76,27 +78,7 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
     src = path
       .relative(fontsDirPath, fonts[0]?.path as string)
       .replaceAll(path.sep, "/");
-  return deSerializeKeys(JSON.stringify(src));
-};
-
-/**
- * De-Serialize object keys in a JSON string.
- * @param {string} jsonString - The JSON string to be parsed.
- * @example deSerializeKeys('{"hello":"world"}') // Output: '{hello:"world"}'
- */
-//? Doesn't work on deeply nested objects(yet)??
-const deSerializeKeys = (jsonString: string) => {
-  const jsonObj = JSON.parse(jsonString);
-  if (typeof jsonObj !== "undefined" && typeof jsonObj !== "string") {
-    return jsonString
-      .split(",")
-      .map((token) => {
-        const [key, value] = token.split(":");
-        return `${key?.replaceAll('"', "")}:${value}`;
-      })
-      .join(",");
-  }
-  return jsonString;
+  return dsr(JSON.stringify(src));
 };
 
 export const getFontStyle = () => {};

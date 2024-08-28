@@ -13,16 +13,11 @@ import { getFontsDir } from "./helpers/get-fonts-dir";
 
 //? entry point
 const main = async () => {
-  const {
-    projectName: PROJECT_NAME,
-    importAlias,
-    isTwProject,
-  } = getProjectConfig();
+  const { projectName: PROJECT_NAME, isTwProject } = getProjectConfig();
   const { didPathChange, signalSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
   if (isTwProject) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
-  // get fonts directory
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
     logger.warning(
@@ -31,12 +26,15 @@ const main = async () => {
     return createFontsDir();
   }
   logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
-  if (didPathChange(fontsDirPath))
+  if (didPathChange(fontsDirPath)) {
     logger.info("Change to fonts directory path detected. Updating imports...");
+    await writeFontImports(fontsDirPath, []);
+    return logger.success("Font imports updated...");
+  }
 
   const fontFiles = await getFontFiles(fontsDirPath);
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
-  await writeFontImports(fontsDirPath, fontFamilies, importAlias);
+  await writeFontImports(fontsDirPath, fontFamilies);
   signalSuccess();
 };
 

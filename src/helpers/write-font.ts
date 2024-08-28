@@ -1,72 +1,39 @@
 import path from "path";
-import fs, { readdirSync } from "fs-extra";
+import fs from "fs-extra";
 import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc } from "../utils/get-font-meta";
 import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
-import { fileExists, folderExists } from "../utils/exists";
-import { getLofoConfig } from "../utils/get-config";
+import { folderExists, isFileFont } from "../utils/exists";
+import { getLofoConfig, getProjectConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
-import { isFileFont } from "./get-font-files";
 
-const { reachedSuccess, fonts, shouldUpdateImports } = getLofoConfig();
+// todo: investigate stale closures -- shouldUpdateImports
+const { reachedSuccess, fonts } = getLofoConfig();
+const { importAlias, getLayoutFile } = getProjectConfig();
 
 const CURR_DIR = process.cwd();
 
 export const writeFontImports = async (
   fontsDirPath: string,
-  fontFamilies: FontFamily[],
-  importAlias?: string
+  fontFamilies: FontFamily[]
 ) => {
+  const { shouldUpdateImports } = getLofoConfig();
   if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
-  logger.info("Writing font exports...");
   const indexFilePath = path.join(fontsDirPath, "index.ts");
-  const [content] = generateFileContent(fontFamilies, fontsDirPath);
-  !reachedSuccess
-    ? fs.outputFileSync(indexFilePath, content)
-    : reWriteFileSync(indexFilePath, content, "export");
-  logger.info("Finished writing font exports");
-  const srcDir = path.join(CURR_DIR, "/src");
-  const appDirPath = folderExists(srcDir)
-    ? path.join(srcDir, "/app")
-    : path.join(CURR_DIR, "/app");
+  if (fontFamilies.length) {
+    logger.info("Writing font exports...");
+    const [content] = generateFileContent(fontFamilies, fontsDirPath);
+    !reachedSuccess
+      ? fs.outputFileSync(indexFilePath, content)
+      : reWriteFileSync(indexFilePath, content, "export");
+    logger.info("Finished writing font exports");
+  }
 
-  try {
-    const [layoutFile] = readdirSync(appDirPath, { recursive: true }).filter(
-      (item) =>
-        fileExists(path.join(appDirPath, item as string)) &&
-        item.includes("layout")
-    ) as string[];
-    if (!layoutFile) {
-      logger.error(
-        "Couldn't find your root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
-      );
-      return process.exit(1);
-    }
-    const layoutFilePath = path.join(appDirPath, layoutFile);
-    const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
-      const folderPath = path.join(fontsDirPath, fsItem);
-      return (
-        folderExists(folderPath) &&
-        fs.readdirSync(folderPath).every((file) => isFileFont(file))
-      );
-    })[0];
-    if (!Boolean(reachedSuccess) || shouldUpdateImports) {
-      await writeImportStatement(
-        layoutFilePath,
-        fontsDirPath,
-        namedExport!,
-        importAlias
-      )
-        .then(() => logger.info("Finished writing font imports..."))
-        .catch((err) => logger.error(err));
-    }
-  } catch (error: any) {
-    if (error.code === "ENOENT")
-      logger.error("Couldn't find your app directory...");
-    console.error(error);
-    process.exit(1);
+  if (!reachedSuccess || shouldUpdateImports) {
+    await writeImportStatement(fontsDirPath);
+    logger.info("Finished writing font imports...");
   }
 };
 
@@ -104,22 +71,41 @@ const generateFileContent = (
 };
 
 // WRITE IMPORT STATEMENT TO LAYOUT FILE
-const writeImportStatement = async (
-  filePath: string,
-  fontsDirPath: string,
-  namedExport: string,
-  alias?: string
-) => {
+const writeImportStatement = async (fontsDirPath: string) => {
+  const { shouldUpdateImports } = getLofoConfig();
+  const layoutFilePath = getLayoutFile() as string;
   logger.info("Writing font imports to layout file...");
-  // todo: detect when fonts dir path has changed and update import path accordingly
-  const importPath = alias
+
+  // get named export
+  const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
+    const folderPath = path.join(fontsDirPath, fsItem);
+    return (
+      folderExists(folderPath) &&
+      fs.readdirSync(folderPath).every((file) => isFileFont(file))
+    );
+  })[0];
+
+  const importPath = importAlias
     ? path.resolve(CURR_DIR, fontsDirPath)
-    : path.relative(path.parse(filePath).dir, fontsDirPath);
-  const importStatement = getImportStatement(namedExport, importPath, alias);
-  await writeLineBy(filePath, importStatement, (prevLine, currentLine) => {
-    if (!currentLine.trim() && prevLine.includes("import")) return true;
-    return false;
-  });
+    : path.relative(path.parse(layoutFilePath).dir, fontsDirPath);
+  const importStatement = getImportStatement(
+    namedExport!,
+    importPath,
+    importAlias
+  );
+  await writeLineBy(
+    layoutFilePath,
+    importStatement,
+    (prevLine, currentLine) => {
+      if (shouldUpdateImports) {
+        if (currentLine.includes("fonts") && !currentLine.startsWith("//"))
+          return true;
+        return false;
+      }
+      if (!currentLine.trim() && prevLine.includes("import")) return true;
+      return false;
+    }
+  );
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
