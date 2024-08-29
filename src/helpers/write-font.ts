@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
-import { getFontSrc } from "../utils/get-font-meta";
+import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
 import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
 import { folderExists, isFileFont } from "../utils/exists";
 import { getLofoConfig, getProjectConfig } from "../utils/get-config";
@@ -51,6 +51,7 @@ const generateFileContent = (
       `
     export const ${family.familyName} = localfont({
       \tsrc: ${getFontSrc(family.fonts, fontsDirPath)},
+      \tvariable: "${getFontVarName(family.familyName)}",
       \tdisplay: "swap",
     })
     `.trim() + "\n"

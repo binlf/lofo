@@ -45,9 +45,10 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
 // todo: revise impl.
 export const getFontWeight = (font: string): Wght => {
   // get part of file name containing font weight: `Inter-Bold.otf -> Bold`
+  const [fileName] = getFontFileNames([font]);
   const fontWeightAnnot = font
     .trim()
-    .split(getFontFileNames([font])[0] as string)[1]
+    .split(fileName as string)[1]
     ?.split(".")[0]
     ?.split("-")[1]
     ?.toLowerCase();
@@ -81,5 +82,16 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   return dsr(JSON.stringify(src));
 };
 
-export const getFontStyle = () => {};
-export const getFontVarName = () => {};
+export const getFontVarName = (fontFamilyName: string) => {
+  // --font-{font-name}-{font-property}
+  const prefix = `--font-`;
+  const families = ["mono", "sans", "serif"];
+  const name = fontFamilyName.toLowerCase();
+
+  for (const family of families) {
+    if (name.includes(family)) {
+      return prefix + name.split(family).join("-") + family;
+    }
+  }
+  return prefix + name;
+};
