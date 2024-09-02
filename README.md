@@ -53,13 +53,13 @@ Using a command line argument with the `lofo` command[_Ignore the angle brackets
 
 ### Quirks
 
-_These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed._
+> These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed.
 
-#### Q(uirk): I have to manually delete a font's entry in the `lofo-config.json` file after I remove/delete a local font.
+#### _Quirk: Font entry has to be manually deleted in `lofo-config.json` file after a local font is removed/deleted._
 
-This is an [issue](https://github.com/binlf/lofo/issues/26)! Rest assured that a fix is on the way and would be released soon enough as a QoL(Quality of Life) improvement.
+This is an [issue](https://github.com/binlf/lofo/issues/26)! Rest assured, a fix is in the works and would be released soon enough as an enhancement.
 
-#### Q(uirk): Nothing happens when I add a folder containing my font files to the `fonts` directory.
+#### _Quirk: Nothing happens when I add a folder containing my font files to the `fonts` directory._
 
 This is currently being implemented, to be released in the next **minor** release.
 
