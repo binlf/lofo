@@ -23,7 +23,7 @@ export const getProjectConfig = () => {
 };
 
 // GET ROOT LAYOUT FILE PATH
-const getLayoutFile = () => {
+export const getLayoutFile = () => {
   const CURR_DIR = process.cwd();
   try {
     const srcDir = path.join(CURR_DIR, "/src");

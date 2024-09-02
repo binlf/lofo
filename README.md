@@ -50,7 +50,6 @@ Using a command line argument with the `lofo` command[_Ignore the angle brackets
 | Command | Description | Example |
 | --- | --- | --- |
 | `lofo --dest <path>` or `lofo -d <path>` | Run this command on your **initial** attempt[i.e when running running `lofo` for the first time] to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest /public/assets` |
-| `lofo --move <path>` or `lofo -m <path>` | Run this command to move the `fonts` directory across your project directory to the specified `<path>`. The value of `<path>` is resolved relative to your root directory. | `lofo -m /app/assets` |
 
 ### Quirks
 

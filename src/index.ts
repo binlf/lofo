@@ -1,42 +1,36 @@
 #!/usr/bin/env node
 
 import { logger } from "./utils/logger";
-import { FONTS_DIR_NAME } from "./constants";
-import { createFontsDir } from "./helpers/create-fonts-dir";
-import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
-import { getFontFiles } from "./helpers/get-font-files";
-import { writeFontImports } from "./helpers/write-font";
-import { getLofoConfig, getProjectConfig } from "./utils/get-config";
-import { getFontsDir } from "./helpers/get-fonts-dir";
+import { Command } from "commander";
+import { getPackageInfo } from "./utils/get-package-info";
+import { dest } from "./commands/dest";
+import { runLofo } from "./runLofo";
 
-// const program = new Command();
+const program = new Command();
 
 //? entry point
-const main = async () => {
-  const { projectName: PROJECT_NAME, isTwProject } = getProjectConfig();
-  const { didPathChange, signalSuccess } = getLofoConfig();
-  logger.info(`lofo is running in ${PROJECT_NAME}`);
-  if (isTwProject) logger.info("Tailwind Config detected...");
-  logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
-  const fontsDirPath = getFontsDir();
-  if (!fontsDirPath) {
-    logger.warning(
-      `A ${FONTS_DIR_NAME} directory was not found in your project...`
-    );
-    return createFontsDir();
-  }
-  logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
-  if (didPathChange(fontsDirPath)) {
-    logger.info("Change to fonts directory path detected. Updating imports...");
-    await writeFontImports(fontsDirPath, []);
-    return logger.success("Font imports updated...");
-  }
+async function main() {
+  const { version } = getPackageInfo();
+  program
+    .name("lofo")
+    .description("CLI tool for adding local fonts to your Next.js project!")
+    .version(version || "0.1.0", "-v, --version", "Display current version")
+    .option(
+      "-d, --dest, --destination",
+      "Specify the destination of the fonts directory",
+      "."
+    )
+    .action((cmdObj) => {
+      const options = cmdObj.opts();
+      if (options.dest) console.log(options.dest);
+      // runLofo();
+      console.log("Heyyy");
+    });
 
-  const fontFiles = await getFontFiles(fontsDirPath);
-  const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
-  await writeFontImports(fontsDirPath, fontFamilies);
-  signalSuccess();
-};
+  // program.addCommand(dest);
+  program.parse();
+  // runLofo();
+}
 
 main().catch((err) => {
   logger.error(
