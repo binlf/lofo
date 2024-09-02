@@ -8,10 +8,11 @@ import { folderExists, isFileFont } from "../utils/exists";
 import { getLofoConfig, getProjectConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
+import { getLayoutFile } from "../utils/get-project-info";
 
 // todo: investigate stale closures -- shouldUpdateImports
 const { reachedSuccess, fonts } = getLofoConfig();
-const { importAlias, getLayoutFile } = getProjectConfig();
+const { importAlias } = getProjectConfig();
 
 const CURR_DIR = process.cwd();
 

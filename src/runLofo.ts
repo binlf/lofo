@@ -12,7 +12,7 @@ export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME } = getProjectConfig();
   const { didPathChange, signalSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
-  if (isTwProject()) logger.info("Tailwind Config detected...");
+  //   if (isTwProject()) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   const fontsDirPath = getFontsDir();
   if (!fontsDirPath) {
