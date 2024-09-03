@@ -12,5 +12,5 @@
     "moduleResolution": "node16"
   },
   "include": ["src"],
-  "exclude": ["public", "src/app", "fonts", "src/deprecated"]
+  "exclude": ["public", "src/app", "public/fonts", "src/deprecated"]
 }

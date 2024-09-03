@@ -52,6 +52,10 @@ export const getLayoutFile = () => {
     const appDirPath = folderExists(srcDir)
       ? path.join(srcDir, "/app")
       : path.join(CURR_DIR, "/app");
+    if (!appDirPath)
+      throw new Error(
+        "App directory is missing. Make sure your project is using Next.js app router"
+      );
     const [layoutFile] = fs
       .readdirSync(appDirPath, { recursive: true })
       .filter(
@@ -60,12 +64,13 @@ export const getLayoutFile = () => {
           item.includes("layout")
       ) as string[];
     // todo: revise impl.
-    if (!layoutFile) throw new Error();
+    if (!layoutFile)
+      throw new Error(
+        "Root layout file is missing. Make sure you're using Next.js version 13 or later and using the app router."
+      );
     return path.join(appDirPath, layoutFile);
   } catch (error) {
-    logger.error(
-      "Could not find root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
-    );
+    logger.error(error as string);
     process.exit(1);
   }
 };

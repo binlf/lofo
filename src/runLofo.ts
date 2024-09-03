@@ -1,3 +1,4 @@
+import { move } from "fs-extra";
 import { FONTS_DIR_NAME } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontFiles } from "./helpers/get-font-files";
@@ -7,11 +8,14 @@ import { writeFontImports } from "./helpers/write-font";
 import { getLofoConfig } from "./utils/get-config";
 import { getProjectConfig, isTwProject } from "./utils/get-project-info";
 import { logger } from "./utils/logger";
+import { resolveDestPath } from "./utils/resolve-dest";
+import path from "path";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME } = getProjectConfig();
   const { didPathChange, signalSuccess } = getLofoConfig();
   logger.info(`lofo is running in ${PROJECT_NAME}`);
+  dest && resolveDestPath(dest);
   //   if (isTwProject()) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   const fontsDirPath = getFontsDir();
@@ -30,5 +34,14 @@ export const runLofo = async (dest?: string) => {
   const fontFiles = await getFontFiles(fontsDirPath);
   const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies);
+
+  // todo: implement recovery incase operation fails at this point
+  dest &&
+    (await move(
+      fontsDirPath,
+      path.resolve(process.cwd(), dest, FONTS_DIR_NAME),
+      { overwrite: true }
+    ));
+
   signalSuccess();
 };
