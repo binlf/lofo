@@ -2,11 +2,15 @@
 
 CLI for adding local fonts to your Next.js projects!
 
+### 🛑Prerequisites.
+
+- Node.js version >= **20.11.1**
+
 ```
  npx lofo
 ```
 
-## Installation
+## ⬜Installation
 
 To get started, run the above command in the root of your project directory and `lofo` would try to get everything set up properly for you automatically. You can also install the CLI on your machine by running the command below:
 
@@ -16,7 +20,7 @@ npm install lofo
 
 After which you can execute the CLI by just running the command: `lofo` in your terminal...
 
-### How it works.
+### 🔍How it works.
 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one(_if it doesn't exist_) in the root directory of your project.
 
@@ -27,7 +31,7 @@ In the latter scenario, after the creation of the `fonts` directory, it would pr
 
 It would then resolve the paths to all the font files in your `fonts` directory and then generate the code snippet to add the font imports into your Next.js project. _This would typically be written to your root `layout.tsx` file._
 
-### Project Structure
+### 📂Project Structure
 
 _This is an example project structure to begin with before running the cli -- not cumpulsory_
 
@@ -42,17 +46,16 @@ my-project/
 └── ...
 ```
 
-### Fonts Directory Destination
+### 📍Fonts Directory Destination
 
-The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path...
+The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument[_yet to be implemented_] or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path[this is a compulsory step]...
 
 Using a command line argument with the `lofo` command[_Ignore the angle brackets_]:
 | Command | Description | Example |
 | --- | --- | --- |
-| `lofo --dest <path>` or `lofo -d <path>` | Run this command on your **initial** attempt[i.e when running running `lofo` for the first time] to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest /public/assets` |
-| `lofo --move <path>` or `lofo -m <path>` | Run this command to move the `fonts` directory across your project directory to the specified `<path>`. The value of `<path>` is resolved relative to your root directory. | `lofo -m /app/assets` |
+| `lofo --dest <path>` or `lofo -d <path>` | Run this command on your **initial** attempt[i.e when running running `lofo` for the first time] to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
 
-### Quirks
+### 👀Quirks
 
 > These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed.
 
@@ -62,15 +65,14 @@ This is an [issue](https://github.com/binlf/lofo/issues/26)! Rest assured, a fix
 
 #### _Quirk: Nothing happens when I add a folder containing my font files to the `fonts` directory._
 
-This is currently being implemented, to be released in the next **minor** release.
+This is admittedly an annoying [issue](https://github.com/binlf/lofo/issues/32) and we're currently looking into it. This issue should be fixed and released in the next **minor** release.
 
-### Roadmap
+### 🗾Roadmap
 
-- [ ] Add support for projects using TailwindCSS
-- [ ] Add support for projects still on pages router
+- [ ] Add support for Next.js projects using TailwindCSS
+- [ ] Add support for Next.js projects using the pages router
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
-- [ ] Add support for monorepo projects
 
 > [!WARNING]
-> _This project, at this time, is in active development and makes quite a few assumptions about your project and conventions. Proceed with caution!_
+> _This project, at this time, is in active development and makes quite a few assumptions about your project and conventions. Feel free to open an [issue](https://github.com/binlf/lofo/issues/new) if you catch something🧐!_

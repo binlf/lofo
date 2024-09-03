@@ -1,9 +1,8 @@
 import fs from "fs-extra";
-import { fileExists, folderExists } from "./exists";
+import { fileExists } from "./exists";
 import { LOFO_CONFIG, NEXT_LOCAL_FONTS_DOCS } from "../constants";
-import { type PackageJson as PkgJson, type TsConfigJson } from "type-fest";
+import { type PackageJson as PkgJson } from "type-fest";
 import { logger } from "./logger";
-import path from "path";
 
 type LofoConfig = {
   fontsDirPath: string;
@@ -15,62 +14,6 @@ let FONTS_DIR_PATH = "";
 let fontNames: string[] = [];
 let shouldUpdateImports = false;
 
-export const getProjectConfig = () => {
-  const packageJSON: PkgJson = fs.readJSONSync("./package.json");
-  const projectName = packageJSON.name;
-  const { alias: importAlias, isTwProject } = getProjectMeta();
-  return { projectName, importAlias, isTwProject, getLayoutFile };
-};
-
-// GET ROOT LAYOUT FILE PATH
-const getLayoutFile = () => {
-  const CURR_DIR = process.cwd();
-  try {
-    const srcDir = path.join(CURR_DIR, "/src");
-    const appDirPath = folderExists(srcDir)
-      ? path.join(srcDir, "/app")
-      : path.join(CURR_DIR, "/app");
-    const [layoutFile] = fs
-      .readdirSync(appDirPath, { recursive: true })
-      .filter(
-        (item) =>
-          fileExists(path.join(appDirPath, item as string)) &&
-          item.includes("layout")
-      ) as string[];
-    // todo: revise impl.
-    if (!layoutFile) throw new Error();
-    return path.join(appDirPath, layoutFile);
-  } catch (error) {
-    logger.error(
-      "Could not find root layout file...Make sure you're on Next.js version 13 or later and also using the app router!"
-    );
-    process.exit(1);
-  }
-};
-
-// GET PROJECT META INFORMATION
-const getProjectMeta = () => {
-  const isTwProject = fileExists("./tailwind.config.ts");
-  try {
-    const tsConfigFile = fs.readJSONSync("./tsconfig.json") as TsConfigJson;
-    const paths = tsConfigFile.compilerOptions?.paths;
-    const alias =
-      paths &&
-      Object.entries(paths).reduce((acc, [alias, paths]) => {
-        if (!acc && paths.filter((path) => path.indexOf("./") === 0).length > 0)
-          return alias;
-        return acc;
-      }, "");
-    return { alias, isTwProject };
-  } catch (error) {
-    if (error instanceof Error)
-      if ("code" in error && error.code === "ENOENT")
-        logger.error("Couldn't find your tsconfig file...");
-    console.error(error);
-    return { isTwProject };
-  }
-};
-
 export const getLofoConfig = () => {
   const lofoConfigPath = `./${LOFO_CONFIG}`;
   const lofoConfig =
@@ -78,7 +21,7 @@ export const getLofoConfig = () => {
     (fs.readJSONSync(lofoConfigPath) as LofoConfig);
 
   const didPathChange = (fontsDirPath: string) => {
-    FONTS_DIR_PATH = fontsDirPath;
+    FONTS_DIR_PATH ||= fontsDirPath;
     try {
       if (lofoConfig && fontsDirPath) {
         const { fontsDirPath: _fontsDirPath, reachedSuccess } = lofoConfig;
@@ -97,12 +40,13 @@ export const getLofoConfig = () => {
     } catch (error) {
       if (error instanceof Error)
         if ("code" in error && error.code === "ENOENT")
-          logger.error("Could not find a lofo-config.json file...");
+          logger.error("lofo-config.json file is missing...");
       return console.error(error);
     }
   };
 
   const setFontNames = (names: string[]) => (fontNames = names);
+  const setDestinationPath = (destPath: string) => (FONTS_DIR_PATH = destPath);
 
   const signalSuccess = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
@@ -144,5 +88,7 @@ export const getLofoConfig = () => {
     reachedSuccess: Boolean(lofoConfig?.reachedSuccess),
     fonts: lofoConfig?.fonts,
     setFontNames,
+    setDestinationPath,
+    destPath: FONTS_DIR_PATH,
   };
 };

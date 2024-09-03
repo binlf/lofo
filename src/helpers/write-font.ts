@@ -5,13 +5,14 @@ import { logger } from "../utils/logger";
 import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
 import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
 import { folderExists, isFileFont } from "../utils/exists";
-import { getLofoConfig, getProjectConfig } from "../utils/get-config";
+import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
+import { getLayoutFile, getProjectConfig } from "../utils/get-project-info";
 
 // todo: investigate stale closures -- shouldUpdateImports
 const { reachedSuccess, fonts } = getLofoConfig();
-const { importAlias, getLayoutFile } = getProjectConfig();
+const { importAlias } = getProjectConfig();
 
 const CURR_DIR = process.cwd();
 
@@ -73,10 +74,11 @@ const generateFileContent = (
 
 // WRITE IMPORT STATEMENT TO LAYOUT FILE
 const writeImportStatement = async (fontsDirPath: string) => {
-  const { shouldUpdateImports } = getLofoConfig();
+  const { shouldUpdateImports, destPath } = getLofoConfig();
   const layoutFilePath = getLayoutFile() as string;
   logger.info("Writing font imports to layout file...");
 
+  // if (pathExistsSync(fontsDirPath)) {
   // get named export
   const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
     const folderPath = path.join(fontsDirPath, fsItem);
@@ -86,13 +88,14 @@ const writeImportStatement = async (fontsDirPath: string) => {
     );
   })[0];
 
+  // get import path
   const importPath = importAlias
-    ? path.resolve(CURR_DIR, fontsDirPath)
-    : path.relative(path.parse(layoutFilePath).dir, fontsDirPath);
+    ? path.resolve(CURR_DIR, destPath)
+    : path.relative(path.parse(layoutFilePath).dir, destPath);
   const importStatement = getImportStatement(
-    namedExport!,
+    namedExport as string,
     importPath,
-    importAlias
+    importAlias as string
   );
   await writeLineBy(
     layoutFilePath,
@@ -107,6 +110,7 @@ const writeImportStatement = async (fontsDirPath: string) => {
       return false;
     }
   );
+  // }
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
