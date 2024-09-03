@@ -52,7 +52,7 @@ export const getLayoutFile = () => {
     const appDirPath = folderExists(srcDir)
       ? path.join(srcDir, "/app")
       : path.join(CURR_DIR, "/app");
-    if (!appDirPath)
+    if (!pathExistsSync(appDirPath))
       throw new Error(
         "App directory is missing. Make sure your project is using Next.js app router"
       );

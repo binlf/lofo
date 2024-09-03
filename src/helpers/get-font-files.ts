@@ -12,7 +12,7 @@ import { getFontFileNames } from "../utils/get-file-names";
  * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file paths.
  */
 export const getFontFiles = async (fontsDirPath: string) => {
-  const { fonts, shouldUpdateImports } = getLofoConfig();
+  const { fonts } = getLofoConfig();
   logger.info("Getting your local font files...");
   const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
   if (!filesInFontsDir.length) {
