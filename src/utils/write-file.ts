@@ -130,12 +130,13 @@ export const reWriteFileSync = (
       .join("")
       .replaceAll("LF", "\n");
     if (restContent) {
-      //todo: switch impl. to use `arr.splice()` to support earlier node versions
-      return updatedContentChunks.toSpliced(
+      const restUpdatedContentChunks = [...updatedContentChunks];
+      restUpdatedContentChunks.splice(
         updatedContentChunks.length - 1,
         0,
         restContent
       );
+      return restUpdatedContentChunks;
     }
     return updatedContentChunks;
   }

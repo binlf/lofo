@@ -22,8 +22,16 @@ async function main() {
       "."
     )
     .action((options) => {
-      if (options.dest !== "." && !reachedSuccess) return runLofo(options.dest);
-      runLofo();
+      if (options.dest !== "." && !reachedSuccess)
+        // todo: refactor
+        return runLofo(options.dest).catch((err) => {
+          logger.error("Someghing goofed...");
+          console.error(err);
+        });
+      runLofo().catch((err) => {
+        logger.error("Someghing goofed...");
+        console.error(err);
+      });
     });
 
   program.parse();
