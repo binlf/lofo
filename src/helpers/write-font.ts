@@ -10,7 +10,6 @@ import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
 import { getLayoutFile, getProjectConfig } from "../utils/get-project-info";
 
-// todo: investigate stale closures -- shouldUpdateImports
 const { reachedSuccess, fonts } = getLofoConfig();
 const { importAlias } = getProjectConfig();
 
@@ -78,7 +77,6 @@ const writeImportStatement = async (fontsDirPath: string) => {
   const layoutFilePath = getLayoutFile() as string;
   logger.info("Writing font imports to layout file...");
 
-  // if (pathExistsSync(fontsDirPath)) {
   // get named export
   const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
     const folderPath = path.join(fontsDirPath, fsItem);
@@ -110,7 +108,6 @@ const writeImportStatement = async (fontsDirPath: string) => {
       return false;
     }
   );
-  // }
 };
 
 // GET IMPORT STATEMENT TO WRITE IN LAYOUT FILE
