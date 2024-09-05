@@ -24,7 +24,8 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one(_if it doesn't exist_) in the root directory of your project.
 
-> [!NOTE] > _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move](https://github.com/binlf/lofo?tab=readme-ov-file#fonts-directory-destination) it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
+> [!NOTE]
+> > _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move](https://github.com/binlf/lofo?tab=readme-ov-file#fonts-directory-destination) it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
 
 In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these files typically have extensions such as `.otf`, `.ttf`, `.woff`, `.woff2` etc._] into the `fonts` directory.
 
@@ -75,4 +76,5 @@ This can admittedly get troublesome and we're currently looking into [it](https:
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
 
-> [!WARNING] > _This project, at this time, is in active development and makes quite a few assumptions about your project and conventions. Feel free to open an [issue](https://github.com/binlf/lofo/issues/new) if you catch something🧐!_
+> [!WARNING]
+> > _This project, at this time, is in active development and makes quite a few assumptions about your project and conventions. Feel free to open an [issue](https://github.com/binlf/lofo/issues/new) if you catch something🧐!_
