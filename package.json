@@ -3,7 +3,7 @@
   "bin": {
     "lofo": "./dist/index.js"
   },
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A CLI tool for adding local fonts to your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {
@@ -18,6 +18,10 @@
     "cli"
   ],
   "author": "binlf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binlf/lofo"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.14.2",
