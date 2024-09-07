@@ -1,5 +1,5 @@
 import path from "path";
-import fs from "fs-extra";
+import fs, { pathExistsSync } from "fs-extra";
 import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
@@ -8,7 +8,11 @@ import { folderExists, isFileFont } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
-import { getLayoutFile, getProjectConfig } from "../utils/get-project-info";
+import {
+  getLayoutFile,
+  getProjectConfig,
+  isTypescriptProject,
+} from "../utils/get-project-info";
 
 const { reachedSuccess, fonts } = getLofoConfig();
 const { importAlias } = getProjectConfig();
@@ -21,11 +25,12 @@ export const writeFontImports = async (
 ) => {
   const { shouldUpdateImports } = getLofoConfig();
   if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
-  const indexFilePath = path.join(fontsDirPath, "index.ts");
+  const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
+  const indexFilePath = path.join(fontsDirPath, indexFile);
   if (fontFamilies.length) {
     logger.info("Writing font exports...");
-    const [content] = generateFileContent(fontFamilies, fontsDirPath);
-    !reachedSuccess
+    const [content, _] = generateFileContent(fontFamilies, fontsDirPath);
+    !pathExistsSync(indexFilePath)
       ? fs.outputFileSync(indexFilePath, content)
       : reWriteFileSync(indexFilePath, content, "export");
     logger.info("Finished writing font exports");
@@ -42,9 +47,7 @@ const generateFileContent = (
   fontFamilies: FontFamily[],
   fontsDirPath: string
 ): [content: string, chunks: string[]] => {
-  const localfontUtilImport = !reachedSuccess
-    ? NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n\n"
-    : "";
+  const localfontUtilImport = NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT + "\n";
 
   const familiesExportArr = fontFamilies.map((family) => {
     return (

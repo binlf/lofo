@@ -1,8 +1,9 @@
 import fs from "fs-extra";
 import { fileExists } from "./exists";
-import { LOFO_CONFIG, NEXT_LOCAL_FONTS_DOCS } from "../constants";
+import { LOFO_CONFIG } from "../constants";
 import { type PackageJson as PkgJson } from "type-fest";
 import { logger } from "./logger";
+import path from "path";
 
 type LofoConfig = {
   fontsDirPath: string;
@@ -15,7 +16,8 @@ let fontNames: string[] = [];
 let shouldUpdateImports = false;
 
 export const getLofoConfig = () => {
-  const lofoConfigPath = `./${LOFO_CONFIG}`;
+  const CURR_DIR = process.cwd();
+  const lofoConfigPath = path.join(CURR_DIR, `${LOFO_CONFIG}`);
   const lofoConfig =
     (fileExists(lofoConfigPath) || undefined) &&
     (fs.readJSONSync(lofoConfigPath) as LofoConfig);
@@ -45,8 +47,11 @@ export const getLofoConfig = () => {
     }
   };
 
-  const setFontNames = (names: string[]) => (fontNames = names);
   const setDestinationPath = (destPath: string) => (FONTS_DIR_PATH = destPath);
+  const updateFonts = (callbackFn: (fonts: string[]) => string[]) => {
+    const existingFonts = lofoConfig?.fonts as string[];
+    fontNames = callbackFn(existingFonts);
+  };
 
   const signalSuccess = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
@@ -66,19 +71,11 @@ export const getLofoConfig = () => {
         lofoConfigPath,
         {
           ...lofoConfig,
-          fonts: Array.from(new Set([...lofoConfig?.fonts!, ...fontNames])),
+          fonts: fontNames,
         } as LofoConfig,
         { spaces: 2 }
       );
     }
-
-    // todo: success message should reflect finished operation
-    // todo: (e.g Added 1 font(s) successfully...)
-    // todo: (Removed 2 font(s) successfully...)
-    logger.success("Added local fonts to your project successfully...");
-    logger.info(
-      `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS}`
-    );
   };
 
   return {
@@ -87,8 +84,9 @@ export const getLofoConfig = () => {
     signalSuccess,
     reachedSuccess: Boolean(lofoConfig?.reachedSuccess),
     fonts: lofoConfig?.fonts,
-    setFontNames,
     setDestinationPath,
     destPath: FONTS_DIR_PATH,
+    fontsDirPath: lofoConfig?.fontsDirPath,
+    updateFonts,
   };
 };

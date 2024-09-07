@@ -54,7 +54,7 @@ export const writeLineBy = async (
 };
 
 /**
- * Synchronously rewrites the content of a file while inserting new `content` at a determined chunk.
+ * Synchronously rewrites the content of a file while modifying content of file at a determined chunk.
  *
  * @param {string} path - The path to the file to be rewritten.
  * @param {string} content - The new content to write into the file.
@@ -66,7 +66,8 @@ export const writeLineBy = async (
 export const reWriteFileSync = (
   path: string,
   content: string,
-  separator: string = "\n"
+  separator: string = "\n",
+  flag?: "r"
 ): undefined => {
   const fileContent = readFileSync(path, { encoding: "utf8" });
   const fileContentChunks = getChunks(fileContent, separator, true);
@@ -108,6 +109,7 @@ export const reWriteFileSync = (
     return Number(simIndex.toFixed(1));
   }
 
+  // todo: if chunk of chunks doesn't include "separator", ignore it
   function getUpdatedChunks() {
     const foundChunkIndexes: number[] = [];
     const updatedContentChunks = fileContentChunks.map((oldChunk) => {
@@ -115,8 +117,13 @@ export const reWriteFileSync = (
       const THRESHOLD = 0.7;
       let index = 0;
       for (const chunk of newContentChunks) {
+        // if (!oldChunk.includes(separator)) continue;
         const similarityIndex = compareChunks(chunk, oldChunk);
         if (similarityIndex && similarityIndex > THRESHOLD) {
+          if (flag === "r") {
+            foundChunkIndexes.push(index);
+            return updatedChunk;
+          }
           updatedChunk = chunk;
           foundChunkIndexes.push(index);
           break;
@@ -141,7 +148,7 @@ export const reWriteFileSync = (
     return updatedContentChunks;
   }
 
-  const updatedContent = Array.from(new Set(getUpdatedChunks())).join(" ");
+  const updatedContent = Array.from(new Set(getUpdatedChunks())).join("");
   writeFileSync(path, updatedContent, "utf8");
 
   return undefined;
