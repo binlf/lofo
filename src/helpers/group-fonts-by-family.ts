@@ -19,7 +19,7 @@ export type FontFamily = {
   fonts: Font[];
 };
 
-const { setFontNames } = getLofoConfig();
+const { updateFonts } = getLofoConfig();
 
 export const groupFontsByFamily = (
   fontFiles: string[],
@@ -57,6 +57,10 @@ export const groupFontsByFamily = (
     }
   );
   logger.info("Grouped fonts into families...");
-  setFontNames(fontFamilies.map((font) => font.familyName));
+  updateFonts((fonts) =>
+    Array.from(
+      new Set([...fonts, ...fontFamilies.map((font) => font.familyName)])
+    )
+  );
   return fontFamilies;
 };

@@ -81,5 +81,5 @@ export const isTwProject = () => {
   return pathExistsSync(path.join(CURR_DIR, twConfigFile));
 };
 
-const isTypescriptProject = () =>
+export const isTypescriptProject = () =>
   pathExistsSync(path.join(CURR_DIR, "tsconfig.json"));

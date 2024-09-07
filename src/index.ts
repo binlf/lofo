@@ -4,14 +4,13 @@ import { logger } from "./utils/logger";
 import { Command } from "commander";
 import { getPackageInfo } from "./utils/get-package-info";
 import { runLofo } from "./runLofo";
-import { getLofoConfig } from "./utils/get-config";
+import { remove } from "./commands/remove";
 
 const program = new Command();
 
 //? entry point
 async function main() {
   const { version } = getPackageInfo();
-  const { reachedSuccess } = getLofoConfig();
   program
     .name("lofo")
     .description("CLI tool for adding local fonts to your Next.js project!")
@@ -22,17 +21,19 @@ async function main() {
       "."
     )
     .action((options) => {
-      if (options.dest !== "." && !reachedSuccess)
+      if (options.dest)
         // todo: refactor
         return runLofo(options.dest).catch((err) => {
-          logger.error("Someghing goofed...");
+          logger.error("Something goofed...");
           console.error(err);
         });
       runLofo().catch((err) => {
-        logger.error("Someghing goofed...");
+        logger.error("Something goofed...");
         console.error(err);
       });
     });
+
+  program.addCommand(remove);
 
   program.parse();
 }

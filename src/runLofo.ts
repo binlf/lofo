@@ -1,5 +1,5 @@
 import { move } from "fs-extra";
-import { FONTS_DIR_NAME } from "./constants";
+import { FONTS_DIR_NAME, NEXT_LOCAL_FONTS_DOCS_URL } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontFiles } from "./helpers/get-font-files";
 import { getFontsDir } from "./helpers/get-fonts-dir";
@@ -44,4 +44,8 @@ export const runLofo = async (dest?: string) => {
     ));
 
   signalSuccess();
+  logger.success("Added local fonts to your project successfully...");
+  logger.info(
+    `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS_URL}`
+  );
 };
