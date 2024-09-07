@@ -57,10 +57,12 @@ export const groupFontsByFamily = (
     }
   );
   logger.info("Grouped fonts into families...");
-  updateFonts((fonts) =>
-    Array.from(
-      new Set([...fonts, ...fontFamilies.map((font) => font.familyName)])
-    )
-  );
+  updateFonts((fonts) => {
+    const newFonts = fontFamilies.map((font) => font.familyName);
+    if (fonts && fonts.length) {
+      return Array.from(new Set([...fonts, ...newFonts]));
+    }
+    return newFonts;
+  });
   return fontFamilies;
 };

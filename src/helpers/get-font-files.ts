@@ -1,5 +1,5 @@
 import { FONTS_DIR_NAME } from "../constants";
-import { folderExists, isFileFont } from "../utils/exists";
+import { folderExists, isFontFile } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { logger } from "../utils/logger";
 import fsPromises from "fs/promises";
@@ -26,7 +26,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
   const oldFonts: string[] = [];
   const newFontFilePaths: string[] = filesInFontsDir.reduce<string[]>(
     (acc, file) => {
-      if (isFileFont(file)) {
+      if (isFontFile(file)) {
         const [fontName] = getFontFileNames([file]);
         if (fontName && fonts?.includes(fontName)) oldFonts.push(fontName);
         return [...acc, path.join(fontsDirPath, file)];
@@ -42,7 +42,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
       if (folderExists(oldFontsDirPath)) {
         const filesInDir = await fsPromises.readdir(oldFontsDirPath);
         const fontFilePaths = filesInDir
-          .filter((file) => isFileFont(file))
+          .filter((file) => isFontFile(file))
           .map((f) => oldFontsDirPath + path.sep + f);
         if (filesInDir.length) return [...acc, ...fontFilePaths];
       }

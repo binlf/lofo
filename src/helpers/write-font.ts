@@ -4,7 +4,7 @@ import type { FontFamily } from "./group-fonts-by-family";
 import { logger } from "../utils/logger";
 import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
 import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
-import { folderExists, isFileFont } from "../utils/exists";
+import { folderExists, isFontFamilyDir, isFontFile } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
@@ -36,7 +36,7 @@ export const writeFontImports = async (
     logger.info("Finished writing font exports");
   }
 
-  if (!reachedSuccess || shouldUpdateImports) {
+  if (fontFamilies.length || shouldUpdateImports) {
     await writeImportStatement(fontsDirPath);
     logger.info("Finished writing font imports...");
   }
@@ -83,10 +83,7 @@ const writeImportStatement = async (fontsDirPath: string) => {
   // get named export
   const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
     const folderPath = path.join(fontsDirPath, fsItem);
-    return (
-      folderExists(folderPath) &&
-      fs.readdirSync(folderPath).every((file) => isFileFont(file))
-    );
+    return isFontFamilyDir(folderPath);
   })[0];
 
   // get import path
@@ -103,7 +100,7 @@ const writeImportStatement = async (fontsDirPath: string) => {
     importStatement,
     (prevLine, currentLine) => {
       if (shouldUpdateImports) {
-        if (currentLine.includes("fonts") && !currentLine.startsWith("//"))
+        if (currentLine.includes("/fonts") && !currentLine.startsWith("//"))
           return true;
         return false;
       }
