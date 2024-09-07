@@ -21,12 +21,14 @@ async function main() {
       "."
     )
     .action((options) => {
-      if (options.dest)
+      if (options.dest && options.dest !== ".") {
+        console.log("Yoho");
         // todo: refactor
         return runLofo(options.dest).catch((err) => {
           logger.error("Something goofed...");
           console.error(err);
         });
+      }
       runLofo().catch((err) => {
         logger.error("Something goofed...");
         console.error(err);

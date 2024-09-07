@@ -6,6 +6,8 @@ import fs, { pathExistsSync } from "fs-extra";
 import path from "path";
 import { reWriteFileSync } from "../utils/write-file";
 import { isTypescriptProject } from "../utils/get-project-info";
+import { getFontsDir } from "../helpers/get-fonts-dir";
+import { folderExists, isFontFamilyDir } from "../utils/exists";
 
 export const remove = new Command()
   .name("remove")
@@ -15,15 +17,25 @@ export const remove = new Command()
   .option("-a, --all", "remove all font families")
   .action(removeHandler);
 
-const { fonts, fontsDirPath, reachedSuccess, signalSuccess, updateFonts } =
-  getLofoConfig();
+const { fonts, reachedSuccess, signalSuccess, updateFonts } = getLofoConfig();
 function removeHandler(family: string, options: any) {
+  const fontsDirPath = getFontsDir();
+  if (!fs.pathExistsSync(fontsDirPath as string)) {
+    // throw new Error(`${FONTS_DIR_NAME} directory does not exist`);
+    logger.error(`${FONTS_DIR_NAME} directory does not exist`);
+    process.exit(1);
+  }
   if (options.all) return removeFontFamily("", "all");
   if (!family) {
     logger.warning("Please specify a font family to remove");
     process.exit(1);
   }
-  if (!fonts) throw new Error("'fonts' entry is missing in lofo-config.json");
+  if (!fonts) {
+    logger.error(
+      `${FONTS_DIR_NAME} entry is missing in lofo-config.json. Try adding local fonts to your project and try again...`
+    );
+    process.exit(1);
+  }
   if (fonts && !fonts.length && reachedSuccess) {
     logger.warning(
       "'fonts' entry is empty in lofo-config.json. Try adding local fonts to your project and try again"
@@ -36,9 +48,6 @@ function removeHandler(family: string, options: any) {
     );
     process.exit(1);
   }
-  if (!fs.pathExistsSync(fontsDirPath as string)) {
-    throw new Error(`${fonts} directory does not exist`);
-  }
 
   removeFontFamily(family);
 }
@@ -47,6 +56,7 @@ const removeFontFamily = (
   family?: string,
   flag: "single" | "all" = "single"
 ) => {
+  const fontsDirPath = getFontsDir();
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(fontsDirPath!, indexFile);
@@ -74,19 +84,30 @@ const removeFontFamily = (
       }`;
     reWriteFileSync(indexFilePath, namedExport, "export", "r");
     reWriteFileSync(indexFilePath, defaultExport, "export");
-    updateFonts(() => restFonts);
-    signalSuccess();
+    if (reachedSuccess) {
+      updateFonts(() => restFonts);
+      signalSuccess();
+    }
     return logger.success(`Font family ${family} was successfully removed!`);
   }
   logger.info(`Removing all font families`);
-  fonts?.forEach((font) => {
-    const fontFamilyPath = path.join(fontsDirPath!, font);
-    if (!pathExistsSync(fontFamilyPath))
-      return logger.error(`Font family ${font} does not exist`);
-    fs.removeSync(fontFamilyPath);
+  if (!itemsInFontsDir.length)
+    return logger.warning(`${FONTS_DIR_NAME} directory is empty`);
+  let hasRemovedFontFamily = false;
+  itemsInFontsDir?.forEach((fsItem) => {
+    const fsItemPath = path.join(fontsDirPath!, fsItem);
+    if (!pathExistsSync(fsItemPath)) return;
+    if (folderExists(fsItemPath) && isFontFamilyDir(fsItemPath)) {
+      fs.removeSync(fsItemPath);
+      hasRemovedFontFamily = true;
+    }
   });
+  if (!hasRemovedFontFamily)
+    return logger.error("No font family directories were found");
   fs.removeSync(indexFilePath);
-  updateFonts(() => []);
-  signalSuccess();
+  if (reachedSuccess) {
+    updateFonts(() => []);
+    signalSuccess();
+  }
   logger.success("Removed all font familes");
 };
