@@ -18,6 +18,10 @@
     "cli"
   ],
   "author": "binlf",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binlf/lofo"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.14.2",
