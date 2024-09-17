@@ -74,15 +74,16 @@ const removeFontFamily = (
     const fontFamilyPath = path.join(fontsDirPath!, family);
     // remove font family directory
     fs.removeSync(fontFamilyPath);
-    // remove font family named export in index file
     const namedExport = `export const ${family} = localfont`;
     const restFonts = fonts?.filter(
       (fontFamily) => fontFamily !== family
     ) as string[];
     const defaultExport = `\nexport default {
-        ${restFonts.join(", ")}
-      }`;
-    reWriteFileSync(indexFilePath, namedExport, "export", "r");
+      ${restFonts.join(", ")}
+    }`;
+    // remove font family named export in index file
+    reWriteFileSync(indexFilePath, namedExport, "export", true);
+    // remove font family in default export object
     reWriteFileSync(indexFilePath, defaultExport, "export");
     if (reachedSuccess) {
       updateFonts(() => restFonts);
