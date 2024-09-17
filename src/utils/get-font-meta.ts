@@ -1,6 +1,6 @@
+import path from "path";
 import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
-import path from "path";
 import { dsr } from "dsr-kv";
 
 export type Wght =
