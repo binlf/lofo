@@ -8,8 +8,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "link-cli": "npm unlink -g lofo && npm link",
-    "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -w"
   },
   "keywords": [
     "localfonts",
@@ -33,5 +32,8 @@
     "commander": "^12.1.0",
     "dsr-kv": "^0.2.2",
     "fs-extra": "^11.2.0"
-  }
+  },
+  "files": [
+    "dist/"
+  ]
 }
