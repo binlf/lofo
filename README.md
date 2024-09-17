@@ -15,7 +15,7 @@ CLI for adding local fonts to your Next.js projects!
 To get started, run the above command in the root directory of your project and `lofo` would try to get everything set up properly for you automatically. You can also install the CLI on your machine by running the command below:
 
 ```
-npm install lofo
+npm install -g lofo
 ```
 
 After which you can execute the CLI by just running the command: `lofo` in your terminal...
