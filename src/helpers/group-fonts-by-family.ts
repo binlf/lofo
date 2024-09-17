@@ -39,7 +39,9 @@ export const groupFontsByFamily = (
         }) as string;
       }
       moveFile(filesToMove, fontFamilyFolderPath, (err, movedFilePaths) => {
-        if (err) process.exit(1);
+        if (err) {
+          throw new Error(err as string);
+        }
         const fonts = movedFilePaths.map((filePath): Font => {
           return {
             name: basename(filePath),

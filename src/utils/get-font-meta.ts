@@ -44,8 +44,8 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
 
 // todo: revise impl.
 export const getFontWeight = (font: string): Wght => {
-  // get part of file name containing font weight: `Inter-Bold.otf -> Bold`
   const [fileName] = getFontFileNames([font]);
+  // get part of file name containing font weight: `Inter-Bold.otf -> Bold`
   const fontWeightAnnot = font
     .trim()
     .split(fileName as string)[1]

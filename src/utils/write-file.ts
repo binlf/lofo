@@ -59,6 +59,7 @@ export const writeLineBy = async (
  * @param {string} path - The path to the file to be rewritten.
  * @param {string} content - The new content to write into the file.
  * @param {string} separator - The pattern describing how to split file content and new `content` into chunks. Default is LF("\n").
+ * @param {boolean} shouldRemoveChunk - A boolean flag that determines whether the determined chunk should be removed.
  * @returns {undefined} Returns `undefined`
  * @example
  * reWriteFileSync('/path/to/file.txt', 'New content', ", ");
@@ -67,7 +68,7 @@ export const reWriteFileSync = (
   path: string,
   content: string,
   separator: string = "\n",
-  flag?: "r"
+  shouldRemoveChunk: boolean = false
 ): undefined => {
   const fileContent = readFileSync(path, { encoding: "utf8" });
   const fileContentChunks = getChunks(fileContent, separator, true);
@@ -120,7 +121,7 @@ export const reWriteFileSync = (
         // if (!oldChunk.includes(separator)) continue;
         const similarityIndex = compareChunks(chunk, oldChunk);
         if (similarityIndex && similarityIndex > THRESHOLD) {
-          if (flag === "r") {
+          if (shouldRemoveChunk) {
             foundChunkIndexes.push(index);
             return updatedChunk;
           }
