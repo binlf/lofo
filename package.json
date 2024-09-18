@@ -9,6 +9,7 @@
   "scripts": {
     "link-cli": "npm unlink -g lofo && npm link",
     "dev": "tsc -w",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

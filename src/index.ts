@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { getPackageInfo } from "./utils/get-package-info";
 import { runLofo } from "./runLofo";
 import { remove } from "./commands/remove";
+// import { version } from "../package.json";
 
 const program = new Command();
 
