@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { logger } from "../utils/logger";
+import { logger, whiteBold } from "../utils/logger";
 import { getLofoConfig } from "../utils/get-config";
 import { FONTS_DIR_NAME } from "../constants";
 import fs, { pathExistsSync } from "fs-extra";
@@ -22,7 +22,7 @@ function removeHandler(family: string, options: any) {
   const fontsDirPath = getFontsDir();
   if (!fs.pathExistsSync(fontsDirPath as string)) {
     // throw new Error(`${FONTS_DIR_NAME} directory does not exist`);
-    logger.error(`${FONTS_DIR_NAME} directory does not exist`);
+    logger.error(`${whiteBold(FONTS_DIR_NAME)} directory does not exist`);
     process.exit(1);
   }
   if (options.all) return removeFontFamily("", "all");
@@ -32,19 +32,27 @@ function removeHandler(family: string, options: any) {
   }
   if (!fonts) {
     logger.error(
-      `${FONTS_DIR_NAME} entry is missing in lofo-config.json. Try adding local fonts to your project and try again...`
+      `${whiteBold(
+        FONTS_DIR_NAME
+      )} entry is missing in lofo-config.json. Try adding font files to your project and try again...`
     );
     process.exit(1);
   }
   if (fonts && !fonts.length && reachedSuccess) {
     logger.warning(
-      "'fonts' entry is empty in lofo-config.json. Try adding local fonts to your project and try again"
+      `${whiteBold(
+        FONTS_DIR_NAME
+      )} entry is empty in lofo-config.json. Try adding font files to your project and try again...`
     );
     process.exit(1);
   }
   if (!fonts.includes(family)) {
     logger.warning(
-      `Font family ${family} does not exist. Ensure it exists in the ${FONTS_DIR_NAME} directory and try again...`
+      `Font family ${whiteBold(
+        family
+      )} does not exist. Ensure it exists in the ${whiteBold(
+        FONTS_DIR_NAME
+      )} directory and try again...`
     );
     process.exit(1);
   }
@@ -68,7 +76,9 @@ const removeFontFamily = (
     }
     if (!itemsInFontsDir.includes(family as string)) {
       throw new Error(
-        `Font family: ${family} does not exist in ${FONTS_DIR_NAME} directory`
+        `Font family: ${whiteBold(family)} does not exist in ${whiteBold(
+          FONTS_DIR_NAME
+        )} directory`
       );
     }
     const fontFamilyPath = path.join(fontsDirPath!, family);
@@ -89,11 +99,13 @@ const removeFontFamily = (
       updateFonts(() => restFonts);
       signalSuccess();
     }
-    return logger.success(`Font family ${family} was successfully removed!`);
+    return logger.success(
+      `Font family ${whiteBold(family)} was successfully removed!`
+    );
   }
   logger.info(`Removing all font families`);
   if (!itemsInFontsDir.length)
-    return logger.warning(`${FONTS_DIR_NAME} directory is empty`);
+    return logger.warning(`${whiteBold(FONTS_DIR_NAME)} directory is empty`);
   let hasRemovedFontFamily = false;
   itemsInFontsDir?.forEach((fsItem) => {
     const fsItemPath = path.join(fontsDirPath!, fsItem);

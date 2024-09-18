@@ -1,10 +1,10 @@
 import path from "path";
 import fs, { pathExistsSync } from "fs-extra";
 import type { FontFamily } from "./group-fonts-by-family";
-import { logger } from "../utils/logger";
+import { logger, whiteBold } from "../utils/logger";
 import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
 import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
-import { folderExists, isFontFamilyDir, isFontFile } from "../utils/exists";
+import { isFontFamilyDir } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
 import { reWriteFileSync, writeLineBy } from "../utils/write-file";
@@ -24,7 +24,8 @@ export const writeFontImports = async (
   fontFamilies: FontFamily[]
 ) => {
   const { shouldUpdateImports } = getLofoConfig();
-  if (importAlias) logger.info(`Found project import alias: ${importAlias}`);
+  if (importAlias)
+    logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(fontsDirPath, indexFile);
   if (fontFamilies.length) {

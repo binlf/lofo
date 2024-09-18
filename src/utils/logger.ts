@@ -1,15 +1,19 @@
+import pc from "picocolors";
+
 // todo: add chalk for color
 export const logger = {
   error(message: string) {
-    console.log(`ERROR: ${message}`);
+    console.log(`${pc.bold(pc.red("ERROR"))}: ${message}`);
   },
   success(message: string) {
-    console.log(`SUCCESS: ${message}`);
+    console.log(`${pc.bold(pc.green("SUCCESS"))}: ${message}`);
   },
   warning(message: string) {
-    console.log(`WARNING: ${message}`);
+    console.log(`${pc.bold(pc.yellowBright("WARNING"))}: ${message}`);
   },
   info(message: string) {
-    console.log(`INFO: ${message}`);
+    console.log(`${pc.bold(pc.whiteBright("INFO"))}: ${message}`);
   },
 };
+
+export const whiteBold = (string: string) => pc.bold(pc.whiteBright(string));
