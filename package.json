@@ -3,7 +3,7 @@
   "bin": {
     "lofo": "./dist/index.js"
   },
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A CLI tool for adding local fonts to your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {
