@@ -1,6 +1,5 @@
 import pc from "picocolors";
 
-// todo: add chalk for color
 export const logger = {
   error(message: string) {
     console.log(`${pc.bold(pc.red("ERROR"))}: ${message}`);
