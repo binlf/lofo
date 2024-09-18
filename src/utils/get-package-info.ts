@@ -3,4 +3,4 @@ import path from "path";
 import { type PackageJson } from "type-fest";
 
 export const getPackageInfo = (): PackageJson =>
-  fs.readJSONSync(path.join("package.json"));
+  fs.readJSONSync(path.join(__dirname, "..", "..", "package.json"));
