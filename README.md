@@ -50,7 +50,9 @@ my-project/
 
 The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument[_yet to be implemented_] or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path[**_this is a compulsory step_**]...
 
-Using a command line argument with the `lofo` command[_Ignore angle brackets -- used as placeholder for actual value_]:
+Using a command line argument with the `lofo` command:
+> _Replace values in angle brackets with real values_
+
 | Command | Description | Example |
 | --- | --- | --- |
 | `lofo --dest <path>` or `lofo -d <path>` | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
