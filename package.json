@@ -4,7 +4,7 @@
     "lofo": "./dist/index.js"
   },
   "version": "0.4.1",
-  "description": "A CLI tool for adding local fonts to your Next.js project.",
+  "description": "A CLI tool for managing local fonts in your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {
     "link-cli": "npm unlink -g lofo && npm link",
