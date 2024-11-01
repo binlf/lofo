@@ -71,7 +71,12 @@ function removeHandler(family: string, options: any) {
     name: "fontToRemove",
     message: "What font do you want to remove?",
     choices: fontChoices,
-  }).then((res) => removeFontFamily(res.fontToRemove));
+  })
+    .then((res) => {
+      if (!res.fontToRemove) return;
+      removeFontFamily(res.fontToRemove);
+    })
+    .catch((err) => logger.error(err));
 }
 
 const removeFontFamily = (
