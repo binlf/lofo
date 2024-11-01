@@ -25,7 +25,7 @@ After which you can execute the CLI by just running the command: `lofo` in your 
 When the CLI is executed, it would look through your project for a `fonts` directory and create one(_if it doesn't exist_) in the root directory of your project.
 
 > [!NOTE]
-> _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common conventions). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move](https://github.com/binlf/lofo?tab=readme-ov-file#fonts-directory-destination) it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
+> _It would **not** check your entire project directory tree recursively, it instead checks directories that a `fonts` directory would likely be found(based on common [conventions](https://github.com/binlf/lofo/blob/abd7a448baacb791037d3627139d620c14530f31/src/constants.ts#L2)). As this would most likely vary from person-to-person, you could put all your local font files in a directory named `fonts` in the root directory of your project. You could [move](https://github.com/binlf/lofo?tab=readme-ov-file#fonts-directory-destination) it somewhere else afterwards! A common convention you could also consider is putting your `fonts` directory(containing all your font files) in the `public/` directory of your Next.js project._
 
 In the latter scenario, after the creation of the `fonts` directory, it would prompt you to move your local font files[_these files typically have extensions such as `.otf`, `.ttf`, `.woff`, `.woff2` etc._] into the `fonts` directory.
 
@@ -50,7 +50,9 @@ my-project/
 
 The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument[_yet to be implemented_] or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path[**_this is a compulsory step_**]...
 
-Using a command line argument with the `lofo` command[_Ignore angle brackets -- used as placeholder for actual value_]:
+Using a command line argument with the `lofo` command:
+> _Replace values in angle brackets with real values_
+
 | Command | Description | Example |
 | --- | --- | --- |
 | `lofo --dest <path>` or `lofo -d <path>` | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
@@ -65,7 +67,7 @@ Using a command line argument with the `lofo` command[_Ignore angle brackets -- 
 
 For now, the CLI only checks for font files that are direct "children" of the `fonts` directory -- it doesn't look inside sub-directoiries of `fonts`. This means that, you can't add whole directories containing all the files you need, instead you add the individual font files to the `fonts` directory and let the CLI group them for you...
 
-This can admittedly get troublesome and we're currently looking into [it](https://github.com/binlf/lofo/issues/32). You can keep track of this [issue](https://github.com/binlf/lofo/issues/32) to know when it's been resolved.
+This can admittedly get troublesome and we're looking into [it](https://github.com/binlf/lofo/issues/32). You can keep track of this [issue](https://github.com/binlf/lofo/issues/32) to know when it's been resolved.
 
 #### _Quirk: Something GOOFED._
 
