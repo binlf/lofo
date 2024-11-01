@@ -8,6 +8,7 @@ import { reWriteFileSync } from "../utils/write-file";
 import { isTypescriptProject } from "../utils/get-project-info";
 import { getFontsDir } from "../helpers/get-fonts-dir";
 import { folderExists, isFontFamilyDir } from "../utils/exists";
+import prompts, { type Choice } from "prompts";
 
 export const remove = new Command()
   .name("remove")
@@ -20,16 +21,15 @@ export const remove = new Command()
 const { fonts, reachedSuccess, signalSuccess, updateFonts } = getLofoConfig();
 function removeHandler(family: string, options: any) {
   const fontsDirPath = getFontsDir();
+
   if (!fs.pathExistsSync(fontsDirPath as string)) {
     // throw new Error(`${FONTS_DIR_NAME} directory does not exist`);
     logger.error(`${whiteBold(FONTS_DIR_NAME)} directory does not exist`);
     process.exit(1);
   }
+  // remove all font families
   if (options.all) return removeFontFamily("", "all");
-  if (!family) {
-    logger.warning("Please specify a font family to remove");
-    process.exit(1);
-  }
+
   if (!fonts) {
     logger.error(
       `${whiteBold(
@@ -46,7 +46,7 @@ function removeHandler(family: string, options: any) {
     );
     process.exit(1);
   }
-  if (!fonts.includes(family)) {
+  if (family && !fonts.includes(family)) {
     logger.warning(
       `Font family ${whiteBold(
         family
@@ -57,7 +57,21 @@ function removeHandler(family: string, options: any) {
     process.exit(1);
   }
 
-  removeFontFamily(family);
+  const fontChoices = fonts.map(
+    (font): Choice => ({
+      title: font,
+      value: font,
+    })
+  );
+
+  if (family) return removeFontFamily(family);
+
+  prompts({
+    type: "select",
+    name: "fontToRemove",
+    message: "What font do you want to remove?",
+    choices: fontChoices,
+  }).then((res) => removeFontFamily(res.fontToRemove));
 }
 
 const removeFontFamily = (

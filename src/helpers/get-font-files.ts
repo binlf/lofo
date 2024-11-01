@@ -53,7 +53,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
   const fontFilePaths = [...newFontFilePaths, ...oldFontFilePaths];
   if (!newFontFilePaths.length) {
     logger.warning(
-      `Couldn't find any font files in your ${FONTS_DIR_NAME} directory...\nAdd your local font files to your ${FONTS_DIR_NAME} directory and run cli again...`
+      `Couldn't find any font files at the root of your ${FONTS_DIR_NAME} directory...\nAdd your font files to your ${FONTS_DIR_NAME} directory and run cli again...`
     );
     return process.exit(0);
   }

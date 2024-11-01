@@ -28,6 +28,8 @@ export const writeFontImports = async (
     logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(fontsDirPath, indexFile);
+
+  // todo: extract logic for writing font exports(util?)
   if (fontFamilies.length) {
     logger.info("Writing font exports...");
     const [content, _] = generateFileContent(fontFamilies, fontsDirPath);
