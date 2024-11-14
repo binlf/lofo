@@ -78,6 +78,7 @@ Unfortunately, every failure can't be accounted for and the only "escape hatch" 
 - [ ] Add support for Next.js projects using the pages router
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
+- [ ] Add support for React Native projects
 
 > [!WARNING]
 > _This project, at this time, is in active development and makes some assumptions about your project and conventions. Feel free to open an [issue](https://github.com/binlf/lofo/issues/new) if you catch something🧐!_
