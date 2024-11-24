@@ -3,13 +3,19 @@
   "bin": {
     "lofo": "./dist/index.js"
   },
+  "workspaces": [
+    "test/*"
+  ],
   "version": "0.4.1",
   "description": "A CLI tool for managing local fonts in your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {
-    "link-cli": "npm unlink -g lofo && npm link",
+    "link": "bun unlink && bun link",
+    "build": "tsc",
     "dev": "tsc -w",
-    "build": "tsc"
+    "dev:all": "bun run --filter '*' dev",
+    "dev:wf": "bun run --filter 'with-fonts' dev",
+    "dev:wof": "bun run --filter 'without-fonts' dev"
   },
   "keywords": [
     "localfonts",
