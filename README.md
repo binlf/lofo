@@ -1,6 +1,6 @@
 # LoFo
 
-CLI for adding local fonts to your Next.js projects!
+CLI for managing local fonts in your Next.js project!
 
 ### 🛑Prerequisites.
 
@@ -56,7 +56,7 @@ Using a command line argument with the `lofo` command:
 | Command | Description | Example |
 | --- | --- | --- |
 | `lofo --dest <path>` or `lofo -d <path>` | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
-| `lofo remove <font_family>` or `lofo rm <font_family>` | Run this command to remove a specified font family from your project -- the `fonts` directory | `lofo rm Roboto` |
+| `lofo remove [font_family]` or `lofo rm <font_family>` | Run this command to remove a specified font family from your project -- the `fonts` directory. _Run `lofo rm` or `lofo remove` to display a list of existing fonts from which you can select one to delete._ | `lofo rm Roboto` |
 | `lofo remove --all` or `lofo remove -a ` | Run this command to remove all font files and font family directories from your project -- the `fonts` directory | `lofo rm --all` |
 
 ### 👀Quirks
@@ -78,6 +78,7 @@ Unfortunately, every failure can't be accounted for and the only "escape hatch" 
 - [ ] Add support for Next.js projects using the pages router
 - [ ] Add support for React.js projects
 - [ ] Add support for Vanilla.js projects
+- [ ] Add support for React Native projects
 
 > [!WARNING]
 > _This project, at this time, is in active development and makes some assumptions about your project and conventions. Feel free to open an [issue](https://github.com/binlf/lofo/issues/new) if you catch something🧐!_
