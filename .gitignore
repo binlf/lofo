@@ -1,9 +1,6 @@
 node_modules/
 dist/
 update-remotes.sh
-fonts/
 process.txt
 src/deprecated/
 contribution-guidelines.md
-lofo-config.json
-lofo-config.json
