@@ -7,14 +7,14 @@ import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 import { writeFontImports } from "./helpers/write-font";
 import { getLofoConfig } from "./utils/get-config";
 import { getProjectConfig, isTwProject } from "./utils/get-project-info";
-import { logger } from "./utils/logger";
+import { logger, whiteBold } from "./utils/logger";
 import { resolveDestPath } from "./utils/resolve-dest";
 import path from "path";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME } = getProjectConfig();
   const { didPathChange, signalSuccess } = getLofoConfig();
-  logger.info(`lofo is running in ${PROJECT_NAME}`);
+  logger.info(`lofo is running in ${whiteBold(PROJECT_NAME!)}`);
   dest && resolveDestPath(dest);
   //   if (isTwProject()) logger.info("Tailwind Config detected...");
   logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
@@ -25,7 +25,9 @@ export const runLofo = async (dest?: string) => {
     );
     return createFontsDir();
   }
-  logger.info(`Found ${FONTS_DIR_NAME} directory at ${fontsDirPath}`);
+  logger.info(
+    `Found ${FONTS_DIR_NAME} directory at ${whiteBold(fontsDirPath)}`
+  );
   if (didPathChange(fontsDirPath)) {
     logger.info("Change to fonts directory path detected. Updating imports...");
     await writeFontImports(fontsDirPath, []);
@@ -46,6 +48,8 @@ export const runLofo = async (dest?: string) => {
   signalSuccess();
   logger.success("Added local fonts to your project successfully...");
   logger.info(
-    `Stuck? Check out the Next.js docs for next steps: ${NEXT_LOCAL_FONTS_DOCS_URL}`
+    `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
+      NEXT_LOCAL_FONTS_DOCS_URL
+    )}`
   );
 };
