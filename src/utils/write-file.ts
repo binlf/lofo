@@ -39,7 +39,7 @@ export const writeLineBy = async (
     nextLine: string,
     lineNumber = 1;
   rl.on("line", (line) => {
-    if (predicate(previousLine, line, nextLine)) {
+    if (predicate(previousLine, line, nextLine!)) {
       fileWriteStream.write(content);
     } else {
       // todo: remove string concat
