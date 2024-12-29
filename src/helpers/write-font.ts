@@ -3,7 +3,7 @@ import fs, { pathExistsSync } from "fs-extra";
 import type { FontFamily } from "./group-fonts-by-family";
 import { logger, whiteBold } from "../utils/logger";
 import { getFontSrc, getFontVarName } from "../utils/get-font-meta";
-import { NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
+import { ENV, NEXT_LOCALFONT_UTIL_IMPORT_STATEMENT } from "../constants";
 import { isFontFamilyDir } from "../utils/exists";
 import { getLofoConfig } from "../utils/get-config";
 import { replaceAll } from "../utils/format-string";
@@ -24,10 +24,14 @@ export const writeFontImports = async (
   fontFamilies: FontFamily[]
 ) => {
   const { shouldUpdateImports } = getLofoConfig();
+  const prefix = "lf-";
   if (importAlias)
     logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
-  const indexFilePath = path.join(fontsDirPath, indexFile);
+  const indexFilePath = path.join(
+    fontsDirPath,
+    ENV === "development" ? prefix + indexFile : indexFile
+  );
 
   // todo: extract logic for writing font exports(util?)
   if (fontFamilies.length) {

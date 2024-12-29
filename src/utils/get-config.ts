@@ -64,7 +64,7 @@ export const getLofoConfig = () => {
         } as LofoConfig,
         { spaces: 2 }
       );
-      fs.outputFile("./.gitignore", "\nlofo-config.json", { flag: "a" });
+      fs.outputFile("./.gitignore", `\n${LOFO_CONFIG}`, { flag: "a" });
     }
     if (lofoConfig?.reachedSuccess) {
       fs.outputJSONSync(
