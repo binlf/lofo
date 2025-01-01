@@ -13,7 +13,7 @@ import { getFontFileNames } from "../utils/get-file-names";
  */
 export const getFontFiles = async (fontsDirPath: string) => {
   const { fonts } = getLofoConfig();
-  logger.info("Getting your local font files...");
+  // logger.info("Getting your local font files...");
   const filesInFontsDir = await fsPromises.readdir(fontsDirPath);
   if (!filesInFontsDir.length) {
     logger.warning(
@@ -57,11 +57,11 @@ export const getFontFiles = async (fontsDirPath: string) => {
     );
     return process.exit(0);
   }
-  logger.info("Found font files...");
-  console.log(
-    "Font Files: ",
-    newFontFilePaths.map((fontFilePath) => path.basename(fontFilePath))
-  );
+  // logger.info("Found font files...");
+  // console.log(
+  //   "Font Files: ",
+  //   newFontFilePaths.map((fontFilePath) => path.basename(fontFilePath))
+  // );
 
   return fontFilePaths;
 };

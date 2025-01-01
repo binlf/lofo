@@ -22,6 +22,8 @@ export const getLofoConfig = () => {
     (fileExists(lofoConfigPath) || undefined) &&
     (fs.readJSONSync(lofoConfigPath) as LofoConfig);
 
+  // todo: didPathChange() should only check if the path has changed
+  // it's currently doing unrelated things as well like updating the config file and setting the FONTS_DIR_PATH
   const didPathChange = (fontsDirPath: string) => {
     FONTS_DIR_PATH ||= fontsDirPath;
     try {
@@ -53,6 +55,7 @@ export const getLofoConfig = () => {
     fontNames = callbackFn(existingFonts);
   };
 
+  // todo: split into `writeConfig()` and `updateConfig()`
   const signalSuccess = () => {
     if (!lofoConfig || !lofoConfig.reachedSuccess) {
       fs.outputJSONSync(

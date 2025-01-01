@@ -6,35 +6,38 @@ import { getFontsDir } from "./helpers/get-fonts-dir";
 import { groupFontsByFamily } from "./helpers/group-fonts-by-family";
 import { writeFontImports } from "./helpers/write-font";
 import { getLofoConfig } from "./utils/get-config";
-import { getProjectConfig, isTwProject } from "./utils/get-project-info";
-import { logger, whiteBold } from "./utils/logger";
+import { getProjectConfig } from "./utils/get-project-info";
+import { gray, logger } from "./utils/logger";
 import { resolveDestPath } from "./utils/resolve-dest";
 import path from "path";
+import { greenBright, whiteBright } from "picocolors";
 
 export const runLofo = async (dest?: string) => {
-  const { projectName: PROJECT_NAME } = getProjectConfig();
+  const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
   const { didPathChange, signalSuccess } = getLofoConfig();
-  logger.info(`lofo is running in ${whiteBold(PROJECT_NAME!)}`);
-  dest && resolveDestPath(dest);
-  //   if (isTwProject()) logger.info("Tailwind Config detected...");
-  logger.info(`Getting your ${FONTS_DIR_NAME} directory...`);
   const fontsDirPath = getFontsDir();
+  dest && resolveDestPath(dest);
+
+  logger.nominal(`${gray("lofo is running in")} ${whiteBright(PROJECT_NAME!)}`);
   if (!fontsDirPath) {
     logger.warning(
       `A ${FONTS_DIR_NAME} directory was not found in your project...`
     );
     return createFontsDir();
   }
-  logger.info(
-    `Found ${FONTS_DIR_NAME} directory at ${whiteBold(fontsDirPath)}`
-  );
+  logger.nominal(`${gray("Fonts directory:")} ${whiteBright(fontsDirPath)}`);
+  importAlias &&
+    logger.nominal(
+      `${gray("Project import alias:")} ${whiteBright(importAlias)}`
+    );
   if (didPathChange(fontsDirPath)) {
-    logger.info("Change to fonts directory path detected. Updating imports...");
+    // logger.info("Change to fonts directory path detected. Updating imports...");
+    logger.info("Updated font import path in `layout.tsx`");
     await writeFontImports(fontsDirPath, []);
     return logger.success("Font imports updated...");
   }
-  const fontFiles = await getFontFiles(fontsDirPath);
-  const fontFamilies = groupFontsByFamily(fontFiles, fontsDirPath);
+  const fontFilePaths = await getFontFiles(fontsDirPath);
+  const fontFamilies = groupFontsByFamily(fontFilePaths, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies);
 
   // todo: implement recovery incase operation fails at this point
@@ -46,10 +49,15 @@ export const runLofo = async (dest?: string) => {
     ));
 
   signalSuccess();
-  logger.success("Added local fonts to your project successfully...");
-  logger.info(
-    `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
-      NEXT_LOCAL_FONTS_DOCS_URL
-    )}`
+  logger.success("Added Font(s)");
+  fontFilePaths.map((filePath) =>
+    console.log(`\t${greenBright("+")} ${path.basename(filePath)}`)
   );
+
+  // logger.success("Added local fonts to your project successfully...");
+  // logger.info(
+  //   `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
+  //     NEXT_LOCAL_FONTS_DOCS_URL
+  //   )}`
+  // );
 };

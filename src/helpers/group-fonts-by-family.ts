@@ -26,7 +26,7 @@ export const groupFontsByFamily = (
   fontFilePaths: string[],
   fontsDirPath: string
 ) => {
-  logger.info("Grouping font files into families...");
+  // logger.info("Grouping font files into families...");
   const fontFamilies: FontFamily[] = [];
   const fontFileNames = getFontFileNames(
     fontFilePaths.map((file) => path.basename(file))
@@ -62,7 +62,7 @@ export const groupFontsByFamily = (
       fontFamilies.push(family);
     });
   });
-  logger.info("Grouped fonts into families...");
+  // logger.info("Grouped fonts into families...");
   updateFonts((fonts) => {
     const newFonts = fontFamilies.map((font) => font.familyName);
     if (fonts && fonts.length) {
