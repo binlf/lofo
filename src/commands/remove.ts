@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { logger, whiteBold } from "../utils/logger";
 import { getLofoConfig } from "../utils/get-config";
-import { FONTS_DIR_NAME } from "../constants";
+import { ENV, FONTS_DIR_NAME, LOFO_CONFIG } from "../constants";
 import fs, { pathExistsSync } from "fs-extra";
 import path from "path";
 import { reWriteFileSync } from "../utils/write-file";
@@ -14,12 +14,12 @@ export const remove = new Command()
   .name("remove")
   .alias("rm")
   .description("remove a font family")
-  .argument("[family]", "font family to remove")
+  // .argument("[family]", "font family to remove")
   .option("-a, --all", "remove all font families")
   .action(removeHandler);
 
 const { fonts, reachedSuccess, signalSuccess, updateFonts } = getLofoConfig();
-function removeHandler(family: string, options: any) {
+function removeHandler(options: { all: boolean }) {
   const fontsDirPath = getFontsDir();
 
   if (!fs.pathExistsSync(fontsDirPath as string)) {
@@ -28,13 +28,13 @@ function removeHandler(family: string, options: any) {
     process.exit(1);
   }
   // remove all font families
-  if (options.all) return removeFontFamily("", "all");
+  if (options.all) return removeFont("", "all");
 
   if (!fonts) {
     logger.error(
       `${whiteBold(
         FONTS_DIR_NAME
-      )} entry is missing in lofo-config.json. Try adding font files to your project and try again...`
+      )} entry is missing in ${LOFO_CONFIG}. Try adding font files to your project and try again...`
     );
     process.exit(1);
   }
@@ -42,20 +42,20 @@ function removeHandler(family: string, options: any) {
     logger.warning(
       `${whiteBold(
         FONTS_DIR_NAME
-      )} entry is empty in lofo-config.json. Try adding font files to your project and try again...`
+      )} entry is empty in ${LOFO_CONFIG}. Try adding font files to your project and try again...`
     );
     process.exit(1);
   }
-  if (family && !fonts.includes(family)) {
-    logger.warning(
-      `Font family ${whiteBold(
-        family
-      )} does not exist. Ensure it exists in the ${whiteBold(
-        FONTS_DIR_NAME
-      )} directory and try again...`
-    );
-    process.exit(1);
-  }
+  // if (font && !fonts.includes(font)) {
+  //   logger.warning(
+  //     `Font family ${whiteBold(
+  //       font
+  //     )} does not exist. Ensure it exists in the ${whiteBold(
+  //       FONTS_DIR_NAME
+  //     )} directory and try again...`
+  //   );
+  //   process.exit(1);
+  // }
 
   const fontChoices = fonts.map(
     (font): Choice => ({
@@ -64,7 +64,7 @@ function removeHandler(family: string, options: any) {
     })
   );
 
-  if (family) return removeFontFamily(family);
+  // if (font) return removeFont(font);
 
   prompts({
     type: "select",
@@ -74,18 +74,17 @@ function removeHandler(family: string, options: any) {
   })
     .then((res) => {
       if (!res.fontToRemove) return;
-      removeFontFamily(res.fontToRemove);
+      removeFont(res.fontToRemove);
     })
     .catch((err) => logger.error(err));
 }
 
-const removeFontFamily = (
-  family?: string,
-  flag: "single" | "all" = "single"
-) => {
+const removeFont = (family?: string, flag: "single" | "all" = "single") => {
   const fontsDirPath = getFontsDir();
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
-  const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
+  const indexFile =
+    ((ENV === "development" && "lf-") || "") +
+    (isTypescriptProject() ? "index.ts" : "index.js");
   const indexFilePath = path.join(fontsDirPath!, indexFile);
   if (flag === "single") {
     logger.info(`Removing font family: ${family}`);
