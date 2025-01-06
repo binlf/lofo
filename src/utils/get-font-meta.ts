@@ -82,16 +82,23 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   return dsr(JSON.stringify(src));
 };
 
-export const getFontVarName = (fontFamilyName: string) => {
+export const getFontVarName = (type: string) => {
   // --font-{font-name}-{font-property}
   const prefix = `--font-`;
-  const families = ["mono", "sans", "serif"];
-  const name = fontFamilyName.toLowerCase();
+  const typeClasses = ["mono", "sans", "serif", "display", "script"];
+  const typeface = type.toLowerCase();
 
-  for (const family of families) {
-    if (name.includes(family)) {
-      return prefix + name.split(family).join("-") + family;
+  for (const typeClass of typeClasses) {
+    if (typeface.includes(typeClass)) {
+      return prefix + typeface.split(typeClass).join("-") + typeClass;
     }
   }
-  return prefix + name;
+  return prefix + typeface;
 };
+
+/**
+ * Checks if a font is a variable font
+ * @function isVariableFont
+ * @returns {boolean} Returns true if the font is a variable font, false otherwise
+ */
+export const isVariableFont = (font: string) => {};

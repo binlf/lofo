@@ -14,6 +14,8 @@ export const getProjectConfig = () => {
 
   const alias = isTypescriptProject() ? getImportAlias() : null;
 
+  // todo: return `projectPath` as well, this standardizes the project path
+  // and we won't need to keep calling process.cwd() elsewhere
   return { projectName: projectConfigJson.name, importAlias: alias };
 };
 

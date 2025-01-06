@@ -119,7 +119,6 @@ export const reWriteFileSyncDep = (
   return undefined;
 };
 
-// todo: make function more generic
 /**
  * Writes to a file using the `node:readline` module
  * @param {string} filePath - Path to file.

@@ -36,7 +36,7 @@ export const writeFontImports = async (
   // todo: extract logic for writing font exports(util?)
   if (fontFamilies.length) {
     // logger.info("Writing font exports...");
-    const [content, _] = generateFileContent(fontFamilies, fontsDirPath);
+    const [content] = generateFileContent(fontFamilies, fontsDirPath);
     !pathExistsSync(indexFilePath)
       ? fs.outputFileSync(indexFilePath, content)
       : reWriteFileSync(indexFilePath, content, "export");
@@ -88,10 +88,10 @@ const writeImportStatement = async (fontsDirPath: string) => {
   // logger.info("Writing font imports to layout file...");
 
   // get named export
-  const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
+  const [namedExport] = fs.readdirSync(fontsDirPath).filter((fsItem) => {
     const folderPath = path.join(fontsDirPath, fsItem);
     return isFontFamilyDir(folderPath);
-  })[0];
+  });
 
   // get import path
   const importPath = importAlias

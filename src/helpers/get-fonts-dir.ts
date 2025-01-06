@@ -4,7 +4,6 @@ import { folderExists } from "../utils/exists";
 
 const CURRENT_DIR = process.cwd();
 
-// todo: recursively traverse the project tree for the `fonts` directory
 export const getFontsDir = () => {
   const dirPathInCurrDir = path.join(CURRENT_DIR, FONTS_DIR_NAME);
   let fontsDirPath = "";

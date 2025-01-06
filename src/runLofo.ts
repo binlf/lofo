@@ -11,10 +11,11 @@ import { gray, logger } from "./utils/logger";
 import { resolveDestPath } from "./utils/resolve-dest";
 import path from "path";
 import { greenBright, whiteBright } from "picocolors";
+import { getFontFileNames } from "./utils/get-file-names";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
-  const { didPathChange, signalSuccess } = getLofoConfig();
+  const { didPathChange, signalSuccess, fonts } = getLofoConfig();
   const fontsDirPath = getFontsDir();
   dest && resolveDestPath(dest);
 
@@ -31,12 +32,17 @@ export const runLofo = async (dest?: string) => {
       `${gray("Project import alias:")} ${whiteBright(importAlias)}`
     );
   if (didPathChange(fontsDirPath)) {
-    // logger.info("Change to fonts directory path detected. Updating imports...");
     logger.info("Updated font import path in `layout.tsx`");
     await writeFontImports(fontsDirPath, []);
     return logger.success("Font imports updated...");
   }
   const fontFilePaths = await getFontFiles(fontsDirPath);
+  const shouldAddFonts = !!fontFilePaths.filter((fontFilePath) => {
+    const fontFile = path.basename(fontFilePath);
+    const [typeface] = getFontFileNames([fontFile]);
+    return !fonts?.includes(typeface!);
+  }).length;
+  if (!shouldAddFonts) return;
   const fontFamilies = groupFontsByFamily(fontFilePaths, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies);
 
