@@ -1,7 +1,7 @@
 import path from "path";
-import { getFontFileNames } from "./get-file-names";
 import type { Font } from "../helpers/group-fonts-by-family";
 import { dsr } from "dsr-kv";
+import { getTypeface } from "./get-file-names";
 
 export type Wght =
   | "100"
@@ -44,11 +44,12 @@ const wghtsMap: Record<WghtAnnotation, Wght> = {
 
 // todo: revise impl.
 export const getFontWeight = (font: string): Wght => {
-  const [fileName] = getFontFileNames([font]);
+  // const [fileName] = getFontFileNames([font]);
+  const typeface = getTypeface(font);
   // get part of file name containing font weight: `Inter-Bold.otf -> Bold`
   const fontWeightAnnot = font
     .trim()
-    .split(fileName as string)[1]
+    .split(typeface)[1]
     ?.split(".")[0]
     ?.split("-")[1]
     ?.toLowerCase();

@@ -1,12 +1,13 @@
 import path, { basename, join } from "path";
 import fs from "fs";
-import { getFontFileNames } from "../utils/get-file-names";
+// import { getFontFileNames } from "../utils/get-file-names";
 import { logger } from "../utils/logger";
 import { folderExists } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
 import { type Wght, getFontWeight } from "../utils/get-font-meta";
 import { getLofoConfig } from "../utils/get-config";
 import { moveSync } from "fs-extra";
+import { getTypeface } from "../utils/get-file-names";
 
 export type Font = {
   name: string;
@@ -28,14 +29,15 @@ export const groupFontsByFamily = (
 ) => {
   // logger.info("Grouping font files into families...");
   const fontFamilies: FontFamily[] = [];
-  const fontFileNames = getFontFileNames(
+  const fontFileNames = getTypeface(
     fontFilePaths.map((file) => path.basename(file))
   );
   fontFileNames.forEach((fileName) => {
     let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFilePaths.filter((fontFile) => {
-      const [fontFileName] = getFontFileNames([path.basename(fontFile)]);
-      return fontFileName === fileName;
+      // const [fontFileName] = getFontFileNames([path.basename(fontFile)]);
+      const typeface = getTypeface(path.basename(fontFile));
+      return typeface === fileName;
     });
     // skip grouping if font files are not more than 1
     if (filesToMove.length < 2) {

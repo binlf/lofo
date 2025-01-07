@@ -4,7 +4,7 @@ import { getLofoConfig } from "../utils/get-config";
 import { logger } from "../utils/logger";
 import fsPromises from "fs/promises";
 import path from "path";
-import { getFontFileNames } from "../utils/get-file-names";
+import { getTypeface } from "../utils/get-file-names";
 
 /**
  * Returns an array of font file paths in a given directory.
@@ -27,8 +27,9 @@ export const getFontFiles = async (fontsDirPath: string) => {
   const newFontFilePaths: string[] = filesInFontsDir.reduce<string[]>(
     (acc, file) => {
       if (isFontFile(file)) {
-        const [fontName] = getFontFileNames([file]);
-        if (fontName && fonts?.includes(fontName)) oldFonts.push(fontName);
+        // const [fontName] = getFontFileNames([file]);
+        const typeface = getTypeface(file);
+        if (typeface && fonts?.includes(typeface)) oldFonts.push(typeface);
         return [...acc, path.join(fontsDirPath, file)];
       }
       return acc;

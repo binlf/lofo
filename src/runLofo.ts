@@ -11,7 +11,7 @@ import { gray, logger } from "./utils/logger";
 import { resolveDestPath } from "./utils/resolve-dest";
 import path from "path";
 import { greenBright, whiteBright } from "picocolors";
-import { getFontFileNames } from "./utils/get-file-names";
+import { getTypeface } from "./utils/get-file-names";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
@@ -39,7 +39,7 @@ export const runLofo = async (dest?: string) => {
   const fontFilePaths = await getFontFiles(fontsDirPath);
   const shouldAddFonts = !!fontFilePaths.filter((fontFilePath) => {
     const fontFile = path.basename(fontFilePath);
-    const [typeface] = getFontFileNames([fontFile]);
+    const typeface = getTypeface(fontFile);
     return !fonts?.includes(typeface!);
   }).length;
   if (!shouldAddFonts) return;
