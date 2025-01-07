@@ -27,7 +27,6 @@ export const getFontFiles = async (fontsDirPath: string) => {
   const newFontFilePaths: string[] = filesInFontsDir.reduce<string[]>(
     (acc, file) => {
       if (isFontFile(file)) {
-        // const [fontName] = getFontFileNames([file]);
         const typeface = getTypeface(file);
         if (typeface && fonts?.includes(typeface)) oldFonts.push(typeface);
         return [...acc, path.join(fontsDirPath, file)];

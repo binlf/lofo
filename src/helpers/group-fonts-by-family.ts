@@ -27,7 +27,6 @@ export const groupFontsByFamily = (
   fontFilePaths: string[],
   fontsDirPath: string
 ) => {
-  // logger.info("Grouping font files into families...");
   const fontFamilies: FontFamily[] = [];
   const fontFileNames = getTypeface(
     fontFilePaths.map((file) => path.basename(file))
@@ -35,7 +34,6 @@ export const groupFontsByFamily = (
   fontFileNames.forEach((fileName) => {
     let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
     const filesToMove = fontFilePaths.filter((fontFile) => {
-      // const [fontFileName] = getFontFileNames([path.basename(fontFile)]);
       const typeface = getTypeface(path.basename(fontFile));
       return typeface === fileName;
     });

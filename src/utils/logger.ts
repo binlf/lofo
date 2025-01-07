@@ -11,7 +11,7 @@ export const logger = {
     console.log(`> ${pc.yellowBright("WARNING")}: ${message}`);
   },
   info(message: string) {
-    console.log(`> ${pc.whiteBright("INFO")}: ${message}`);
+    console.log(`> ${whiteBold("INFO")}: ${message}`);
   },
   nominal(message: string) {
     console.log(`> ${message}`);

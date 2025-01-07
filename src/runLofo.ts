@@ -42,7 +42,8 @@ export const runLofo = async (dest?: string) => {
     const typeface = getTypeface(fontFile);
     return !fonts?.includes(typeface!);
   }).length;
-  if (!shouldAddFonts) return;
+  if (!shouldAddFonts)
+    return logger.info("Add a font file to your project and try again!");
   const fontFamilies = groupFontsByFamily(fontFilePaths, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies);
 
