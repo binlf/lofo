@@ -40,7 +40,7 @@ export const runLofo = async (dest?: string) => {
   const shouldAddFonts = !!fontFilePaths.filter((fontFilePath) => {
     const fontFile = path.basename(fontFilePath);
     const typeface = getTypeface(fontFile);
-    return !fonts?.includes(typeface!);
+    return !fonts?.includes(typeface);
   }).length;
   if (!shouldAddFonts)
     return logger.info("Add a font file to your project and try again!");
@@ -57,11 +57,12 @@ export const runLofo = async (dest?: string) => {
 
   signalSuccess();
   logger.success("Added Font(s)");
-  fontFilePaths.map((filePath) =>
-    console.log(`\t${greenBright("+")} ${path.basename(filePath)}`)
-  );
+  fontFilePaths.forEach((filePath) => {
+    const fontFile = path.basename(filePath);
+    !fonts?.includes(getTypeface(fontFile)) &&
+      console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
+  });
 
-  // logger.success("Added local fonts to your project successfully...");
   // logger.info(
   //   `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
   //     NEXT_LOCAL_FONTS_DOCS_URL

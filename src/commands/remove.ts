@@ -59,17 +59,34 @@ function removeHandler(options: { all: boolean }) {
   // }
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
 
-  const fontChoices = fonts.map((font): Choice => {
-    const [fontFileOrDir = ""] = itemsInFontsDir.filter((item) =>
-      item.includes(font)
-    );
+  // const fontChoices = fonts.filter((font) => {
+  //   const [fontFileOrDir] = itemsInFontsDir.filter((item) =>
+  //     item.includes(font)
+  //   );
 
-    return {
-      // title gets displayed in the terminal
-      title: !isFontFile(fontFileOrDir) ? `${fontFileOrDir}(F)` : fontFileOrDir,
-      value: fontFileOrDir,
-    };
-  });
+  //   return {
+  //     // title gets displayed in the terminal
+  //     title: !isFontFile(fontFileOrDir) ? `${fontFileOrDir}(F)` : fontFileOrDir,
+  //     value: fontFileOrDir,
+  //   };
+  // });
+
+  const fontChoices = fonts.reduce((acc, currVal) => {
+    const [fontFileOrDir] = itemsInFontsDir.filter((item) =>
+      item.includes(currVal)
+    );
+    if (fontFileOrDir)
+      return [
+        ...acc,
+        {
+          title: !isFontFile(fontFileOrDir)
+            ? `${fontFileOrDir}(F)`
+            : fontFileOrDir,
+          value: fontFileOrDir,
+        },
+      ];
+    return acc;
+  }, [] as Choice[]);
 
   // if (font) return removeFont(font);
 
