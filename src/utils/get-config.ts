@@ -8,12 +8,16 @@ import path from "path";
 type LofoConfig = {
   fontsDirPath: string;
   reachedSuccess: boolean;
-  fonts: string[];
+  fonts: {
+    typefaces: Array<string>;
+    length: number;
+  };
 } & PkgJson;
 
-let FONTS_DIR_PATH = "";
-let fontNames: string[] = [];
+let fontsDirPath = "";
+let typefaces: string[] = [];
 let shouldUpdateImports = false;
+let filesLength = 0;
 
 export const getLofoConfig = () => {
   const CURR_DIR = process.cwd();
@@ -25,7 +29,7 @@ export const getLofoConfig = () => {
   // todo: didPathChange() should only check if the path has changed
   // it's currently doing unrelated things as well like updating the config file and setting the FONTS_DIR_PATH
   const didPathChange = (fontsDirPath: string) => {
-    FONTS_DIR_PATH ||= fontsDirPath;
+    fontsDirPath ||= fontsDirPath;
     try {
       if (lofoConfig && fontsDirPath) {
         const { fontsDirPath: _fontsDirPath, reachedSuccess } = lofoConfig;
@@ -44,52 +48,86 @@ export const getLofoConfig = () => {
     } catch (error) {
       if (error instanceof Error)
         if ("code" in error && error.code === "ENOENT")
-          logger.error("lofo-config.json file is missing...");
+          logger.error("Failed to load lofo config...");
       return console.error(error);
     }
   };
 
-  const setDestinationPath = (destPath: string) => (FONTS_DIR_PATH = destPath);
-  const updateFonts = (callbackFn: (fonts: string[]) => string[]) => {
-    const existingFonts = lofoConfig?.fonts as string[];
-    fontNames = callbackFn(existingFonts);
+  const setFontsDirPath = (path: string) => (fontsDirPath = path);
+  const setFilesLength = (length: number) => (filesLength = length);
+  const setDestinationPath = (destPath: string) => (fontsDirPath = destPath);
+
+  const updateTypefaces = (callbackFn: (typefaces: string[]) => string[]) => {
+    const oldTypefaces = lofoConfig?.fonts.typefaces;
+    typefaces = callbackFn(oldTypefaces || []);
   };
 
-  // todo: split into `writeConfig()` and `updateConfig()`
-  const signalSuccess = () => {
-    if (!lofoConfig || !lofoConfig.reachedSuccess) {
-      fs.outputJSONSync(
-        lofoConfigPath,
-        {
-          fontsDirPath: FONTS_DIR_PATH,
-          reachedSuccess: true,
-          fonts: fontNames,
-        } as LofoConfig,
-        { spaces: 2 }
-      );
-      fs.outputFile("./.gitignore", `\n${LOFO_CONFIG}`, { flag: "a" });
+  function writeConfig(): void;
+  function writeConfig(callbackFn: (config: LofoConfig) => LofoConfig): void;
+  function writeConfig(callbackFn?: (config: LofoConfig) => LofoConfig) {
+    if (!callbackFn) {
+      /** create */
+      if (!lofoConfig || !lofoConfig.reachedSuccess) {
+        fs.outputJSONSync(
+          lofoConfigPath,
+          {
+            fontsDirPath: fontsDirPath,
+            reachedSuccess: true,
+            fonts: {
+              typefaces,
+              length: filesLength,
+            },
+          } as LofoConfig,
+          { spaces: 2 }
+        );
+        fs.outputFile("./.gitignore", `\n${LOFO_CONFIG}`, { flag: "a" });
+      }
+      /** update */
+      if (lofoConfig?.reachedSuccess) {
+        fs.outputJSONSync(
+          lofoConfigPath,
+          {
+            ...lofoConfig,
+            fontsDirPath,
+            fonts: {
+              typefaces,
+              length: filesLength,
+            },
+          },
+          { spaces: 2 }
+        );
+      }
+    } else {
+      fs.outputJSONSync(lofoConfigPath, callbackFn(lofoConfig as LofoConfig));
     }
-    if (lofoConfig?.reachedSuccess) {
-      fs.outputJSONSync(
-        lofoConfigPath,
-        {
-          ...lofoConfig,
-          fonts: fontNames,
-        } as LofoConfig,
-        { spaces: 2 }
-      );
-    }
-  };
+  }
 
   return {
     didPathChange,
     shouldUpdateImports,
-    signalSuccess,
+    writeConfig,
     reachedSuccess: Boolean(lofoConfig?.reachedSuccess),
     fonts: lofoConfig?.fonts,
+    setFontsDirPath,
+    setFilesLength,
     setDestinationPath,
-    destPath: FONTS_DIR_PATH,
+    destPath: fontsDirPath,
     fontsDirPath: lofoConfig?.fontsDirPath,
-    updateFonts,
+    updateFonts: updateTypefaces,
   };
 };
+
+// /** updateConfig */
+// if (lofoConfig?.reachedSuccess) {
+//   fs.outputJSONSync(
+//     lofoConfigPath,
+//     {
+//       ...lofoConfig,
+//       fonts: {
+//         ...lofoConfig.fonts,
+//         typefaces,
+//       },
+//     } as LofoConfig,
+//     { spaces: 2 }
+//   );
+// }

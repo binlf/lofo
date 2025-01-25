@@ -15,7 +15,8 @@ import { getTypeface } from "./utils/get-file-names";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
-  const { didPathChange, signalSuccess, fonts } = getLofoConfig();
+  const { didPathChange, writeConfig, fonts, setFilesLength, setFontsDirPath } =
+    getLofoConfig();
   const fontsDirPath = getFontsDir();
   dest && resolveDestPath(dest);
 
@@ -31,19 +32,31 @@ export const runLofo = async (dest?: string) => {
     logger.nominal(
       `${gray("Project import alias:")} ${whiteBright(importAlias)}`
     );
-  if (didPathChange(fontsDirPath)) {
-    logger.info("Updated font import path in `layout.tsx`");
-    await writeFontImports(fontsDirPath, []);
-    return logger.success("Font imports updated...");
-  }
+  setFontsDirPath(fontsDirPath);
+  // if (didPathChange(fontsDirPath)) {
+  //   logger.info("Updated font import path in `layout.tsx`");
+  //   await writeFontImports(fontsDirPath, []);
+  //   return logger.success("Font imports updated...");
+  // }
   const fontFilePaths = await getFontFiles(fontsDirPath);
-  const shouldAddFonts = !!fontFilePaths.filter((fontFilePath) => {
-    const fontFile = path.basename(fontFilePath);
-    const typeface = getTypeface(fontFile);
-    return !fonts?.includes(typeface);
-  }).length;
-  if (!shouldAddFonts)
-    return logger.info("Add a font file to your project and try again!");
+  setFilesLength(fontFilePaths.length);
+  // return console.log("Fonts: ", fontFilePaths);
+  // console.log("Fonts: ", fontFilePaths);
+  // return console.log("Font File Paths: ", fontFilePaths);
+  // if the font already exists , check if the font exists as a family
+  // if it doesn't, add it and create a family
+  // store the length of the current number of files added and use that to check for new files
+  // const shouldAddFonts = !!fontFilePaths.filter((fontFilePath, _, ffPaths) => {
+  //   const fontFile = path.basename(fontFilePath);
+  //   const typeface = getTypeface(fontFile);
+  //   return !fonts?.includes(typeface);
+  // }).length;
+  // if (!shouldAddFonts)
+  //   return logger.info("Add a font file to your project and try again!");
+  const shouldAddFonts = (fonts?.length || 0) < fontFilePaths.length;
+  if (!shouldAddFonts) {
+    return logger.info("Add a font file to your project and try again");
+  }
   const fontFamilies = groupFontsByFamily(fontFilePaths, fontsDirPath);
   await writeFontImports(fontsDirPath, fontFamilies);
 
@@ -55,13 +68,18 @@ export const runLofo = async (dest?: string) => {
       { overwrite: true }
     ));
 
-  signalSuccess();
+  writeConfig();
   logger.success("Added Font(s)");
-  fontFilePaths.forEach((filePath) => {
-    const fontFile = path.basename(filePath);
-    !fonts?.includes(getTypeface(fontFile)) &&
-      console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
+  // fontFilePaths.forEach((filePath, _, ffPaths) => {
+  // todo: this could be improved to be more deterministic
+  const newFilesLength = fontFilePaths.length - fonts?.length!;
+  fontFilePaths.slice(-newFilesLength).map((filePath) => {
+    console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
   });
+  // const fontFile = path.basename(filePath);
+  //   !fonts?.typefaces.includes(getTypeface(fontFile)) &&
+  //     console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
+  // // });
 
   // logger.info(
   //   `Stuck? Check out the Next.js docs for next steps: ${whiteBold(

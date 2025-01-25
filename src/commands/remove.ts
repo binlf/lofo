@@ -10,16 +10,16 @@ import { getFontsDir } from "../helpers/get-fonts-dir";
 import { folderExists, isFontFamilyDir, isFontFile } from "../utils/exists";
 import prompts, { type Choice } from "prompts";
 import pc from "picocolors";
+import { getTypeface } from "../utils/get-file-names";
 
 export const remove = new Command()
   .name("remove")
   .alias("rm")
   .description("remove a font family")
-  // .argument("[family]", "font family to remove")
   .option("-a, --all", "remove all font families")
   .action(removeHandler);
 
-const { fonts, reachedSuccess, signalSuccess, updateFonts } = getLofoConfig();
+const { fonts, reachedSuccess, writeConfig, updateFonts } = getLofoConfig();
 function removeHandler(options: { all: boolean }) {
   const fontsDirPath = getFontsDir();
 
@@ -59,19 +59,7 @@ function removeHandler(options: { all: boolean }) {
   // }
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
 
-  // const fontChoices = fonts.filter((font) => {
-  //   const [fontFileOrDir] = itemsInFontsDir.filter((item) =>
-  //     item.includes(font)
-  //   );
-
-  //   return {
-  //     // title gets displayed in the terminal
-  //     title: !isFontFile(fontFileOrDir) ? `${fontFileOrDir}(F)` : fontFileOrDir,
-  //     value: fontFileOrDir,
-  //   };
-  // });
-
-  const fontChoices = fonts.reduce((acc, currVal) => {
+  const fontChoices = fonts.typefaces.reduce((acc, currVal) => {
     const [fontFileOrDir] = itemsInFontsDir.filter((item) =>
       item.includes(currVal)
     );
@@ -88,8 +76,6 @@ function removeHandler(options: { all: boolean }) {
     return acc;
   }, [] as Choice[]);
 
-  // if (font) return removeFont(font);
-
   prompts({
     type: "select",
     name: "fontToRemove",
@@ -98,7 +84,6 @@ function removeHandler(options: { all: boolean }) {
   })
     .then((res) => {
       if (!res.fontToRemove) return;
-      // return console.log(res.fontToRemove);
       removeFont(res.fontToRemove);
     })
     .catch((err) => logger.error(err));
@@ -112,7 +97,6 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
     (isTypescriptProject() ? "index.ts" : "index.js");
   const indexFilePath = path.join(fontsDirPath!, indexFile);
   if (flag === "single") {
-    // logger.info(`Removing font font: ${font}`);
     if (!font) {
       logger.warning("Please specify a font to remove");
       process.exit(1);
@@ -128,7 +112,9 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
     // remove font font directory
     fs.removeSync(fontPath);
     const namedExport = `export const ${font} = localfont`;
-    const restFonts = fonts?.filter((f) => f !== font) as string[];
+    const restFonts = fonts?.typefaces.filter(
+      (f) => f !== (isFontFile(font) ? getTypeface(font) : font)
+    ) as string[];
     const defaultExport = `\nexport default {
       ${restFonts.join(", ")}
     }`;
@@ -138,7 +124,7 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
     reWriteFileSync(indexFilePath, defaultExport, "export");
     if (reachedSuccess) {
       updateFonts(() => restFonts);
-      signalSuccess();
+      writeConfig();
     }
     logger.success(`Removed font(s)`);
     console.log(
@@ -164,7 +150,7 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
   fs.removeSync(indexFilePath);
   if (reachedSuccess) {
     updateFonts(() => []);
-    signalSuccess();
+    writeConfig();
   }
   logger.success("Removed all font familes");
 };

@@ -73,7 +73,7 @@ const generateFileContent = (
     ${Array.from(
       new Set([
         ...fontFamilies.map((family) => family.familyName),
-        ...(fonts || ""),
+        ...(fonts?.typefaces || ""),
       ])
     ).join(", ")}
   }`;

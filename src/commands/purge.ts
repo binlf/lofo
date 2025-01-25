@@ -25,7 +25,7 @@ function purgeHandler() {
     (file) => file.startsWith("lf-") && remove(path.join(fontsDirPath!, file))
   );
   // ungroup font files
-  fonts?.map((font) => {
+  fonts?.typefaces.map((font) => {
     const familyDirPath = path.join(fontsDirPath!, font);
     pathExistsSync(familyDirPath) &&
       fs
