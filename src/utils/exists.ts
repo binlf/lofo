@@ -1,11 +1,11 @@
 import fs from "fs";
 import { FONT_FILE_EXTENSIONS } from "../constants";
 
-export const folderExists = (folderPath: string) => {
+export const doesFolderExist = (folderPath: string) => {
   return fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory();
 };
 
-export const fileExists = (filePath: string) => {
+export const doesFileExist = (filePath: string) => {
   return fs.existsSync(filePath) && fs.lstatSync(filePath).isFile();
 };
 
@@ -16,7 +16,7 @@ export const isFontFile = (file: string) => {
 
 export const isFontFamilyDir = (dirPath: string) => {
   return (
-    folderExists(dirPath) &&
+    doesFolderExist(dirPath) &&
     fs.readdirSync(dirPath).every((file) => isFontFile(file))
   );
 };

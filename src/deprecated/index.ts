@@ -1,5 +1,5 @@
 import path from "path";
-import { folderExists } from "../utils/exists";
+import { doesFolderExist } from "../utils/exists";
 import {
   createReadStream,
   createWriteStream,
@@ -20,7 +20,7 @@ import readline from "readline";
 export const getFsItem = (item: string, locations?: string[]) => {
   const CURRENT_DIR = process.cwd();
   let itemPath = path.join(CURRENT_DIR, item);
-  if (folderExists(itemPath)) {
+  if (doesFolderExist(itemPath)) {
   }
 };
 
@@ -119,7 +119,6 @@ export const reWriteFileSyncDep = (
   return undefined;
 };
 
-// todo: make function more generic
 /**
  * Writes to a file using the `node:readline` module
  * @param {string} filePath - Path to file.

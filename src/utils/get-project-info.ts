@@ -1,7 +1,7 @@
 import path from "path";
 import fs, { pathExistsSync } from "fs-extra";
 import { PackageJson, TsConfigJson } from "type-fest";
-import { fileExists, folderExists } from "./exists";
+import { doesFileExist, doesFolderExist } from "./exists";
 import { logger } from "./logger";
 
 const CURR_DIR = process.cwd();
@@ -14,6 +14,8 @@ export const getProjectConfig = () => {
 
   const alias = isTypescriptProject() ? getImportAlias() : null;
 
+  // todo: return `projectPath` as well, this standardizes the project path
+  // and we won't need to keep calling process.cwd() elsewhere
   return { projectName: projectConfigJson.name, importAlias: alias };
 };
 
@@ -49,7 +51,7 @@ export const getImportAlias = () => {
 export const getLayoutFile = () => {
   try {
     const srcDir = path.join(CURR_DIR, "/src");
-    const appDirPath = folderExists(srcDir)
+    const appDirPath = doesFolderExist(srcDir)
       ? path.join(srcDir, "/app")
       : path.join(CURR_DIR, "/app");
     if (!pathExistsSync(appDirPath))
@@ -60,7 +62,7 @@ export const getLayoutFile = () => {
       .readdirSync(appDirPath, { recursive: true })
       .filter(
         (item) =>
-          fileExists(path.join(appDirPath, item as string)) &&
+          doesFileExist(path.join(appDirPath, item as string)) &&
           item.includes("layout")
       ) as string[];
     // todo: revise impl.

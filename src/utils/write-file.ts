@@ -54,11 +54,11 @@ export const writeLineBy = async (
 };
 
 /**
- * Synchronously rewrites the content of a file while modifying content of file at a determined chunk.
+ * Synchronously rewrites the content of a file while modifying content of file at matched chunk(s)
  *
  * @param {string} path - The path to the file to be rewritten.
- * @param {string} content - The new content to write into the file.
- * @param {string} separator - The pattern describing how to split file content and new `content` into chunks. Default is LF("\n").
+ * @param {string} content - The new content to write into the file. It will be used to match the chunk to be rewritten and if no chunk(s) is matched it will be appended to the file.
+ * @param {string} separator - The pattern describing how to split file content and new `content` into chunks. Default is LF(`'\n'`).
  * @param {boolean} shouldRemoveChunk - A boolean flag that determines whether the determined chunk should be removed.
  * @returns {undefined} Returns `undefined`
  * @example

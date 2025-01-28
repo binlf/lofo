@@ -25,8 +25,8 @@ export const writeFontImports = async (
 ) => {
   const { shouldUpdateImports } = getLofoConfig();
   const prefix = "lf-";
-  if (importAlias)
-    logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
+  // if (importAlias)
+  //   logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(
     fontsDirPath,
@@ -35,17 +35,17 @@ export const writeFontImports = async (
 
   // todo: extract logic for writing font exports(util?)
   if (fontFamilies.length) {
-    logger.info("Writing font exports...");
-    const [content, _] = generateFileContent(fontFamilies, fontsDirPath);
+    // logger.info("Writing font exports...");
+    const [content] = generateFileContent(fontFamilies, fontsDirPath);
     !pathExistsSync(indexFilePath)
       ? fs.outputFileSync(indexFilePath, content)
       : reWriteFileSync(indexFilePath, content, "export");
-    logger.info("Finished writing font exports");
+    // logger.info("Finished writing font exports");
   }
 
   if (fontFamilies.length || shouldUpdateImports) {
     await writeImportStatement(fontsDirPath);
-    logger.info("Finished writing font imports...");
+    // logger.info("Finished writing font imports...");
   }
 };
 
@@ -73,7 +73,7 @@ const generateFileContent = (
     ${Array.from(
       new Set([
         ...fontFamilies.map((family) => family.familyName),
-        ...(fonts || ""),
+        ...(fonts?.typefaces || ""),
       ])
     ).join(", ")}
   }`;
@@ -85,13 +85,13 @@ const generateFileContent = (
 const writeImportStatement = async (fontsDirPath: string) => {
   const { shouldUpdateImports, destPath } = getLofoConfig();
   const layoutFilePath = getLayoutFile() as string;
-  logger.info("Writing font imports to layout file...");
+  // logger.info("Writing font imports to layout file...");
 
   // get named export
-  const namedExport = fs.readdirSync(fontsDirPath).filter((fsItem) => {
+  const [namedExport] = fs.readdirSync(fontsDirPath).filter((fsItem) => {
     const folderPath = path.join(fontsDirPath, fsItem);
     return isFontFamilyDir(folderPath);
-  })[0];
+  });
 
   // get import path
   const importPath = importAlias
