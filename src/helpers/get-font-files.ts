@@ -1,7 +1,7 @@
 import { FONTS_DIR_NAME } from "../constants";
 import {
-  fileExists,
-  folderExists,
+  doesFileExist,
+  doesFolderExist,
   isFontFamilyDir,
   isFontFile,
 } from "../utils/exists";
@@ -46,7 +46,7 @@ export const getFontFiles = async (fontsDirPath: string) => {
   //   async (accPromise, font) => {
   //     const acc = await accPromise;
   //     const oldFontsDirPath = path.join(fontsDirPath, font);
-  //     if (folderExists(oldFontsDirPath)) {
+  //     if (doesFolderExist(oldFontsDirPath)) {
   //       const filesInDir = await fsPromises.readdir(oldFontsDirPath);
   //       const fontFilePaths = filesInDir
   //         .filter((file) => isFontFile(file))
@@ -58,27 +58,41 @@ export const getFontFiles = async (fontsDirPath: string) => {
   //   Promise.resolve([])
   // );
 
-  const fontFilePaths = itemsInFontsDir.reduce((acc, item, index) => {
-    const itemPath = path.join(fontsDirPath, item);
-    if (fileExists(itemPath)) {
-      if (isFontFile(item)) return [...acc, itemPath];
-    }
-
-    if (folderExists(itemPath)) {
-      const dirName = item;
-      if (isFontFamilyDir(itemPath)) {
-        const fontFiles = fs.readdirSync(itemPath);
-        return [
-          ...acc,
-          ...fontFiles.map((fontFile) =>
-            path.join(fontsDirPath, dirName, fontFile)
-          ),
-        ];
+  const fontFilePaths = itemsInFontsDir
+    .reduce((acc, item, index) => {
+      const itemPath = path.join(fontsDirPath, item);
+      if (doesFileExist(itemPath)) {
+        if (isFontFile(item)) return [...acc, itemPath];
       }
-    }
 
-    return acc;
-  }, [] as string[]);
+      // get the 'latest' font family from st' font file in the famconfig
+      // get the 'lateily
+      // compare the birth times of the 'latest' existing font with the other birth times
+
+      if (doesFolderExist(itemPath)) {
+        const dirName = item;
+        if (fonts?.typefaces.includes(dirName)) {
+          if (isFontFamilyDir(itemPath)) {
+            const fontFiles = fs.readdirSync(itemPath);
+            return [
+              ...acc,
+              ...fontFiles.map((fontFile) =>
+                path.join(fontsDirPath, dirName, fontFile)
+              ),
+            ];
+          }
+        }
+      }
+
+      return acc;
+    }, [] as string[])
+    .sort((filePath, nextFilePath) => {
+      const [timestamp, nextTimestamp] = [
+        fs.statSync(filePath).birthtimeMs,
+        fs.statSync(nextFilePath).birthtimeMs,
+      ];
+      return timestamp - nextTimestamp;
+    });
   // if (!newFontFilePaths.length) {
   //   logger.warning(
   //     `Couldn't find any font files at the root of your ${FONTS_DIR_NAME} directory...\nAdd your font files to your ${FONTS_DIR_NAME} directory and run cli again...`

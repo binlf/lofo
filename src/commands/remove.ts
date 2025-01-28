@@ -7,7 +7,7 @@ import path from "path";
 import { reWriteFileSync } from "../utils/write-file";
 import { isTypescriptProject } from "../utils/get-project-info";
 import { getFontsDir } from "../helpers/get-fonts-dir";
-import { folderExists, isFontFamilyDir, isFontFile } from "../utils/exists";
+import { doesFolderExist, isFontFamilyDir, isFontFile } from "../utils/exists";
 import prompts, { type Choice } from "prompts";
 import pc from "picocolors";
 import { getTypeface } from "../utils/get-file-names";
@@ -140,7 +140,7 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
   itemsInFontsDir?.forEach((fsItem) => {
     const fsItemPath = path.join(fontsDirPath!, fsItem);
     if (!pathExistsSync(fsItemPath)) return;
-    if (folderExists(fsItemPath) && isFontFamilyDir(fsItemPath)) {
+    if (doesFolderExist(fsItemPath) && isFontFamilyDir(fsItemPath)) {
       fs.removeSync(fsItemPath);
       hasRemovedFontFamily = true;
     }

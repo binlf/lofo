@@ -11,7 +11,6 @@ import { gray, logger } from "./utils/logger";
 import { resolveDestPath } from "./utils/resolve-dest";
 import path from "path";
 import { greenBright, whiteBright } from "picocolors";
-import { getTypeface } from "./utils/get-file-names";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
@@ -40,19 +39,7 @@ export const runLofo = async (dest?: string) => {
   // }
   const fontFilePaths = await getFontFiles(fontsDirPath);
   setFilesLength(fontFilePaths.length);
-  // return console.log("Fonts: ", fontFilePaths);
-  // console.log("Fonts: ", fontFilePaths);
-  // return console.log("Font File Paths: ", fontFilePaths);
-  // if the font already exists , check if the font exists as a family
-  // if it doesn't, add it and create a family
-  // store the length of the current number of files added and use that to check for new files
-  // const shouldAddFonts = !!fontFilePaths.filter((fontFilePath, _, ffPaths) => {
-  //   const fontFile = path.basename(fontFilePath);
-  //   const typeface = getTypeface(fontFile);
-  //   return !fonts?.includes(typeface);
-  // }).length;
-  // if (!shouldAddFonts)
-  //   return logger.info("Add a font file to your project and try again!");
+
   const shouldAddFonts = (fonts?.length || 0) < fontFilePaths.length;
   if (!shouldAddFonts) {
     return logger.info("Add a font file to your project and try again");
@@ -70,17 +57,11 @@ export const runLofo = async (dest?: string) => {
 
   writeConfig();
   logger.success("Added Font(s)");
-  // fontFilePaths.forEach((filePath, _, ffPaths) => {
   // todo: this could be improved to be more deterministic
   const newFilesLength = fontFilePaths.length - fonts?.length!;
   fontFilePaths.slice(-newFilesLength).map((filePath) => {
     console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
   });
-  // const fontFile = path.basename(filePath);
-  //   !fonts?.typefaces.includes(getTypeface(fontFile)) &&
-  //     console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
-  // // });
-
   // logger.info(
   //   `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
   //     NEXT_LOCAL_FONTS_DOCS_URL

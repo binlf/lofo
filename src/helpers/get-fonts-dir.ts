@@ -1,6 +1,6 @@
 import path from "path";
 import { FONTS_DIR_NAME, FONT_DIRS_TO_CHECK } from "../constants";
-import { folderExists } from "../utils/exists";
+import { doesFolderExist } from "../utils/exists";
 
 const CURRENT_DIR = process.cwd();
 
@@ -9,7 +9,7 @@ export const getFontsDir = () => {
   let fontsDirPath = "";
   let dirFound = false;
 
-  if (folderExists(dirPathInCurrDir)) {
+  if (doesFolderExist(dirPathInCurrDir)) {
     dirFound = true;
     fontsDirPath = dirPathInCurrDir;
   } else {
@@ -22,7 +22,7 @@ export const getFontsDir = () => {
         FONTS_DIR_NAME
       );
       fontsDirPath = dirPathInSubDir;
-      if (folderExists(fontsDirPath)) {
+      if (doesFolderExist(fontsDirPath)) {
         dirFound = true;
         break;
       }

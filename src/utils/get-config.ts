@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import { fileExists } from "./exists";
+import { doesFileExist } from "./exists";
 import { LOFO_CONFIG } from "../constants";
 import { type PackageJson as PkgJson } from "type-fest";
 import { logger } from "./logger";
@@ -23,7 +23,7 @@ export const getLofoConfig = () => {
   const CURR_DIR = process.cwd();
   const lofoConfigPath = path.join(CURR_DIR, `${LOFO_CONFIG}`);
   const lofoConfig =
-    (fileExists(lofoConfigPath) || undefined) &&
+    (doesFileExist(lofoConfigPath) || undefined) &&
     (fs.readJSONSync(lofoConfigPath) as LofoConfig);
 
   // todo: didPathChange() should only check if the path has changed
@@ -116,18 +116,3 @@ export const getLofoConfig = () => {
     updateFonts: updateTypefaces,
   };
 };
-
-// /** updateConfig */
-// if (lofoConfig?.reachedSuccess) {
-//   fs.outputJSONSync(
-//     lofoConfigPath,
-//     {
-//       ...lofoConfig,
-//       fonts: {
-//         ...lofoConfig.fonts,
-//         typefaces,
-//       },
-//     } as LofoConfig,
-//     { spaces: 2 }
-//   );
-// }

@@ -2,7 +2,7 @@ import path, { basename, join } from "path";
 import fs from "fs";
 // import { getFontFileNames } from "../utils/get-file-names";
 import { logger } from "../utils/logger";
-import { folderExists } from "../utils/exists";
+import { doesFolderExist } from "../utils/exists";
 import { moveFile } from "../utils/move-fs-items";
 import { type Wght, getFontWeight } from "../utils/get-font-meta";
 import { getLofoConfig } from "../utils/get-config";
@@ -44,7 +44,7 @@ export const groupFontsByFamily = (
       return;
     }
 
-    if (!folderExists(fontFamilyFolderPath)) {
+    if (!doesFolderExist(fontFamilyFolderPath)) {
       fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
         recursive: true,
       }) as string;
