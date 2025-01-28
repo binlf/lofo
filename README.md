@@ -56,7 +56,7 @@ Using a command line argument with the `lofo` command:
 | Command | Description | Example |
 | --- | --- | --- |
 | `lofo --dest <path>` or `lofo -d <path>` | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
-| `lofo remove [font_family]` or `lofo rm <font_family>` | Run this command to remove a specified font family from your project -- the `fonts` directory. _Run `lofo rm` or `lofo remove` to display a list of existing fonts from which you can select one to delete._ | `lofo rm Roboto` |
+| `lofo remove [font_family]` or `lofo rm [font_family]` | Run this command to remove a specified font family from your project -- the `fonts` directory. _Run `lofo rm` or `lofo remove` to display a list of existing fonts from which you can select one to delete._ | `lofo rm Roboto` |
 | `lofo remove --all` or `lofo remove -a ` | Run this command to remove all font files and font family directories from your project -- the `fonts` directory | `lofo rm --all` |
 
 ### 👀Quirks
