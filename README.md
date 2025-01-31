@@ -75,8 +75,8 @@ Unfortunately, every failure can't be accounted for and the only "escape hatch" 
 
 ### 🗾Roadmap
 
-- [ ] Add support for Next.js projects using the pages router
 - [ ] Add support for React.js projects
+- [ ] Add support for Next.js projects using the pages router
 - [ ] Add support for Vanilla.js projects
 - [ ] Add support for React Native projects
 
