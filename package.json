@@ -21,7 +21,8 @@
     "localfonts",
     "fonts",
     "nextjs",
-    "cli"
+    "cli",
+    "tool"
   ],
   "author": "binlf",
   "repository": {

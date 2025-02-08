@@ -25,7 +25,7 @@ function listHandler() {
     if (isFontFamilyDir(itemPath) && fonts?.typefaces.includes(item)) {
       console.log(`${whiteBright(`${item}(F)`)}`);
       fs.readdirSync(itemPath).map((fontFile) =>
-        console.log(`    - ${fontFile}`)
+        console.log(`  - ${fontFile}`)
       );
     }
     if (isFontFile(item)) {
