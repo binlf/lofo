@@ -6,6 +6,7 @@ import { getPackageInfo } from "./utils/get-package-info";
 import { runLofo } from "./runLofo";
 import { remove } from "./commands/remove";
 import { purge } from "./commands/purge";
+import { list } from "./commands/list";
 // import { version } from "../package.json";
 
 const program = new Command();
@@ -36,7 +37,7 @@ async function main() {
       });
     });
 
-  program.addCommand(remove).addCommand(purge);
+  program.addCommand(remove).addCommand(purge).addCommand(list);
   program.parse();
 }
 
