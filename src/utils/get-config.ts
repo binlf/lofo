@@ -4,6 +4,8 @@ import { LOFO_CONFIG } from "../constants";
 import { type PackageJson as PkgJson } from "type-fest";
 import { logger } from "./logger";
 import path from "path";
+import { getFontFiles } from "../helpers/get-font-files";
+import { getFontsDir } from "../helpers/get-fonts-dir";
 
 type LofoConfig = {
   fontsDirPath: string;
@@ -14,7 +16,7 @@ type LofoConfig = {
   };
 } & PkgJson;
 
-let fontsDirPath = "";
+// let fontsDirPath = "";
 let typefaces: string[] = [];
 let shouldUpdateImports = false;
 let filesLength = 0;
@@ -53,9 +55,11 @@ export const getLofoConfig = () => {
     }
   };
 
-  const setFontsDirPath = (path: string) => (fontsDirPath = path);
+  // reconsider using the `getFontsDir` helper to get the fonts directory path as it'd always be up-to-date
+  // we might not need to rely on an external "dependency" to set the fonts directory path for us
+  // const setFontsDirPath = (path: string) => (fontsDirPath = path);
   const setFilesLength = (length: number) => (filesLength = length);
-  const setDestinationPath = (destPath: string) => (fontsDirPath = destPath);
+  // const setDestinationPath = (destPath: string) => (fontsDirPath = destPath);
 
   const updateTypefaces = (callbackFn: (typefaces: string[]) => string[]) => {
     const oldTypefaces = lofoConfig?.fonts.typefaces;
@@ -65,6 +69,8 @@ export const getLofoConfig = () => {
   function writeConfig(): void;
   function writeConfig(callbackFn: (config: LofoConfig) => LofoConfig): void;
   function writeConfig(callbackFn?: (config: LofoConfig) => LofoConfig) {
+    const fontsDirPath = getFontsDir();
+    const fontFilesLength = getFontFiles(fontsDirPath).length;
     if (!callbackFn) {
       /** create */
       if (!lofoConfig || !lofoConfig.reachedSuccess) {
@@ -75,7 +81,7 @@ export const getLofoConfig = () => {
             reachedSuccess: true,
             fonts: {
               typefaces,
-              length: filesLength,
+              length: fontFilesLength,
             },
           } as LofoConfig,
           { spaces: 2 }
@@ -91,7 +97,7 @@ export const getLofoConfig = () => {
             fontsDirPath,
             fonts: {
               typefaces,
-              length: filesLength,
+              length: fontFilesLength,
             },
           },
           { spaces: 2 }
@@ -108,11 +114,8 @@ export const getLofoConfig = () => {
     writeConfig,
     reachedSuccess: Boolean(lofoConfig?.reachedSuccess),
     fonts: lofoConfig?.fonts,
-    setFontsDirPath,
     setFilesLength,
-    setDestinationPath,
-    destPath: fontsDirPath,
     fontsDirPath: lofoConfig?.fontsDirPath,
-    updateFonts: updateTypefaces,
+    updateTypefaces,
   };
 };

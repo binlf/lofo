@@ -19,10 +19,12 @@ export const remove = new Command()
   .option("-a, --all", "remove all font families")
   .action(removeHandler);
 
-const { fonts, reachedSuccess, writeConfig, updateFonts } = getLofoConfig();
+const { fonts, reachedSuccess, writeConfig, updateTypefaces, setFilesLength } =
+  getLofoConfig();
 function removeHandler(options: { all: boolean }) {
   const fontsDirPath = getFontsDir();
 
+  // check if `fonts` directory exists
   if (!fs.pathExistsSync(fontsDirPath as string)) {
     // throw new Error(`${FONTS_DIR_NAME} directory does not exist`);
     logger.error(`${whiteBold(FONTS_DIR_NAME)} directory does not exist`);
@@ -83,52 +85,69 @@ function removeHandler(options: { all: boolean }) {
     choices: fontChoices,
   })
     .then((res) => {
+      // return console.log("Font To Remove: ", res.fontToRemove);
       if (!res.fontToRemove) return;
       removeFont(res.fontToRemove);
     })
     .catch((err) => logger.error(err));
 }
 
-const removeFont = (font?: string, flag: "single" | "all" = "single") => {
+const removeFont = (fontItem?: string, flag: "single" | "all" = "single") => {
   const fontsDirPath = getFontsDir();
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
-  const indexFile =
+  const fontExportsFile =
     ((ENV === "development" && "lf-") || "") +
     (isTypescriptProject() ? "index.ts" : "index.js");
-  const indexFilePath = path.join(fontsDirPath!, indexFile);
+  const fontExportsFilePath = path.join(fontsDirPath!, fontExportsFile);
+
   if (flag === "single") {
-    if (!font) {
+    // remove this check, it may never be used
+    if (!fontItem) {
       logger.warning("Please specify a font to remove");
       process.exit(1);
     }
-    if (!itemsInFontsDir.includes(font as string)) {
+
+    // this check is redundant as the remove command doesn't accept arguments anymore
+    // if execution reaches this code block, everything should be valid and guaranteed
+    if (!itemsInFontsDir.includes(fontItem as string)) {
       throw new Error(
-        `Font${!isFontFile(font) && " family"}: ${whiteBold(
-          font
+        `Font${!isFontFile(fontItem) && " family"}: ${whiteBold(
+          fontItem
         )} does not exist in the ${whiteBold(FONTS_DIR_NAME)} directory`
       );
     }
-    const fontPath = path.join(fontsDirPath!, font);
-    // remove font font directory
-    fs.removeSync(fontPath);
-    const namedExport = `export const ${font} = localfont`;
-    const restFonts = fonts?.typefaces.filter(
-      (f) => f !== (isFontFile(font) ? getTypeface(font) : font)
+
+    // remove font(file or directory)
+    const fontItemPath = path.join(fontsDirPath!, fontItem);
+    fs.removeSync(fontItemPath);
+
+    // update font exports file
+    const typeface = getTypeface(fontItem);
+    const namedExport = `export const ${typeface} = localfont`;
+    // const restTypefaces = fonts?.typefaces.filter(
+    //   (f) =>
+    //     f !==
+    //     (isFontFile(typeface) ? getTypeface : fontItem)
+    // ) as string[];
+    const restTypefaces = fonts?.typefaces.filter(
+      (tf) => tf !== typeface
     ) as string[];
     const defaultExport = `\nexport default {
-      ${restFonts.join(", ")}
+      ${restTypefaces.join(", ")}
     }`;
-    // remove  font named export in index file
-    reWriteFileSync(indexFilePath, namedExport, "export", true);
+    // remove named export in font exports file
+    reWriteFileSync(fontExportsFilePath, namedExport, "export", true);
     // remove font in default export object
-    reWriteFileSync(indexFilePath, defaultExport, "export");
+    reWriteFileSync(fontExportsFilePath, defaultExport, "export");
     if (reachedSuccess) {
-      updateFonts(() => restFonts);
+      updateTypefaces(() => restTypefaces);
       writeConfig();
     }
     logger.success(`Removed font(s)`);
     console.log(
-      `\t${pc.redBright("-")} ${!isFontFile(font) ? `${font}(F)` : font}`
+      `\t${pc.redBright("-")} ${
+        !isFontFile(fontItem) ? `${fontItem}(F)` : fontItem
+      }`
     );
   }
 
@@ -147,9 +166,9 @@ const removeFont = (font?: string, flag: "single" | "all" = "single") => {
   });
   if (!hasRemovedFontFamily)
     return logger.error("No font family directories were found");
-  fs.removeSync(indexFilePath);
+  fs.removeSync(fontExportsFilePath);
   if (reachedSuccess) {
-    updateFonts(() => []);
+    updateTypefaces(() => []);
     writeConfig();
   }
   logger.success("Removed all font familes");
