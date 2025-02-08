@@ -13,9 +13,9 @@ import path from "path";
 /**
  * Returns an array of font file paths in a given directory.
  * @param {string} fontsDirPath - Path to directory containing font files.
- * @returns {Promise<string[]>} Returns a promise that resolves with an array of font file paths.
+ * @returns {tring[]} Returns an array of font file paths.
  */
-export const getFontFiles = async (fontsDirPath: string) => {
+export const getFontFiles = (fontsDirPath: string) => {
   const { fonts } = getLofoConfig();
   const itemsInFontsDir = fs.readdirSync(fontsDirPath);
   if (!itemsInFontsDir.length) {

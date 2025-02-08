@@ -1,4 +1,7 @@
 // todo: handle less common, edge file naming patterns
+
+import { isFontFile } from "./exists";
+
 /**
  * Returns an array of font typefaces.
  * @param {string[]} files - An array of font files(with annotations and extensions).
@@ -16,9 +19,11 @@ export function getTypeface(file: string): string;
 export function getTypeface(fileOrFiles: string | string[]): string | string[] {
   if (Array.isArray(fileOrFiles)) {
     return fileOrFiles.reduce((acc, file) => {
+      if (!isFontFile(file)) return [...acc, file];
       const fileName = file.split(".")[0]?.split("-")[0] as string;
       return !acc.includes(fileName) ? [...acc, fileName] : acc;
     }, [] as string[]);
   }
+  if (!isFontFile(fileOrFiles)) return fileOrFiles;
   return fileOrFiles.split(".")[0]?.split("-")[0] as string;
 }

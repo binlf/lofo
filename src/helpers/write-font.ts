@@ -83,7 +83,7 @@ const generateFileContent = (
 
 // WRITE IMPORT STATEMENT TO LAYOUT FILE
 const writeImportStatement = async (fontsDirPath: string) => {
-  const { shouldUpdateImports, destPath } = getLofoConfig();
+  const { shouldUpdateImports } = getLofoConfig();
   const layoutFilePath = getLayoutFile() as string;
   // logger.info("Writing font imports to layout file...");
 
@@ -95,8 +95,8 @@ const writeImportStatement = async (fontsDirPath: string) => {
 
   // get import path
   const importPath = importAlias
-    ? path.resolve(CURR_DIR, destPath)
-    : path.relative(path.parse(layoutFilePath).dir, destPath);
+    ? path.resolve(CURR_DIR, fontsDirPath)
+    : path.relative(path.parse(layoutFilePath).dir, fontsDirPath);
   const importStatement = getImportStatement(
     namedExport as string,
     importPath,
