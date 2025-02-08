@@ -1,5 +1,5 @@
 import { move } from "fs-extra";
-import { FONTS_DIR_NAME, NEXT_LOCAL_FONTS_DOCS_URL } from "./constants";
+import { FONTS_DIR_NAME } from "./constants";
 import { createFontsDir } from "./helpers/create-fonts-dir";
 import { getFontFiles } from "./helpers/get-font-files";
 import { getFontsDir } from "./helpers/get-fonts-dir";
@@ -30,12 +30,7 @@ export const runLofo = async (dest?: string) => {
     logger.nominal(
       `${gray("Project import alias:")} ${whiteBright(importAlias)}`
     );
-  // setFontsDirPath(fontsDirPath);
-  // if (didPathChange(fontsDirPath)) {
-  //   logger.info("Updated font import path in `layout.tsx`");
-  //   await writeFontImports(fontsDirPath, []);
-  //   return logger.success("Font imports updated...");
-  // }
+
   const fontFilePaths = getFontFiles(fontsDirPath);
   setFilesLength(fontFilePaths.length);
 
@@ -56,14 +51,8 @@ export const runLofo = async (dest?: string) => {
 
   writeConfig();
   logger.success("Added Font(s)");
-  // todo: this could be improved to be more deterministic
-  const newFilesLength = fontFilePaths.length - fonts?.length!;
-  fontFilePaths.slice(-newFilesLength).map((filePath) => {
+  const addedFilesCount = fontFilePaths.length - fonts?.length!;
+  fontFilePaths.slice(-addedFilesCount).map((filePath) => {
     console.log(`\t${greenBright("+")} ${path.basename(filePath)}`);
   });
-  // logger.info(
-  //   `Stuck? Check out the Next.js docs for next steps: ${whiteBold(
-  //     NEXT_LOCAL_FONTS_DOCS_URL
-  //   )}`
-  // );
 };

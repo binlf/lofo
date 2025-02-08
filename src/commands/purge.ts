@@ -7,7 +7,6 @@ import { logger } from "../utils/logger";
 
 export const purge = new Command()
   .name("purge")
-  .alias("pr")
   .description("purge all lofo files")
   .option("-p", "destory config")
   .action(purgeHandler);

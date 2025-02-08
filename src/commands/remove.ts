@@ -49,16 +49,7 @@ function removeHandler(options: { all: boolean }) {
     );
     process.exit(1);
   }
-  // if (font && !fonts.includes(font)) {
-  //   logger.warning(
-  //     `Font family ${whiteBold(
-  //       font
-  //     )} does not exist. Ensure it exists in the ${whiteBold(
-  //       FONTS_DIR_NAME
-  //     )} directory and try again...`
-  //   );
-  //   process.exit(1);
-  // }
+
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
 
   const fontChoices = fonts.typefaces.reduce((acc, currVal) => {
@@ -85,7 +76,6 @@ function removeHandler(options: { all: boolean }) {
     choices: fontChoices,
   })
     .then((res) => {
-      // return console.log("Font To Remove: ", res.fontToRemove);
       if (!res.fontToRemove) return;
       removeFont(res.fontToRemove);
     })
@@ -124,11 +114,7 @@ const removeFont = (fontItem?: string, flag: "single" | "all" = "single") => {
     // update font exports file
     const typeface = getTypeface(fontItem);
     const namedExport = `export const ${typeface} = localfont`;
-    // const restTypefaces = fonts?.typefaces.filter(
-    //   (f) =>
-    //     f !==
-    //     (isFontFile(typeface) ? getTypeface : fontItem)
-    // ) as string[];
+
     const restTypefaces = fonts?.typefaces.filter(
       (tf) => tf !== typeface
     ) as string[];
@@ -137,7 +123,7 @@ const removeFont = (fontItem?: string, flag: "single" | "all" = "single") => {
     }`;
     // remove named export in font exports file
     reWriteFileSync(fontExportsFilePath, namedExport, "export", true);
-    // remove font in default export object
+    // in font exports file, remove font in default export object
     reWriteFileSync(fontExportsFilePath, defaultExport, "export");
     if (reachedSuccess) {
       updateTypefaces(() => restTypefaces);
