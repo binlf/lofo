@@ -1,7 +1,7 @@
 {
   "name": "lofo",
   "bin": {
-    "lofo": "./dist/index.js"
+    "lofo": "dist/index.js"
   },
   "workspaces": [
     "test/*"
@@ -27,7 +27,7 @@
   "author": "binlf",
   "repository": {
     "type": "git",
-    "url": "https://github.com/binlf/lofo"
+    "url": "git+https://github.com/binlf/lofo.git"
   },
   "license": "MIT",
   "devDependencies": {
