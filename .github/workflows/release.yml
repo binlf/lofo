@@ -1,4 +1,4 @@
-name: Release CLI Tool
+name: release lofo
 
 on:
   pull_request:
@@ -11,6 +11,8 @@ jobs:
     # Only run if the PR was merged (not just closed)
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
