@@ -8,11 +8,8 @@ on:
 
 jobs:
   release:
-    # Only run if the PR was merged (not just closed)
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,16 +24,37 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Check version change
+        id: check_version
+        run: |
+          # Get current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Get latest published version from npm
+          PUBLISHED_VERSION=$(npm view $(node -p "require('./package.json').name") version 2>/dev/null || echo "0.0.0")
+          echo "Latest published version: $PUBLISHED_VERSION"
+
+          # Compare versions
+          if [ "$CURRENT_VERSION" = "$PUBLISHED_VERSION" ]; then
+            echo "No version change detected. Skipping release."
+            echo "SHOULD_RELEASE=false" >> $GITHUB_ENV
+          else
+            echo "New version detected. Proceeding with release."
+            echo "SHOULD_RELEASE=true" >> $GITHUB_ENV
+            echo "VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+          fi
+
+      - name: Run tests
+        if: env.SHOULD_RELEASE == 'true'
+        run: bun test
+
       - name: Build
+        if: env.SHOULD_RELEASE == 'true'
         run: bun run build
 
-      - name: Get version from package.json
-        id: package_version
-        run: |
-          version=$(node -p "require('./package.json').version")
-          echo "VERSION=$version" >> $GITHUB_ENV
-
       - name: Create Git Tag
+        if: env.SHOULD_RELEASE == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -44,34 +62,35 @@ jobs:
           git push origin v${{ env.VERSION }}
 
       - name: Generate Release Notes
+        if: env.SHOULD_RELEASE == 'true'
         id: release_notes
         run: |
-          # Get commit messages since last release
           echo "CHANGELOG<<EOF" >> $GITHUB_ENV
           echo "## What's Changed in v${{ env.VERSION }}" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
-          # Get PR title and number
           echo "* ${{ github.event.pull_request.title }} (#${{ github.event.pull_request.number }})" >> $GITHUB_ENV
-          # Get all commit messages in this PR
           git log --pretty=format:"* %s" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Create GitHub Release
+        if: env.SHOULD_RELEASE == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION }}
           body: ${{ env.CHANGELOG }}
           draft: false
-          prerelease: true
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup .npmrc
+        if: env.SHOULD_RELEASE == 'true'
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
 
       - name: Publish to NPM
+        if: env.SHOULD_RELEASE == 'true'
         run: bunx npm publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
