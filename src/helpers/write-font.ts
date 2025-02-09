@@ -30,7 +30,7 @@ export const writeFontImports = async (
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(
     fontsDirPath,
-    ENV === "development" ? prefix + indexFile : indexFile
+    ENV === "dev" ? prefix + indexFile : indexFile
   );
 
   // todo: extract logic for writing font exports(util?)

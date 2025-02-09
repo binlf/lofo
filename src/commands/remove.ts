@@ -86,7 +86,7 @@ const removeFont = (fontItem?: string, flag: "single" | "all" = "single") => {
   const fontsDirPath = getFontsDir();
   const itemsInFontsDir = fs.readdirSync(fontsDirPath as string);
   const fontExportsFile =
-    ((ENV === "development" && "lf-") || "") +
+    ((ENV === "dev" && "lf-") || "") +
     (isTypescriptProject() ? "index.ts" : "index.js");
   const fontExportsFilePath = path.join(fontsDirPath!, fontExportsFile);
 

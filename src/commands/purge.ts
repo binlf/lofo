@@ -4,6 +4,7 @@ import { getLofoConfig } from "../utils/get-config";
 import path from "path";
 import { LOFO_CONFIG } from "../constants";
 import { logger } from "../utils/logger";
+import { writeLineBy } from "../utils/write-file";
 
 export const purge = new Command()
   .name("purge")
@@ -38,5 +39,10 @@ function purgeHandler() {
     fs.removeSync(familyDirPath);
   });
   fs.removeSync(path.join(process.cwd(), LOFO_CONFIG));
+  // writeLineBy(
+  //   path.join(process.cwd(), ".gitignore"),
+  //   "                ",
+  //   (_, currentLine) => currentLine === "lofo.json"
+  // );
   logger.success("Purge complete!");
 }

@@ -11,7 +11,9 @@
   "main": "./dist/index.js",
   "scripts": {
     "link": "bun unlink && bun link",
-    "build": "tsc",
+    "prebuild": "bun ./scripts/pre-build.ts",
+    "predev": "bun ./scripts/pre-dev.ts",
+    "build": "bun prebuild && tsc",
     "dev": "tsc -w",
     "dev:all": "bun run --filter '*' dev",
     "dev:wf": "bun run --filter 'with-fonts' dev",
