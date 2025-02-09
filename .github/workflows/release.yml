@@ -24,9 +24,6 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Authenticate to npm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
       - name: Install dependencies
         run: bun install
 
@@ -70,7 +67,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup .npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+
       - name: Publish to NPM
-        run: bun run publish
+        run: bunx npm publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
