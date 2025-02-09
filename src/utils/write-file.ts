@@ -40,6 +40,9 @@ export const writeLineBy = async (
     lineNumber = 1;
   rl.on("line", (line) => {
     if (predicate(previousLine, line, nextLine!)) {
+      // it writes the `content` to the line in-place -- it doesn't overwrite the line with the new content,
+      // rather it just replaces the existing content with the new conent only up to the length of the new content
+      // e.g old content = "abc", new content = "z", the result will be "zbc"
       fileWriteStream.write(content);
     } else {
       // todo: remove string concat

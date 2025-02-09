@@ -6,16 +6,19 @@
   "workspaces": [
     "test/*"
   ],
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A CLI tool for managing local fonts in your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {
     "link": "bun unlink && bun link",
+    "prebuild": "bun ./scripts/pre-build.ts",
+    "predev": "bun ./scripts/pre-dev.ts",
     "build": "tsc",
     "dev": "tsc -w",
     "dev:all": "bun run --filter '*' dev",
     "dev:wf": "bun run --filter 'with-fonts' dev",
-    "dev:wof": "bun run --filter 'without-fonts' dev"
+    "dev:wof": "bun run --filter 'without-fonts' dev",
+    "publish": "bun publish"
   },
   "keywords": [
     "localfonts",
