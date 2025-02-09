@@ -17,8 +17,7 @@
     "dev": "tsc -w",
     "dev:all": "bun run --filter '*' dev",
     "dev:wf": "bun run --filter 'with-fonts' dev",
-    "dev:wof": "bun run --filter 'without-fonts' dev",
-    "publish": "bun publish"
+    "dev:wof": "bun run --filter 'without-fonts' dev"
   },
   "keywords": [
     "localfonts",
