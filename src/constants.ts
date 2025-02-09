@@ -18,4 +18,4 @@ export const NEXT_LOCAL_FONTS_DOCS_URL =
   "https://nextjs.org/docs/app/building-your-application/optimizing/fonts#local-fonts";
 // export const LOFO_CONFIG = "lofo-config.json";
 export const LOFO_CONFIG = "lofo.json";
-export const ENV: "prod" | "dev" = "dev";
+export const ENV: "prod" | "dev" = "prod";

@@ -4,6 +4,6 @@ import path from "path";
 const constantsFilePath = path.join(process.cwd(), "src", "constants.ts");
 writeLineBy(
   constantsFilePath,
-  'export const ENV: "prod" | "dev" = "prod"',
+  'export const ENV: "prod" | "dev" = "prod";',
   (_, currentLine) => currentLine.includes("ENV")
 );
