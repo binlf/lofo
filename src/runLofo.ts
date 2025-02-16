@@ -42,12 +42,12 @@ export const runLofo = async (dest?: string) => {
   await writeFontImports(fontsDirPath, fontFamilies);
 
   // todo: implement recovery incase operation fails at this point
-  dest &&
-    (await move(
-      fontsDirPath,
-      path.resolve(process.cwd(), dest, FONTS_DIR_NAME),
-      { overwrite: true }
-    ));
+  // dest &&
+  //   (await move(
+  //     fontsDirPath,
+  //     path.resolve(process.cwd(), dest, FONTS_DIR_NAME),
+  //     { overwrite: true }
+  //   ));
 
   writeConfig();
   logger.success("Added Font(s)");
