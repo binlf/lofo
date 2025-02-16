@@ -1,12 +1,8 @@
 import path, { basename, join } from "path";
-import fs from "fs";
-// import { getFontFileNames } from "../utils/get-file-names";
-import { logger } from "../utils/logger";
+import fs from "fs-extra";
 import { doesFolderExist } from "../utils/exists";
-import { moveFile } from "../utils/move-fs-items";
 import { type Wght, getFontWeight } from "../utils/get-font-meta";
 import { getLofoConfig } from "../utils/get-config";
-import { moveSync } from "fs-extra";
 import { getTypeface } from "../utils/get-file-names";
 
 export type Font = {
@@ -31,12 +27,14 @@ export const groupFontsByFamily = (
   const fontFileNames = getTypeface(
     fontFilePaths.map((file) => path.basename(file))
   );
+
   fontFileNames.forEach((fileName) => {
-    let fontFamilyFolderPath = join(fontsDirPath, `/${fileName}`);
+    let fontFamilyDirPath = join(fontsDirPath, fileName);
     const filesToMove = fontFilePaths.filter((fontFile) => {
       const typeface = getTypeface(path.basename(fontFile));
       return typeface === fileName;
     });
+
     // skip grouping if font files are not more than 1
     if (filesToMove.length < 2) {
       const fontFamily = getFontMeta(filesToMove[0] || "");
@@ -44,25 +42,31 @@ export const groupFontsByFamily = (
       return;
     }
 
-    if (!doesFolderExist(fontFamilyFolderPath)) {
-      fontFamilyFolderPath = fs.mkdirSync(fontFamilyFolderPath, {
+    // create family directory
+    if (!doesFolderExist(fontFamilyDirPath)) {
+      fontFamilyDirPath = fs.mkdirSync(fontFamilyDirPath, {
         recursive: true,
       }) as string;
     }
 
-    moveFile(filesToMove, fontFamilyFolderPath, (err, movedFilePaths) => {
-      if (err) {
-        throw new Error(err as string);
-      }
-      const fonts = movedFilePaths.map(getFontMeta);
-      const family: FontFamily = {
-        familyName: fileName,
-        fonts: [...fonts],
-      };
-      fontFamilies.push(family);
+    // group font files -- move files into family directory
+    const movedFilePaths: string[] = [];
+    filesToMove.forEach((filePath) => {
+      const movedFilePath = path.join(
+        fontFamilyDirPath,
+        path.basename(filePath)
+      );
+      movedFilePaths.push(movedFilePath);
+      fs.moveSync(filePath, movedFilePath);
     });
+    const fonts = movedFilePaths.map(getFontMeta);
+    const family: FontFamily = {
+      familyName: fileName,
+      fonts: [...fonts],
+    };
+    fontFamilies.push(family);
   });
-  // logger.info("Grouped fonts into families...");
+
   updateTypefaces((fonts) => {
     const newFonts = fontFamilies.map((font) => font.familyName);
     if (fonts && fonts.length) {

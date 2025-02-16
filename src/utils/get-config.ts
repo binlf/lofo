@@ -81,7 +81,7 @@ export const getLofoConfig = () => {
             reachedSuccess: true,
             fonts: {
               typefaces,
-              length: fontFilesLength,
+              length: filesLength,
             },
           } as LofoConfig,
           { spaces: 2 }
@@ -97,7 +97,7 @@ export const getLofoConfig = () => {
             fontsDirPath,
             fonts: {
               typefaces,
-              length: fontFilesLength,
+              length: filesLength,
             },
           },
           { spaces: 2 }

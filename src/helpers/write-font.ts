@@ -25,8 +25,6 @@ export const writeFontImports = async (
 ) => {
   const { shouldUpdateImports } = getLofoConfig();
   const prefix = "lf-";
-  // if (importAlias)
-  //   logger.info(`Found project import alias: ${whiteBold(importAlias)}`);
   const indexFile = isTypescriptProject() ? "index.ts" : "index.js";
   const indexFilePath = path.join(
     fontsDirPath,
@@ -35,17 +33,14 @@ export const writeFontImports = async (
 
   // todo: extract logic for writing font exports(util?)
   if (fontFamilies.length) {
-    // logger.info("Writing font exports...");
     const [content] = generateFileContent(fontFamilies, fontsDirPath);
     !pathExistsSync(indexFilePath)
       ? fs.outputFileSync(indexFilePath, content)
       : reWriteFileSync(indexFilePath, content, "export");
-    // logger.info("Finished writing font exports");
   }
 
   if (fontFamilies.length || shouldUpdateImports) {
     await writeImportStatement(fontsDirPath);
-    // logger.info("Finished writing font imports...");
   }
 };
 

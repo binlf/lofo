@@ -30,7 +30,9 @@ export function getTsConfig() {
 
     return tsconfig;
   } catch (error) {
-    return null;
+    if (error instanceof Error && error.message === "tsconfig.json is missing")
+      return null;
+    throw error;
   }
 }
 
@@ -78,7 +80,7 @@ export const getLayoutFile = () => {
 };
 
 export const isTwProject = () => {
-  const twConfigFileName = "tailwindcss.config";
+  const twConfigFileName = "tailwind.config";
   const twConfigFile = twConfigFileName + isTypescriptProject() ? ".ts" : ".js";
   return pathExistsSync(path.join(CURR_DIR, twConfigFile));
 };

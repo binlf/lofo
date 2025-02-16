@@ -70,7 +70,9 @@ export const getFontSrc = (fonts: Font[], fontsDirPath: string) => {
   if (fonts.length > 1) {
     src = fonts.map((font) => {
       return {
-        path: path.relative(fontsDirPath, font.path).replaceAll(path.sep, "/"),
+        path: path
+          .relative(fontsDirPath, normalizePath(font.path))
+          .replaceAll(path.sep, "/"),
         ...(font.weight && { weight: font.weight }),
         style: font.style,
       };
@@ -94,6 +96,13 @@ export const getFontVarName = (type: string) => {
     }
   }
   return prefix + typeface;
+};
+
+const normalizePath = (filePath: string) => {
+  const prefix = `${path.sep}${path.sep}?${path.sep}`;
+  const tokens = filePath.split(prefix);
+  const normalizedPath = (tokens.length > 1 && tokens.join("")) || filePath;
+  return normalizedPath;
 };
 
 /**
