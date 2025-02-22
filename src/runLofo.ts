@@ -31,8 +31,10 @@ export const runLofo = async (dest?: string) => {
       `${gray("Project import alias:")} ${whiteBright(importAlias)}`
     );
 
-  const fontFilePaths = getFontFiles(fontsDirPath);
-  setFilesLength(fontFilePaths.length);
+  // const fontFilePaths = getFontFiles(fontsDirPath);
+  console.log(getFontFiles(fontsDirPath));
+  return;
+  // setFilesLength(fontFilePaths.length);
 
   const shouldAddFonts = (fonts?.length || 0) < fontFilePaths.length;
   if (!shouldAddFonts) {

@@ -1,10 +1,6 @@
 # LoFo
 
-CLI for managing local fonts in your Next.js project!
-
-### 🛑Prerequisites.
-
-- Node.js version >= **10.8.0**
+> A tool for managing local fonts in your Next.js project!
 
 ```
  npx lofo
@@ -12,13 +8,13 @@ CLI for managing local fonts in your Next.js project!
 
 ## ⬜Installation
 
-To get started, run the above command in the root directory of your project and `lofo` would try to get everything set up properly for you automatically. You can also install the CLI on your machine by running the command below:
+To get started, run the above command in the root directory of your project and `lofo` would automatically try to get everything set up properly. You can also install the CLI globally on your machine by running the command below:
 
 ```
 npm install -g lofo
 ```
 
-After which you can execute the CLI by just running the command: `lofo` in your terminal...
+...after which you should be able to execute the CLI by running the command: `lofo` in your terminal...
 
 ### 🔍How it works.
 
@@ -51,13 +47,14 @@ my-project/
 The final destination of the `fonts` directory is up to you. You can decide to move the `fonts` directory to a different location, this can be achieved by running the CLI with an argument[_yet to be implemented_] or manually moving the `fonts` directory through your project directory tree(in your IDE). If you prefer the latter, remember to run `lofo` afterwards to auto-update your import path[**_this is a compulsory step_**]...
 
 Using a command line argument with the `lofo` command:
+
 > _Replace values in angle brackets with real values_
 
-| Command | Description | Example |
-| --- | --- | --- |
-| `lofo --dest <path>` or `lofo -d <path>` | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory | `lofo --dest public/assets/` |
-| `lofo remove [font_family]` or `lofo rm [font_family]` | Run this command to remove a specified font family from your project -- the `fonts` directory. _Run `lofo rm` or `lofo remove` to display a list of existing fonts from which you can select one to delete._ | `lofo rm Roboto` |
-| `lofo remove --all` or `lofo remove -a ` | Run this command to remove all font files and font family directories from your project -- the `fonts` directory | `lofo rm --all` |
+| Command                                                | Description                                                                                                                                                                                                  | Example                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- |
+| `lofo --dest <path>` or `lofo -d <path>`               | Run this command when adding a new font to your project to designate a "final destination" for the `fonts` directory. The value of `<path>` is resolved relative to your root directory                      | `lofo --dest public/assets/` |
+| `lofo remove [font_family]` or `lofo rm [font_family]` | Run this command to remove a specified font family from your project -- the `fonts` directory. _Run `lofo rm` or `lofo remove` to display a list of existing fonts from which you can select one to delete._ | `lofo rm Roboto`             |
+| `lofo remove --all` or `lofo remove -a `               | Run this command to remove all font files and font family directories from your project -- the `fonts` directory                                                                                             | `lofo rm --all`              |
 
 ### 👀Quirks
 
