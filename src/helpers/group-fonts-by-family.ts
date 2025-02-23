@@ -1,10 +1,9 @@
-import path, { basename, join } from "path";
+import path, { basename } from "path";
 import fs from "fs-extra";
 import { doesFolderExist } from "../utils/exists";
 import { type Wght, getFontWeight } from "../utils/get-font-meta";
 import { getLofoConfig } from "../utils/get-config";
 import { getTypeface } from "../utils/get-file-names";
-import { logger } from "../utils/logger";
 
 export type Font = {
   name: string;

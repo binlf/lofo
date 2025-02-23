@@ -60,12 +60,6 @@ Using a command line argument with the `lofo` command:
 
 > These are known "quirks" that you may notice during usage, some are by design, others are minor issues that would be fixed.
 
-#### _Quirk: Nothing happens when I add a folder containing my font files to the `fonts` directory._
-
-For now, the CLI only checks for font files that are direct "children" of the `fonts` directory -- it doesn't look inside sub-directoiries of `fonts`. This means that, you can't add whole directories containing all the files you need, instead you add the individual font files to the `fonts` directory and let the CLI group them for you...
-
-This can admittedly get troublesome and we're looking into [it](https://github.com/binlf/lofo/issues/32). You can keep track of this [issue](https://github.com/binlf/lofo/issues/32) to know when it's been resolved.
-
 #### _Quirk: Something GOOFED._
 
 Unfortunately, every failure can't be accounted for and the only "escape hatch" for now is the command: `lofo rm --all` -- this command would remove all the font files and directories in the `fonts` directory, this should give you a "fresh" slate. If after doing this, something still goofs[something still goes wrong], please don't hesitate to open an [issue](https://github.com/binlf/lofo/issues/new).
