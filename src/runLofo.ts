@@ -14,7 +14,7 @@ import { greenBright, whiteBright } from "picocolors";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
-  const { didPathChange, writeConfig, fonts, setFilesLength } = getLofoConfig();
+  const { writeConfig, fonts, setFilesLength } = getLofoConfig();
   const fontsDirPath = getFontsDir();
   dest && resolveDestPath(dest);
 
@@ -31,9 +31,7 @@ export const runLofo = async (dest?: string) => {
       `${gray("Project import alias:")} ${whiteBright(importAlias)}`
     );
 
-  // const fontFilePaths = getFontFiles(fontsDirPath);
-  console.log(getFontFiles(fontsDirPath));
-  return;
+  const fontFilePaths = getFontFiles(fontsDirPath, { sort: true });
   // setFilesLength(fontFilePaths.length);
 
   const shouldAddFonts = (fonts?.length || 0) < fontFilePaths.length;
