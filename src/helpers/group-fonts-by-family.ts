@@ -73,37 +73,6 @@ export const groupFontsByFamily = (
       familyName: fileName,
       fonts: [...fontFilesInFamily.map(getFontMeta)],
     });
-
-    // skip grouping if font files are not more than 1
-    // if (ungroupedFiles.length < 2) {
-    //   const fontFamily = getFontMeta(ungroupedFiles[0] || "");
-    //   fontFamilies.push({ familyName: fileName, fonts: [fontFamily] });
-    //   return;
-    // }
-
-    // create family directory
-    // if (!doesFolderExist(fontFamilyDirPath)) {
-    //   fontFamilyDirPath = fs.mkdirSync(fontFamilyDirPath, {
-    //     recursive: true,
-    //   }) as string;
-    // }
-
-    // group font files -- move files into family directory
-    // const movedFilePaths: string[] = [];
-    // ungroupedFiles.forEach((filePath) => {
-    //   const movedFilePath = path.join(
-    //     fontFamilyDirPath,
-    //     path.basename(filePath)
-    //   );
-    //   movedFilePaths.push(movedFilePath);
-    //   fs.moveSync(filePath, movedFilePath);
-    // });
-    // const fonts = groupedFilePaths.map(getFontMeta);
-    // const family: FontFamily = {
-    //   familyName: fileName,
-    //   fonts: [...fonts],
-    // };
-    // fontFamilies.push(family);
   });
 
   // update typefaces in config

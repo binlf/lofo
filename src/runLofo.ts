@@ -14,7 +14,7 @@ import { greenBright, whiteBright } from "picocolors";
 
 export const runLofo = async (dest?: string) => {
   const { projectName: PROJECT_NAME, importAlias } = getProjectConfig();
-  const { writeConfig, fonts, setFilesLength } = getLofoConfig();
+  const { writeConfig, fonts } = getLofoConfig();
   const fontsDirPath = getFontsDir();
   dest && resolveDestPath(dest);
 
@@ -32,7 +32,6 @@ export const runLofo = async (dest?: string) => {
     );
 
   const fontFilePaths = getFontFiles(fontsDirPath, { sort: true });
-  // setFilesLength(fontFilePaths.length);
 
   const shouldAddFonts = (fonts?.length || 0) < fontFilePaths.length;
   if (!shouldAddFonts) {
