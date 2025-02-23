@@ -187,3 +187,28 @@ export const moveFile = (
     return movedFilesPaths;
   }
 };
+
+// const fontFilePaths = itemsInFontsDir
+//   .reduce((acc, item) => {
+//     const itemPath = path.join(fontsDirPath, item);
+//     if (doesFileExist(itemPath)) {
+//       if (isFontFile(item)) return [...acc, itemPath];
+//     }
+
+//     if (doesFolderExist(itemPath)) {
+//       const dirName = item;
+//       if (fonts?.typefaces.includes(dirName)) {
+//         if (isFontFamilyDir(itemPath)) {
+//           const fontFiles = fs.readdirSync(itemPath);
+//           return [
+//             ...acc,
+//             ...fontFiles.map((fontFile) =>
+//               path.join(fontsDirPath, dirName, fontFile)
+//             ),
+//           ];
+//         }
+//       }
+//     }
+
+//     return acc;
+//   }, [] as string[])

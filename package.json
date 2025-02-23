@@ -6,7 +6,7 @@
   "workspaces": [
     "test/*"
   ],
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A CLI tool for managing local fonts in your Next.js project.",
   "main": "./dist/index.js",
   "scripts": {

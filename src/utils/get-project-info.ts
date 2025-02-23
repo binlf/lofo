@@ -8,6 +8,10 @@ const CURR_DIR = process.cwd();
 
 export const getProjectConfig = () => {
   const projectConfigJsonPath = path.join(CURR_DIR, "package.json");
+  if (!doesFileExist(projectConfigJsonPath)) {
+    logger.error("Could not find project's package.json file");
+    return process.exit(0);
+  }
   const projectConfigJson = fs.readJSONSync(
     projectConfigJsonPath
   ) as PackageJson;
